@@ -1,0 +1,764 @@
+---
+title: "Introduction to Relational Event Models"
+author: "Melania Lembo, Martina Boschi, Ernst C. Wit"
+date: "2026-02-09"
+output:
+  pdf_document: default
+subtitle: "Mixed effect additive REMs - Tutorial Section: Solution"
+header-includes:  
+- \usepackage{xcolor}  
+- \definecolor{persianred}{rgb}{0.8, 0.2, 0.2}
+- \definecolor{persianred}{rgb}{0.8, 0.2, 0.2}
+- \definecolor{pastelyellow}{rgb}{0.99, 0.99, 0.59}
+- \definecolor{pastelpurple}{rgb}{0.7, 0.62, 0.71}
+- \definecolor{cerulean}{rgb}{0.0, 0.48, 0.65}
+- \definecolor{darkseagreen}{rgb}{0.56, 0.74, 0.56}
+- \definecolor{mauvetaupe}{rgb}{0.57, 0.37, 0.43}
+---
+
+```{r setup, include=FALSE}
+knitr::knit_hooks$set(purl = knitr::hook_purl)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Application to Alien Species Invasions
+
+## Setup
+
+```{r message=FALSE, warning=FALSE}
+# install.packages("mgcv")
+# install.packages("RColorBrewer")
+library(mgcv)
+library(RColorBrewer)
+```
+
+```{r, echo=FALSE}
+pal.blue <- brewer.pal(9, "Blues")
+pal.rose <- brewer.pal(9, "RdPu")
+colors <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
+            "#D55E00", "#CC79A7", "#999999", "#66C2A5", "#FC8D62")
+```
+
+## 1. Alien species invasions as relational events
+
+a)  **Load the input data \textcolor{persianred}{"input00.RData"} located in the \textcolor{persianred}{01-Data/01-Inputs}. Inspect the original data contained in the object `FR`. Have a look at the columns: `"LifeForm"`, `"Taxon"`, `"Region"`, `"FirstRecord"`, `"Source"`.**
+
+```{r}
+load(file="01-Data/01-Inputs/input00.RData")
+```
+
+We firstly show how data arrives from the original source (Seebens et al., 2018). These data involve 17 life forms. For each record, we are able to identify the \textcolor{cerulean}{species} (`"Taxon"`) of a certain \textcolor{cerulean}{lifeform}} (`"Lifeform"`) that is invading a \textcolor{cerulean}{region}} (`"Region"`) in which it was not native and was not seen before the reported \textcolor{cerulean}{year}} (`"FirstRecord"`). The Alien Species First Records Database collects several sources: the source of each FR is reported in the column `"Source"`.
+
+```{r}
+head(FR[,c("LifeForm", "Taxon",
+           "Region", "FirstRecord",
+           "Source")])
+```
+
+b)  **Interpret this data as a \textcolor{mauvetaupe}{relational event network}. Define \textcolor{mauvetaupe}{sender set}, \textcolor{mauvetaupe}{receiver set}, and \textcolor{mauvetaupe}{time-window}.**
+
+We recall that a \textcolor{cerulean}{first record} is the year ($t$) when a (non-native) species $s$ first invades region $r$. The following dataset, `FR`, already contains information we need to interpret first records as \textbf{relational events} $(s,r,t)$.
+
+Particularly, the \textcolor{mauvetaupe}{sender set} $V^S$ is composed of the unique recorded species, while regions of the world (countries and islands) form the \textcolor{mauvetaupe}{receiver set} $V^R$. The \textcolor{mauvetaupe}{time window} spans from $t_0=1880$ to $T=2005$.
+
+c)  **Inspect the object `native`. A species' \textcolor{cerulean}{native range} (NR) is the collection of areas where it is indigenous. How would you relate this concept to that of \textcolor{mauvetaupe}{risk set}?**
+
+Slightly more liberally, we refer to \textcolor{cerulean}{native range} as the set of sites where a species was already present before the start of the analysis period, which in this context is $1880$.
+
+`native` object also contains the FRs, involving insects, that occurred before 1880. In the following chunk, an example:
+
+```{r}
+native[sample(1:nrow(native), 10), c("species", "region")]
+```
+
+Why do we need the native range? Because the relational event is \textcolor{mauvetaupe}{non-recurrent}, namely, the event first record, for its definition, occurs only once. This also means that the \textcolor{mauvetaupe}{risk set} is reducing over time: once the event is observed, it cannot be sampled anymore as a non-event. But also because covariates are endogenous and at each time, the first time included, rely on the knowledge of which first records already occurred and this must be possible at the beginning of the analysis as well.
+
+In this tutorial, in order to make the analysis easy to reproduce, we focus on \textcolor{cerulean}{insects} only. `first_records` contains the insect FRs of interest. Nevertheless, the attendant to the workshop can reproduce the same analysis for other three taxonomies (plants, birds and mammal). The relative materials are contained in \textcolor{persianred}{02-Supplementary-Materials}.
+
+```{r}
+head(first_records[,c("year","lf",
+           "species", 
+           "region")])
+```
+
+d)  **Read the commented function `invaded.regions` that allows computing which regions the species invaded before the current year. Which type of covariates does this function allow to compute: \textcolor{mauvetaupe}{exogenous or endogenous, node- or dyad-level, time-dependent}?**
+
+This type of function allows us to identify particular instances in the previous event history (specifically, past events involving the same species) and to extract attributes of interest (e.g., which regions were invaded). This information can then be aggregated into a covariate. Since this covariate is a function of the past network of events, the resulting covariate is endogenous. Since we do not store the time of these events - but only the receivers - the covariate will not be a function of the internal time. 
+
+```{r}
+invaded.regions <- function(sp.n, r.n, y, native, first_records){
+  
+  # Convert input arguments to numeric type if not already
+  sp.n <- as.numeric(sp.n)
+  r.n <- as.numeric(r.n)
+  y <- as.numeric(y)
+  
+  # Get unique combinations of species number and region number from native data
+  t <- unique(as.vector(subset(native, sp.num == sp.n, r.num)))
+  
+  # Get region numbers from first records data where species number matches
+  pr <- as.vector(subset(first_records, sp.num == sp.n, r.num))
+  
+  # If the invasion is both present in first records data and in native range
+  # consider the former as actual piece of information
+  t <- setdiff(t, pr)
+  
+  # Find indices of first records occurring before end date for the species
+  set.sp <- which(first_records$sp.num == sp.n & first_records$year < y)
+  
+  # Combine regions in native range with regions in first records before date
+  t <- na.omit(c(t, first_records$r.num[set.sp]))
+  
+  # Do not consider the involved region
+  inv <- unlist(setdiff(t, r.n))
+  
+  # Return invaded regions
+  return(inv)
+}
+```
+
+## 2. Case-1-control dataset
+
+We start by defining some objects: 
+
+```{r}
+# Define sender set - species
+spec <- unique(first_records$species)
+(s <- length(spec))
+# Define receiver set - regions
+reg.lf <- unique(first_records$region)
+(r <- length(reg.lf))
+```
+
+The dynamic network of FRs consists of two sets of nodes: the set of species and the set of regions. Additionally, in the dataset, we refer to a numerical formulation of species and regions, which correspond to the set of unique observed species in the data and the set of regions reported in the matrix of geographical distances, respectively.
+
+```{r}
+reg <- colnames(data_distance)
+```
+
+**Review the commented function `creating_case_control_dataset`, which utilizes information from the relational event network, noting that the relational event is non-recurrent. Use it to generate the case-control dataset.**
+
+To perform inference using the \textcolor{mauvetaupe}{maximum sampled partial likelihood} with m=1, we construct the \textcolor{mauvetaupe}{case-control dataset}, which includes, for each first record, the dyad involved in the observed event and that involved in the \textcolor{mauvetaupe}{non-event} randomly selected from the risk-set.
+
+It is essential to emphasize that in this scenario, due to the non-recurrent nature of the relational event, the risk set diminishes over time. Once the event occurs, it cannot occur again and thus, it is excluded from the dyads at risk.
+
+In order to address the \textcolor{mauvetaupe}{ties} in the event sequence, we exclude, for each event, all the first records that occurred in the same year from being considered as potential non-events.
+
+```{r}
+creating_case_control_dataset <- function(first_records,
+                                 spec, reg.lf, reg,
+                                 seed=1234
+                                 ){
+  
+  reg.lf.num <- match(reg.lf, reg)
+  s <- length(spec)
+  r <- length(reg.lf)
+  
+  ## POSSIBLE (S,R) INTERACTIONS ####
+  # Initialize a vector to keep track of the risk set size over time
+  at.risk <- NULL
+  # Create a matrix to indicate possible (species, region) interactions
+  alien.occ <- matrix(0, nrow = s, ncol = r) 
+  rownames(alien.occ) <- spec
+  colnames(alien.occ) <- reg.lf
+  for (n.sp in 1:s){
+    # Identify native regions for each species
+    nat.id <- unique(native$r.num[native$sp.num == n.sp]) 
+    # Identify regions where the species is not native
+    possible.to <- setdiff(reg.lf.num,nat.id)
+    # Mark these regions as possible invasion sites for the species
+    alien.occ[n.sp,reg[possible.to]] <- 1
+  }
+  
+  ## COLLECTING INFORMATION ####
+  dat.gam <- data.frame(matrix(NA, nrow=nrow(first_records),ncol=6))
+  colnames(dat.gam) <- c("y", "year", 
+                         "sp1", "r1", 
+                         "sp2", "r2")
+  # The response is fixed and equal to 1
+  dat.gam[,1] <- rep(1, nrow(first_records))
+  
+  set.seed(seed)
+  # For each FR:
+  for (i in 1:nrow(first_records)){
+    
+    ### INFORMATION CONCERNING THE EVENT ####
+    # year of the invasion event
+    dat.gam[i,2] <- year <- first_records[i,"year"]
+    # invading species
+    dat.gam[i,3] <- s.ev <- first_records[i,"species"]
+    # invaded country
+    dat.gam[i,4] <- r.ev <- first_records[i,"region"]
+    
+    ### POSSIBLE EVENTS ####
+    # Events occurred at the same time of the considered event
+    # are removed from the risk set
+    sub_stp <- first_records[first_records$year==year,
+                             c("species", "region")]
+    ni <- nrow(sub_stp)
+    for (j in 1:ni){
+      # Mark these (species, region) pairs as not at risk
+      alien.occ[sub_stp[j,1],sub_stp[j,2]] <- 0
+    }
+    at.risk <- c(at.risk, sum(alien.occ==1))
+    
+    ### SAMPLING THE NON-EVENT ####
+    sr.nv<-sample(which(alien.occ!=0),1)
+    # species non-event
+    dat.gam[i,5] <- s.nv <- spec[(sr.nv-1)%%s+1]
+    # region non-event
+    dat.gam[i,6] <- r.nv <- reg.lf[(sr.nv-1)%/%s+1]
+  }
+  
+  return(dat.gam)
+}
+```
+
+
+```{r}
+dat.gam <- creating_case_control_dataset(first_records, 
+                                         spec, reg.lf, reg)
+```
+
+The numerical codification can be derived from the objects `spec` (containing unique species involved in observed events) and `reg` (representing regions with known geographical distance information).
+
+```{r}
+dat.gam$sp1.num <- match(dat.gam$sp1, spec)
+dat.gam$r1.num <- match(dat.gam$r1, reg)
+dat.gam$sp2.num <- match(dat.gam$sp2, spec)
+dat.gam$r2.num <- match(dat.gam$r2, reg)
+```
+
+```{r}
+head(dat.gam[c("year","sp1", "r1","sp2", "r2")])
+head(dat.gam[c("year","sp1.num", "r1.num","sp2.num", "r2.num")])
+```
+
+The case-1-control dataset, with one sampled non-event for each event, represents the starting point of our analysis. 
+For each section of this tutorial, a `RData` object is stored. All the inputs for the exercises of the section can be found in \textcolor{persianred}{01-Data}. 
+
+```{r}
+#save.image("01-Data/01-Inputs/input01.RData")
+```
+
+
+## 3. Covariate computation and model fitting
+
+In this section we will go through some example of covariate computations and model fitting. We will see cases of linear fixed, time-varying, non-linear and random effects using a \textcolor{mauvetaupe}{logistic additive models}. 
+
+In the object \textcolor{persianred}{"input01.RData"} you can find the case-control dataset `dat.gam` . The dataset also includes the values of unique species and regions involved in the system. Furthermore, the dataset contains the numerical codifications for species and regions, referred to as spec and reg, respectively. Information on climatic conditions, trade relationship and geographical distance between regions will be used to compute relevant variables.
+
+```{r}
+load(file="01-Data/01-Inputs/input01.RData")
+```
+
+### 3.1. Linear Effect of Climatic Dissimilarity
+
+
+a)  **Consider the function `climatic_dissimilarity`: \textcolor{cerulean}{given a relational event (and all the relevant information that is required), it computes the minimum temperature difference between the region involved and the previously invaded regions by the spcies}. Apply the function to the events and the sampled non-events and compute the difference. Help yourself with the figure in the following slide to understand how the covariate is computed. Is it node- or dyad-level? Time-dependent? Exogenous?**
+
+`data_temperature` contains the names of the countries in the first column and the average values of near-surface air temperature in the second column (Watanabe et al., 2011). The covariate depends on both the sender and the receiver of the event and can therefore be considered a dyad-level covariate. It is time-dependent but does not incorporate information about internal time. It is endogenous, as it relies on the regions previously invaded by the species, but it also incorporates exogenous information.
+
+```{r}
+climatic_dissimilarity <- function(sp.n, r.n, y, native, first_records, 
+                                   reg, data_temperature){
+  
+  # Convert input arguments to numeric type if not already
+  sp.n <- as.numeric(sp.n)
+  r.n <- as.numeric(r.n)
+  y <- as.numeric(y)
+  
+  # Find regions invaded by the species before the current time
+  inv <- invaded.regions(sp.n = sp.n, 
+                         r.n = r.n, 
+                         y = y, 
+                         native = native, 
+                         first_records = first_records)
+  
+  # Consider the minimum absolute difference in temperature
+  # between the region of interest and those already invaded
+  avg_temp_invaded <- data_temperature[data_temperature[,1] %in% reg[inv], 2]
+  # Get the average temperature value for the region of interest
+  avg_temp_interest <- data_temperature[r.n, 2]
+  # Find the minimum absolute difference in temperature
+  dt.value <- min(abs(avg_temp_invaded - avg_temp_interest))
+  
+  # Return the calculated climatic dissimilarity value
+  return(dt.value)
+}
+```
+
+```{r}
+dat.gam$dt1 <- apply(dat.gam[,c("sp1.num", "r1.num", "year")], 1, 
+                            function(x) climatic_dissimilarity(sp.n = x[1], 
+                                        r.n = x[2], 
+                                        y = x[3], 
+                                        native = native, 
+                                        first_records = first_records, 
+                                        reg = reg, 
+                                        data_temperature = data_temperature))
+dat.gam$dt2 <- apply(dat.gam[,c("sp2.num", "r2.num", "year")], 1, 
+                            function(x) climatic_dissimilarity(sp.n = x[1], 
+                                        r.n = x[2], 
+                                        y = x[3], 
+                                        native = native, 
+                                        first_records = first_records,
+                                        reg = reg, 
+                                        data_temperature = data_temperature))
+dat.gam$dt = dat.gam$dt1 - dat.gam$dt2
+```
+
+
+
+b)  **Estimate the \textcolor{mauvetaupe}{linear fixed effect} of climatic dissimilarity and interpret the resulting estimate**
+
+```{r}
+gam_dt.only <- gam(y ~ dt - 1,
+    family="binomial"(link = 'logit'), data=dat.gam)
+```
+
+```{r}
+summary(gam_dt.only)
+```
+
+The coefficient for Climatic Dissimilarity, which remains constant over time, is negative. This indicates that the rate of invasions tends to increase if the species has already invaded countries with similar temperatures.
+
+```{r, echo=FALSE}
+#save(gam_dt.only, file="01-Data/02-Gam-Fits/gam_dt.only.RData")
+
+```
+
+### 3.2 Time-Varying Effect of Trade on Species Invasions
+
+
+a)  **Consider the function \texttt{log\_trade} \textcolor{cerulean}{that, given a relational event (and all the relevant information required), computes the annual trade between the involved region and the previously invaded regions by the species}. Apply the function to the events and the sampled non-events, and compute the difference. Refer to the figure to understand how the covariate is computed. What kind of covariate is it?**
+
+```{r, echo=FALSE}
+knitr::include_graphics("03-Images/trade-covariate-computation.pdf")
+```
+
+In the existing literature, \textcolor{cerulean}{international trade} has been recognized as a key factor in explaining the spread of alien species. Here, we consider trade as the yearly commerce between already-invaded territories and the involved region. The source information, derived from Barbieri et al. (2009), which reports trade \textcolor{cerulean}{flows among countries}, is contained in `data_trade`.
+
+A few notes on data pre-processing:
+- Negative values of trade are considered equal to $0$.
+- When a pair of nations is never mentioned in the source data, the trade volume is presumed to be $0$, based on the idea that if a value is never recorded, it should be negligible.
+- When the pair is mentioned but there is a non-imputed gap at the time of interest, the trade flow is evaluated based on the latest available year for which information is available.
+- Because trade varies by orders of magnitude, we take a log-transformation for the analysis.
+
+
+```{r}
+t <- which(data_trade$transfer < 0)
+data_trade$transfer[t] <- 0
+```
+
+```{r}
+trade.funct <- function(inv, r.n, y, reg, data_trade){
+  
+  # Convert input arguments to numeric type if not already
+  r.n <- as.numeric(r.n)
+  y <- as.numeric(y)
+  
+  # Check if there are already invaded countries
+  if(length(inv)!=0){
+    
+    # Find rows that involve invaded countries as sending trade
+    u <- which(data_trade$FromRegion %in% reg[inv])
+    # Find rows that involve region of interest as receiving trade
+    v <- which(data_trade$ToRegion == reg[r.n])
+    # Find the intersection of the two sets
+    w <- intersect(u,v)
+    x <- data_trade[w,]
+    # Consider the trade instances occurred before or at the time of interest
+    x <- x[x$year<=y,]
+    trade_value <- NULL
+    # If there are rows in the filtered dataset
+    if(nrow(x)>0){
+      # For each invaded country, the maximum year is recorded
+      o <- aggregate(x$year, list(x$FromRegion), FUN=max)
+      # For each of them, the corresponding transfer is stored
+      for (o.i in 1:nrow(o)){
+        trade_value <- c(trade_value, 
+                         x$transfer[x$FromRegion==o[o.i,1] & 
+                                      x$year==o[o.i,2]])}
+    }
+  } else { 
+  # If there are not already invaded countries, trade is set equal to 0
+    trade_value <- 0
+  }
+  # Compute the log-transformed sum of trade values (with an added constant 1)
+  log_trade.value <- ifelse(length(trade_value)>0, 
+                            log(sum(trade_value, na.rm =T)+1),0)
+  
+  # Return the computed log-transformed trade value
+  return(log_trade.value)
+}
+```
+
+```{r}
+log_trade <- function(sp.n, r.n, y, native, first_records, reg, data_trade){
+  
+  inv <- invaded.regions(sp.n = sp.n, 
+                         r.n = r.n, 
+                         y = y, 
+                         native = native, 
+                         first_records = first_records)
+  
+  log_trade.value <- ifelse(r.n==match("USACanada", reg), 
+                            mean(trade.funct(inv = inv,
+                                             r.n = match("United States",reg),
+                                             y = y, 
+                                             reg = reg,
+                                             data_trade = data_trade),
+                                 trade.funct(inv = inv,
+                                             r.n = match("Canada",reg),
+                                             y = y, 
+                                             reg = reg,
+                                             data_trade = data_trade)),
+                            trade.funct(inv = inv,
+                                        r.n = r.n,
+                                        y = y,
+                                        reg = reg, 
+                                        data_trade = data_trade))
+  
+  return(log_trade.value)
+}
+```
+
+```{r}
+dat.gam$tr1 <- apply(dat.gam[,c("sp1.num", "r1.num", "year")], 1, 
+                            function(x) log_trade(sp.n = x[1], 
+                                                  r.n = x[2], 
+                                                  y = x[3], 
+                                                  native = native, 
+                                                  first_records = 
+                                                    first_records,
+                                                  reg = reg,
+                                                  data_trade = data_trade))
+dat.gam$tr2 <- apply(dat.gam[,c("sp2.num", "r2.num", "year")], 1, 
+                            function(x) log_trade(x[1], x[2], x[3], 
+                                                  native = native, 
+                                                     first_records = 
+                                                       first_records,
+                                                  reg = reg,
+                                                  data_trade = data_trade))
+dat.gam$tr = dat.gam$tr1 - dat.gam$tr2
+```
+
+
+Trade depends both on species and region (and explicitely on time as well). So it is \textcolor{mauvetaupe}{dyadic} because it involves both the sender and the receiver involved in the relational event.
+
+
+To compute this covariate, we need the \textcolor{cerulean}{set of invaded regions} by species $s$ by time $t$ and this is an \textcolor{mauvetaupe}{endougenous} type of information, arising from the network. Nevertheless, \textcolor{mauvetaupe}{exogenous} information is also present, concerning the flows among countries. 
+
+b)  **Estimate the \textcolor{mauvetaupe}{time-varying effect} of trade and interpret the resulting estimate.
+
+Let `x.ev` and `x.nv` be $n\times 1$ vectors of trade covariate evaluated for events \& non-events. Then: `x = x.ev - x.nv`. Let `stp` be $n\times 1$ vector of event-times. Fit the model incorporating a time-varying effect for `x` and interpret the estimate.
+
+```{r}
+# nx1 vector of trade covariate for events
+x.ev <- dat.gam$tr1
+# nx1 vector of trade covariate for non-events
+x.nv <- dat.gam$tr2
+x <- x.ev - x.nv # difference between ev and nv
+
+stp <- dat.gam$year ## time 
+
+gam_tr.only <- gam(y ~ s(stp, by=x) - 1,
+    family="binomial"(link = 'logit'), data=dat.gam)
+
+plot(gam_tr.only)
+```
+```{r}
+filter_data <- which(dat.gam$tr != 0)
+lp_matrix <- predict.gam(gam_tr.only, type="lpmatrix")[filter_data,]
+basis_fcn_tr <- lp_matrix/dat.gam$tr[filter_data]
+
+
+plot(dat.gam$year[filter_data],basis_fcn_tr[,1], type="l", lwd=1.5, ylim=c(-3.5, 4.5),
+     xlab="Time",
+     ylab="b(Time)", col = colors[1])
+for (l in 2:10) {
+  lines(y = basis_fcn_tr[,l],
+         x = dat.gam$year[filter_data],
+         lwd = 0.8,
+         col = colors[l])
+}
+legend("topright",
+       legend=c(sapply(1:10, function(x) paste("Basis",
+                                               as.character(x)))),
+       col=colors,
+       lwd=rep(0.8, 10),
+       cex=0.45)
+```
+```{r}
+coefficients(gam_tr.only)
+```
+
+
+
+```{r}
+predicted_effect_tr <- as.vector(coefficients(gam_tr.only) %*%t(lp_matrix/dat.gam$tr[filter_data]))
+data_effect_tr <- data.frame(x = stp[filter_data],
+                             y = predicted_effect_tr)
+
+plot(data_effect_tr, type="l", lwd=1.5, ylim=c(-0.5, 1.2),
+     xlab="Time",
+     ylab="Contribution to the log-hazard")
+for (l in 1:10) {
+  lines(y = coefficients(gam_tr.only)[l] *
+          lp_matrix[,l]/dat.gam$tr[filter_data],
+         x = dat.gam$year[filter_data],
+         lwd = 0.8,
+         col = colors[l])
+}
+legend("topright",
+       legend=c("Time-varying effect",
+                sapply(1:10, function(x) paste("Contr. basis",
+                                               as.character(x)))),
+       col=c(1, colors),
+       lwd=c(1.5,rep(0.8, 10)),
+       cex=0.45)
+```
+The effect of trade appears to be decreasing over the time period.
+
+```{r}
+#save(gam_tr.only, file="01-Data/02-Gam-fits/gam_tr.only.RData")
+```
+
+
+### 3.3 Non-Linear Effect of Distance on Species Invasions
+
+We compute \textbf{distance} for the dyad (species-region) as the shortest distance among the regions in which the species is already present at that time. Distance is computed referring to the closest borders and consequently is equal to zero for neighbours. Source data for this driver consists of the R package geosphere (Hijmans et al., 2017).
+
+`data_distance` is a matrix with rownames and colnames referring to the regions. The corresponding element in the matrix reports the distance between the two.
+
+a)  Consider the function `log_distance` \textcolor{cerulean}{that, given a relational event (and all the relevant information that is required), computes the shortest distance among the regions in which the species is already present at that time}. Apply the function to the events and the sampled non-events.
+
+```{r, echo=FALSE}
+knitr::include_graphics("03-Images/distance-covariate-computation.pdf")
+```
+
+```{r}
+log_distance <- function(sp.n, r.n, y, native, first_records, data_distance){
+  
+  # Convert input arguments to numeric type if not already
+  sp.n <- as.numeric(sp.n)
+  r.n <- as.numeric(r.n)
+  y <- as.numeric(y)
+  
+  # Find regions invaded by the species before the current time
+  inv <- invaded.regions(sp.n = sp.n, 
+                         r.n = r.n, 
+                         y = y, 
+                         native = native, 
+                         first_records = first_records)
+  
+  # Consider the logarithm of the minimum distance
+  # between the region of interest and those already invaded
+  log_dist.value <- log(min(data_distance[r.n, inv])+1)
+  
+  # Return the calculated distance
+  return(log_dist.value)
+}
+```
+
+```{r}
+dat.gam$d1 <- apply(dat.gam[,c("sp1.num", "r1.num", "year")], 1, 
+                            function(x) log_distance(x[1], x[2], x[3], 
+                                                     native = native, 
+                                                     first_records = 
+                                                       first_records,
+                                                     data_distance = data_distance))
+dat.gam$d2 <- apply(dat.gam[,c("sp2.num", "r2.num", "year")], 1, 
+                            function(x) log_distance(x[1], x[2], x[3], 
+                                                     native = native, 
+                                                     first_records = 
+                                                       first_records,
+                                                     data_distance = data_distance))
+dat.gam$d = dat.gam$d1 - dat.gam$d2
+```
+
+
+
+```{r, echo=FALSE}
+knitr::include_graphics("03-Images/distance-covariate-computation.pdf")
+```
+
+
+When dealing with non-linear effects, the impact of the covariate is expressed by a non-linear function of the covariate itself. In the following we will inspect a suitable non-linear function of distance, which depends on parameters that need to be estimated through our model. 
+
+b)  Estimate the \textcolor{mauvetaupe}{non-linear effect} of distance and interpret the resulting estimate.
+Let `x.ev` and `x.nv` be $n\times 1$ vectors of distance covariate evaluated for events \& non-events. Then: `x = x.ev - x.nv`.  Let `unit` be $n\times 1$ unit vector. Fit the model incorporating a non-linear effect for `x` and interpret the estimate.
+
+
+
+```{r}
+x.ev <- dat.gam$d1
+x.nv <- dat.gam$d2
+unit <- rep(1, nrow(dat.gam))
+
+X = cbind(x.ev,x.nv)
+I = cbind(unit,-unit)	
+
+gam_d.only <- gam(y ~ s(X, by=I) - 1,
+    family="binomial"(link = 'logit'), data=dat.gam)
+
+plot(gam_d.only)
+
+```
+
+ 
+
+```{r}
+lp_matrix <- predict.gam(gam_d.only, type="lpmatrix",
+                         newdata = data.frame(X=dat.gam$d1,
+                                              I=1))
+predicted_effect_d <- as.vector(coefficients(gam_d.only) %*% t(lp_matrix))
+data_effect_d <- data.frame(x = sort(exp(dat.gam$d1)-1),
+                            y = predicted_effect_d[order(exp(dat.gam$d1)-1)])
+
+plot(data_effect_d, lwd=1.5,
+     xlab="Distance",
+     ylab="Contribution to the log-hazard",
+     ylim=c(-2, 3), type = "l",
+     col=0)
+for (l in 1:9) {
+  lines(y = coefficients(gam_d.only)[l]*lp_matrix[,l][order(exp(dat.gam$d1)-1)],
+         x = sort(exp(dat.gam$d1)-1),
+         lwd = 0.8,
+         cex=0.2,
+         col = colors[l])
+}
+lines(data_effect_d, cex=0.4,
+       col=1)
+legend("topright",
+       legend=c("Non-linear effect",
+                sapply(1:9, function(x) paste("Contr. basis",
+                                               as.character(x)))),
+       col=c(1, colors),
+       lwd=c(1.5,rep(0.8, 9)),
+       cex=0.45)
+```
+
+From the estimated non-linear effect, we have that the greater the distance between 2 countries the less likely it is for species to invade from one to other.
+
+
+```{r}
+#save(gam_d.only, file="01-Data/02-Gam-Fits/gam_d.only.RData")
+```
+
+
+```{r}
+#save.image("01-Data/01-Inputs/input02.RData")
+```
+
+### 3.4   Species Invasiveness Random Effect
+
+In the object \textcolor{persianred}{"input02.RData"} you can find the case-control dataset including the values for the covariate \textcolor{cerulean}{Climatic dissimilarity}, \textcolor{cerulean}{Trade},
+\textcolor{cerulean}{Distance}, computed for the events and the non-events. The dataset also includes the values of unique species and regions involved in the system. Furthermore, the dataset contains the numerical codifications for species and regions, referred to as spec and reg. 
+
+```{r}
+load("01-Data/01-Inputs/input02.RData")
+```
+
+Existing literature already underlined the importance of taking into account, together with the relevant external drivers, the heterogeneity due to the species invasiveness (Pysek et al., 2020). We do this by including random effects related to the species factor.
+
+a)  Define the covariate: $z_{s}(t)$: \textcolor{cerulean}{involvement of species} $s$ in first record occurring at $t$. Create a $n \times 2$ matrix \texttt{sp} containing in the fist column \texttt{spec} levels related to species involved in the events and in the second those involved in the non-events. Is it node- or dyad- level?
+
+```{r}
+sp1 <- dat.gam$sp1
+sp2 <- dat.gam$sp2
+sp <- factor(c(sp1,sp2))
+dim(sp) <- c(length(sp1),2)
+```
+
+
+It is just reporting the label of the involved species $s$, so the covariate $z_{s}(t)$ is monadic. 
+
+
+b)  Fit the model incorporating a random effect for species invasiveness and interpret the estimates.
+
+REMARK: default spline is type for `gam` in `mgcv` consists of \textcolor{mauvetaupe}{thin plate regression spline}. Instead, we need to specify that we aim to fit a random effect. 
+
+```{r}
+unit <- rep(1, nrow(dat.gam))
+I = cbind(unit,-unit)	
+gam_sp.only <- gam(y ~ s(sp, by=I, bs="re") - 1,
+    family="binomial"(link = 'logit'), data=dat.gam)
+
+re.species <- coefficients(gam_sp.only)
+names(re.species) <- levels(sp)
+
+# 5 most invasive species
+sort(re.species, decreasing = TRUE)[1:5]
+# 5 least invasive species
+sort(re.species)[1:5]
+```
+
+```{r}
+#save(gam_sp.only, file="01-Data/02-Gam-Fits/gam_sp.only.RData")
+```
+
+## 4. Model selection
+
+### 4.1. Fit a model with all the components included
+
+Load the input data \textcolor{persianred}{"input02.RData"}. 
+In the object you can find the case-control dataset including the values for the covariate \textcolor{cerulean}{Climatic dissimilarity}, \textcolor{cerulean}{Trade},
+\textcolor{cerulean}{Distance} computed for the events and the non-events, plus the object \textcolor{cerulean}{species matrix} tracking levels of species involved. The dataset also includes the values of unique species and regions involved in the system. Furthermore, the dataset contains the numerical codifications for species and regions, referred to as} spec \emph{and} reg. 
+
+```{r}
+load("01-Data/01-Inputs/input02.RData")
+```
+
+a)  **Fit a model with all the components included. Inspect eventual changes in the interpretation and consider the values of the AIC, to understand which model has a better predictive power.**
+
+```{r}
+unit <- rep(1, nrow(dat.gam))
+stp = dat.gam$year
+X = cbind(dat.gam$d1,dat.gam$d2)
+I = cbind(unit,-unit)		
+```
+
+```{r}
+gam_complete <- gam(y ~ dt + 
+                      s(stp, by=tr) +
+                      s(X, by=I) +
+                      s(sp, by=I, bs="re") - 1,
+    family="binomial"(link = 'logit'), data=dat.gam)
+```
+
+### 4.2. Fit a model with all the components included
+
+```{r}
+load(file="01-Data/02-Gam-Fits/gam_dt.only.RData")
+load(file="01-Data/02-Gam-Fits/gam_tr.only.RData")
+load(file="01-Data/02-Gam-Fits/gam_d.only.RData")
+load(file="01-Data/02-Gam-Fits/gam_sp.only.RData")
+```
+
+```{r}
+AIC(gam_dt.only)
+AIC(gam_tr.only)
+AIC(gam_d.only)
+AIC(gam_sp.only)
+AIC(gam_complete)
+```
+
+Among the 5 fitted models, the complete one has better predictive performance.
+
+## References
+
+- Martina Boschi, Rūta Juozaitienė, Ernst C Wit, Mixed additive modelling of global alien species co-invasions of plants and insects, Journal of the Royal Statistical Society Series C: Applied Statistics, Volume 75, Issue 1, January 2026, Pages 57–78, https://doi.org/10.1093/jrsssc/qlaf034
+
+- Juozaitienė   R., Seebens   H., Latombe   G., Essl   F., & Wit   E. C. (2023). Analysing ecological dynamics with relational event models: The case of biological invasions. Diversity & Distributions, 29(10), 1208–1225. 10.1111/ddi.13752
+
+- Seebens   H., Blackburn   T. M., Dyer   E. E., Genovesi   P., Hulme   P. E., Jeschke   J. M., Pagad   S., Pyšek   P., van Kleunen   M., Winter   M., Ansong   M., Arianoutsou   M., Bacher   S., Blasius   B., Brockerhoff   E. G., Brundu   G., Capinha   C., Causton   C. E., Celesti-Grapow   L., …Essl   F. (2018). Global rise in emerging alien species results from increased accessibility of new source pools. Proceedings of the National Academy of Sciences, 115(10), E2264–E2273.
+
+- Watanabe   S., Hajima   T., Sudo   K., Nagashima   T., Takemura   T., Okajima   H., Nozawa   T., Kawase   H., Abe   M., Yokohata   T., Ise   T., Sato   H., Kato   E., Takata   K., Emori   S., & Kawamiya   M. (2011). MIROC-ESM 2010: Model description and basic results of CMIP5-20c3m experiments. Geoscientific Model Development, 4(4), 845–872. 10.5194/gmd-4-845-2011
+
+- Barbieri   K., Keshk   O. M. G., & Pollins   B. M. (2009). Trading data: Evaluating our assumptions and coding rules. Conflict Management and Peace Science, 26(5), 471–491. 10.1177/0738894209343887
+
+- Hijmans   R. J., Karney   C., Williams   E., & Vennes   C. (2017). Package geosphere: Spherical trigonometry, 1(7). R package version 1.5-7. https://cran.r-project.org/web/packages/geosphere/index.html
+
+- Pyšek   P., Hulme   P. E., Simberloff   D., Bacher   S., Blackburn   T. M., Carlton   J. T., Dawson   W., Essl   F., Foxcroft   L. C., & Genovesi   P. (2020). Scientists’ warning on invasive alien species. Biological Reviews, 95(6), 1511–1534. 10.1111/brv.12627

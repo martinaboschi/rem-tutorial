@@ -1,0 +1,378 @@
+---
+title: "All you need to know about relational hyper-event modeling"
+subtitle: "Beyond Linear RHEMs - Tutorial Section: Solution"
+author: "Martina Boschi, Melania Lembo, Juergen Lerner"
+date: "2026-02-10"
+output:
+  pdf_document: default
+header-includes:  
+- \usepackage{xcolor}  
+- \definecolor{myblue}{rgb}{0.36, 0.54, 0.66}
+- \definecolor{myyellow}{rgb}{0.98, 0.85, 0.37}
+- \colorlet{myyellow2}{myyellow!60!orange!90!black}
+- \definecolor{myred}{rgb}{0.8, 0.2, 0.2}
+---
+
+```{r setup, include=FALSE}
+knitr::knit_hooks$set(purl = knitr::hook_purl)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Part 2: Scientific Innovation
+
+## Set Up
+
+```{r message=FALSE, warning=FALSE}
+# install.packages("mgcv")
+# install.packages("mgcViz")
+# install.packages("RColorBrewer")
+# install.packages("dplyr")
+library(mgcv)
+library(mgcViz)
+library(RColorBrewer)
+library(dplyr)
+```
+
+## 1. Aminer Citation Network
+
+a)  **Load the input data `dat_gam.RData` located in `01-Data`. Is this a case-1-control dataset?**
+
+We begin the second part of the tutorial by uploading a new dataset. This dataset has been sampled from an existing dataset used in [Lerner et al., 2025; Boschi et al., 2026].
+
+The original dataset consists of the DBLP Citation Network V14, restricted to journal articles, and is derived from the Aminer Citation Network [Tang et al., 2008].
+
+Code to pre-process and filter the data is publicly available at  
+https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023.  
+To allow you to upload the data and experiment in real time, we provide a sampled version of the original dataset, consisting of $n = 30\,136$ rows.
+
+```{r}
+load(file="01-Data/dat_gam.RData")
+nrow(dat_gam)
+```
+
+b)  **Interpret this data as a relational hyper event network. Define the relational hyperevent unit, the sender set, the receiver set, and the time-window.**
+
+As discussed in the theoretical part of the workshop, a relational hyperevent is defined as the formal *publication of a scientific work*, marking the moment when a group of authors presents their research together with a set of citations listed in the reference section.
+
+$$
+	\{ j_i = (t_i, I_i, J_i), i = 1, \ldots, 10\ 046 \}
+$$
+
+Here, $j_i$ represents the journal article published at time $t_i$ by a group of authors in $I_i \subseteq V^I_{t_i}$ citing journal articles in $J_i \subseteq V^J_{t_i}$. 
+
+These events can be represented as time-stamped directed hyperedges of a two-mode network. There are two types of nodes: authors and cited papers. When a new hyperedge occurs at time $t_i$, a new publication $j_i$ -- authored by a set of authors in $I_i$ and citing a set of papers in $J_i$ -- enters the system and can be cited by other papers at later time points.
+
+This two-mode network representation also makes it possible to examine more complex relationships, such as author-cites-paper, paper-cites-paper, and author-cites-author. These three relations are part of a broader class that we will employ later. 
+
+The sampled events span \textbf{from 1939 to 2023}. The provided dataset is already in a case–1–control formulation, which is explored in more detail in the following section of the tutorial.
+
+```{r}
+range(dat_gam$TIME_ev)
+```
+
+
+## 2. Case-1-control dataset
+
+a)  **Explore the case-1-control dataset by making use of observation #481 as an example.**
+
+This data set contains 84 variables (quite a large number!). As in the previous tutorials, we provide you with the case–control data set already computed, but we also try to explain the rationale behind its construction.
+
+Fortunately, we do not need to interpret all 77 variables but just around half of them :).
+Why is that? For each row, the same piece of information is evaluated twice: once for the event and once for the non-event.
+
+Let’s look at them step by step.
+
+We (probably) understand by now that the statistical unit of relational event modeling is the triple composed of the sender, the receiver, and the time of the event. Where can we find this information? In the second, third, and fourth columns, respectively.
+
+```{r}
+head(dat_gam[, c("SOURCE_ev", "TARGET_ev", "TIME_ev")])
+```
+
+
+Consider event number 481 and look at the set of authors. How can we tell that they are different authors? The bar `|` separates different author IDs.
+
+```{r}
+# set of authors
+dat_gam[481, "SOURCE_ev"]
+```
+
+Exactly the same logic applies to the papers. If you want to know how many authors are involved, you could count the bars minus one. Or maybe :) you can exploit the count already stored in the variable:
+
+```{r}
+# set of cited papers
+dat_gam[481, "TARGET_ev"]
+dat_gam[481, "target.size_ev"]
+```
+
+```{r}
+# publication time
+dat_gam[481, "TIME_ev"]
+```
+
+As we did in the other applications, one non-event is sampled for each event, and the same basic information is stored for the non-event.
+
+```{r}
+head(dat_gam[, c("SOURCE_nv", "TARGET_nv", "TIME_nv")])
+```
+
+Do you notice some similarities with the `head` above? Well, they have the same size… Is that by chance?
+
+```{r}
+# just a check :)
+all(dat_gam[, "source.size_ev"] == dat_gam[, "source.size_nv"])
+all(dat_gam[, "target.size_ev"] == dat_gam[, "target.size_nv"])
+```
+
+Just one more check: is the time of the non-event the same as the time of the event? Is that trivial? Well - if you are curious - you can have a look at [Lembo et al. (2025)].
+
+```{r}
+# just a check :)
+all(dat_gam[, "TIME_nv"] == dat_gam[, "TIME_ev"])
+```
+
+## 3. Attribute and covariate computation
+
+a) **Inspect the attributed employed in this tutorial: Author–paper citations and Out-degree.**
+
+We will not dive into the details of `eventnet` covariate computation here (if you are curious, you can find both a tutorial and a configuration file at https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023).
+
+However, it is important to understand that, in this application, building the covariates - computed as aggregations of attributes - may require several basic blocks.
+
+We focus on a subset of the hyperedge covariates studied in [Lerner et al., 2025; Boschi et al., 2026]. Following those works, we incorporate a weight factor \(\omega\) to model the temporal decay of past events.
+
+The necessary basic blocks (for this tutorial) are the following:
+
+- **Author–paper citations**: the extent to which a set of authors has cited a set of papers in joint publications.
+
+$$\text{cite}^{\text{aut}-\text{pap}}(t, S, R)
+= \sum_{t_m < t} \omega(t-t_m) \cdot 1_{\{S \subseteq S_m \cap R \subseteq R_m\}} $$
+
+- **Out-degree**: the length of the reference list of a paper.
+
+$$\text{out\_degree}(t, r)
+= \sum_{t_m < t} \omega(t-t_m) \cdot 1_{\{r = r_m\}} \cdot |R_m|$$
+
+where, for all of them,
+
+$$\omega(t-t_m)
+= \exp\Big\{ - (t-t_m) \frac{\log 2}{T_{\frac{1}{2}}} \Big\},$$
+
+and \(T_{\frac{1}{2}} > 0\) is the half-life period, set to three years.
+
+b) **Inspect the covariates that are present and the data and focus on: Prior papers, Difference in prior papers, Paper outdegree popularity, Paper citation popularity.**
+
+All covariates for events and non-events are contained in the following objects:
+  
+```{r}
+colnames(dat_gam)[7:19]
+```
+
+and
+
+```{r}
+colnames(dat_gam)[26:38]
+```
+
+In this tutorial, we focus on 4 of them: **Prior papers**, **Difference in prior papers**, **Paper outdegree popularity**, **Paper citation popularity**. Additional information on further covoriates that can be computed for this dataset can be found in [Lerner et al., 2025; Boschi et al., 2026].
+
+Several of the following covariates are defined as **subset-repetition**: 
+
+$$\text{subrep}^{(\rho, \ell)}(t, S, R) = \sum_{(S', R') \in \binom{I}{\rho} \times \binom{J}{\ell}} \dfrac{\text{cite}^{\text{aut}-\text{pap}}(t, S', R')}{\binom{|I|}{\rho} \times \binom{|J|}{\ell}},$$
+
+1.  **Prior papers**: for a set of authors $S$, the average number of prior papers (downweighted by the elapsed time). The covariates is a measure of past publication activity of the authors in the sender set. 
+
+$$\text{prior\_papers}(t,S,R)=\text{subrep}^{(1,0)}(t,S,R)$$
+
+2.  **Difference in prior papers**: for a set of authors $S$, it captures the heterogeneity of the past publication activity. A positive parameter would suggest a large dispersion in the number of prior publications. 
+
+$$\text{difference\_in\_prior\_papers}(t,S,R)=\sum_{\{s,s'\}\in{\binom{I}{2}}} \frac{|\text{cite}^{\text{aut}-\text{pap}}(t,\{s\},\emptyset)-\text{cite}^{\text{aut}-\text{pap}}(t,\{s'\},\emptyset)|}{{\binom{|S|}{2}}}$$
+  
+3.  **Paper outdegree popularity**: average length of reference lists of a set of papers $R$.
+
+$$\text{paper\_outdegree\_popularity}(t,S,R)=\sum_{r\in R} \frac{\text{out\_degree}(r)}{|R|}$$
+        
+4.  **Paper citation popularity**: for a set of papers $R$, average number of past citations (downweighted by the elapsed time). The covariates is a measure of past citation popularity. A positive parameter would be in lign with the idea of the "rich gets richer".
+
+$$\text{paper\_citation\_popularity}(t,S,R)=\text{subrep}^{(0,1)}(t,S,R)$$
+
+## 4. Model fitting
+
+In [Lerner et al., 2025], the results for the linear model fitted on the complete dataset, including all available covariates, are reported. Similarly, in [Boschi et al., 2026], the results for the non-linear models—also based on the complete dataset—are presented.
+
+### 4.1.  Linear RHEM
+
+a) **Fit a linear model with Prior papers, Difference in prior papers, Paper outdegree popularity, and Paper citation popularity. Is it more likely to publish with an author who has a similar number of prior papers to yours?**
+
+The dataset does not include differences of the covariates in their untransformed form. 
+These differences are computed for all variables, even though only a subset of them is used in practice.
+
+```{r}
+dat_gam[,c("diff.author.publication.activity",
+                         "avg.author.citation.popularity",
+                         "diff.author.citation.popularity",  
+                         "paper.outdegree.popularity",
+                         "author.sub.rep.1", "author.sub.rep.2", 
+                         "collaborate.with.citing.author","reference.sub.rep.1",
+                         "reference.sub.rep.2", "author.ref.paper.sub.rep.1.1",
+                         "cite.paper.and.its.references.1","author.self.citation")] <-
+dat_gam[,c("diff.author.publication.activity_ev",
+                         "avg.author.citation.popularity_ev",
+                         "diff.author.citation.popularity_ev",  
+                         "paper.outdegree.popularity_ev",
+                         "author.sub.rep.1_ev", "author.sub.rep.2_ev", 
+                         "collaborate.with.citing.author_ev","reference.sub.rep.1_ev",
+                         "reference.sub.rep.2_ev", "author.ref.paper.sub.rep.1.1_ev",
+                         "cite.paper.and.its.references.1_ev","author.self.citation_ev")] -
+dat_gam[,c("diff.author.publication.activity_nv",
+                         "avg.author.citation.popularity_nv",
+                         "diff.author.citation.popularity_nv",  
+                         "paper.outdegree.popularity_nv",
+                         "author.sub.rep.1_nv", "author.sub.rep.2_nv", 
+                         "collaborate.with.citing.author_nv","reference.sub.rep.1_nv",
+                         "reference.sub.rep.2_nv", "author.ref.paper.sub.rep.1.1_nv",
+                         "cite.paper.and.its.references.1_nv","author.self.citation_nv")]
+```
+              
+```{r}
+gam_linear <- gam(y ~ -1 + diff.author.publication.activity +
+                           paper.outdegree.popularity +
+                           author.sub.rep.1 +
+                           reference.sub.rep.1,
+                           family="binomial",
+                           data = dat_gam)
+```
+
+```{r}
+summary(gam_linear)
+```
+
+```{r}
+summary(dat_gam$diff.author.publication.activity_ev)
+```
+
+We find a positive value for the covariate `diff.author.publication.activity`, which indicates a negative homophily effect in prior publication activity among the actors involved in an event. In general, this result suggests that teams of authors are typically composed of authors with large differences in the number of papers they have previously published, for example a PhD student together with her supervisor.
+
+### 4.2.  Beyond Linearity
+
+a) **Fit a linear model with Prior papers, Difference in prior papers, Paper outdegree popularity, and Paper citation popularity. Let the effect of the latter be either time-varying, non-linear, or jointly time-varying and non-linear. Has the tendency to publish with an author who has a similar number of prior papers changed over time? Does it exhibit saturation? Both?**
+
+An implicit assumption when fitting any regression model using maximum likelihood estimation is that the covariate processes have finite second moments. Practically speaking, this means that, for improved model-fitting stability, the covariates should not exhibit major outliers.
+              
+[Lerner et al., 2025] address this issue by applying a square-root transformation to the non-negative covariates.
+              
+[Boschi et al., 2026], instead, map each covariate - as well as the time variable - from its original scale into the interval \([0,1]\), in a way that distributes the values as uniformly as possible.
+
+In this dataset, you will find the covariates transformed according to the second approach.
+              
+```{r}
+# just a check :) 
+              
+# diff.author.publication.activity
+all(dat_gam[,42] == dat_gam[,40] - dat_gam[,41])
+# avg.author.citation.popularity
+all(dat_gam[,45] == dat_gam[,43] - dat_gam[,44])
+# diff.author.citation.popularity
+all(dat_gam[,48] == dat_gam[,46] - dat_gam[,47])
+# paper.outdegree.popularity
+all(dat_gam[,51] == dat_gam[,49] - dat_gam[,50])
+# author.sub.rep.1
+all(dat_gam[,54] == dat_gam[,52] - dat_gam[,53])
+# author.sub.rep.2
+all(dat_gam[,57] == dat_gam[,55] - dat_gam[,56])
+# collaborate.with.citing.author
+all(dat_gam[,60] == dat_gam[,58] - dat_gam[,59])
+# reference.sub.rep.1
+all(dat_gam[,63] == dat_gam[,61] - dat_gam[,62])
+# reference.sub.rep.2
+all(dat_gam[,66] == dat_gam[,64] - dat_gam[,65])
+# author.ref.paper.sub.rep.1.1
+all(dat_gam[,69] == dat_gam[,67] - dat_gam[,68])
+# cite.paper.and.its.references
+all(dat_gam[,72] == dat_gam[,70] - dat_gam[,71])
+# author.self.citation
+all(dat_gam[,75] == dat_gam[,73] - dat_gam[,74])
+```
+
+### Time-varying effect
+
+```{r}
+gam_tve <- gam(y ~ -1 + s(TIME_ev, by=diff.author.publication.activity) +
+                          paper.outdegree.popularity +
+                          author.sub.rep.1 +
+                          reference.sub.rep.1,
+                          family="binomial",
+                          data = dat_gam)
+```
+
+```{r}
+summary(gam_tve)
+```
+
+```{r}
+plot(gam_tve)
+```
+
+The plot of the time-varying effect shows an increase; the confidence bands are very large at the beginning, probably due to the nature of the data (largest part of the data are from recent years). The effect is significantly time-varying, however. It is also possible to see a slight decrease in the effect at the end of the time window, where, instead, confidence intervals are quite narrow.
+
+### Non-linear effect
+
+```{r}
+diff.author.publication.activity_matrix <-
+  cbind(dat_gam$transform_diff.author.publication.activity_ev,
+        dat_gam$transform_diff.author.publication.activity_nv)
+W <- diff.author.publication.activity_matrix
+W[,1] <- 1
+W[,2] <- -1
+gam_nle <- gam(y ~ -1 + s(diff.author.publication.activity_matrix, by=W) +
+                          paper.outdegree.popularity +
+                          author.sub.rep.1 +
+                          reference.sub.rep.1,
+                          family="binomial",
+                          data = dat_gam)
+```
+
+```{r}
+summary(gam_nle)
+```
+
+```{r}
+plot(gam_nle)
+```
+
+The plot of the non-linear effect clearly shows a non-monotonic pattern. Apparently, authors tend to publish together when they have very similar levels of experience; otherwise, the tendency to collaborate drops immediately. This tendency then increases again as the difference grows, as in the classic example of a PhD student and their professor. The effect appears to reach saturation and eventually decreases for very large values of the covariate. This seems to highlight an “optimal” level of variation in prior publications that maximizes this covariate’s contribution to the log-rate of coauthoring a new paper.
+
+### Time-varying non-linear effect
+
+```{r}
+time_matrix <-
+  cbind(dat_gam$transformed_time,
+        dat_gam$transformed_time)
+gam_tvnle <- gam(y ~ -1 + te(time_matrix, diff.author.publication.activity_matrix, by=W) +
+                          paper.outdegree.popularity +
+                          author.sub.rep.1 +
+                          reference.sub.rep.1,
+                          family="binomial",
+                          data = dat_gam)
+viz <- getViz(gam_tvnle)
+```
+
+```{r}
+summary(gam_tvnle)
+```
+
+```{r}
+plot_obj <- plot(viz)
+plot_data <- plot_obj$plots[[1]]$ggObj$data
+plot_data <- plot_data[!is.na(plot_data$z),]
+  plot_data <- plot_data %>%
+    group_by(x) %>%
+    mutate(z_centered = z - mean(z)) %>%
+    ungroup()
+ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +
+    geom_tile() +
+    geom_contour(mapping = aes(x = x, y = y, z = z_centered, group = 1), 
+                 color = "black", inherit.aes = FALSE) +
+    scale_fill_viridis_c()
+```
+
+By allowing both effects simultaneously, we can see that the non-linear effect remains clearly present, while the decrease/increase over time is visible only at the very beginning of the time window. By comparing the AIC values of the models, we find that jointly combining the effects is not worthwhile, whereas a model with only a non-linear effect is preferred. Of course, this conclusion is based on a limited dataset and on a reduced set of covariates.

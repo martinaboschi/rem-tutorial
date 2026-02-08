@@ -1,0 +1,185 @@
+---
+title: "All you need to know about relational hyper-event modeling"
+subtitle: "Linear RHEMs - Tutorial Section: Solution"
+author: "Martina Boschi, Melania Lembo, Juergen Lerner"
+date: "2026-02-10"
+output:
+  pdf_document: default
+header-includes:
+- \usepackage{xcolor}  
+- \definecolor{myblue}{rgb}{0.36, 0.54, 0.66}
+- \definecolor{myyellow}{rgb}{0.98, 0.85, 0.37}
+- \colorlet{myyellow2}{myyellow!60!orange!90!black}
+- \definecolor{myred}{rgb}{0.8, 0.2, 0.2}
+---
+
+```{r setup, include=FALSE}
+knitr::knit_hooks$set(purl = knitr::hook_purl)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Part 1: Les Misérables
+
+## Setup
+
+```{r message=FALSE, warning=FALSE}
+# install.packages("mgcv")
+# install.packages("RColorBrewer")
+# install.packages("survival")
+# install.packages("dplyr")
+library(mgcv)
+library(RColorBrewer)
+library(survival)
+library(dplyr)
+```
+
+```{r, echo=FALSE}
+pal.blue <- brewer.pal(9, "Blues")
+pal.rose <- brewer.pal(9, "RdPu")
+colors <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
+            "#D55E00", "#CC79A7", "#999999", "#66C2A5", "#FC8D62")
+```
+
+## 1. Les Misérables: Data and Covariate Computation
+
+This tutorial is inspired by the analysis conducted in (Lerner et al., 2025), where, for illustrative purposes, RHEM is applied to the network of actor co-appearances in *Les Misérables*, compiled by Donald Knuth (Knuth, 1993). The data comprises 80 actors (co-)appearing in one or several of 288 chapters. The (binary\footnote{only for mathematical purposes}) gender of the actors is known. 
+
+a)  **Given the information above, interpret this data as a relational hyper-event network. Define the components of the hyperevent sequence, the vertex set, its cardinality, and the available attributes.**
+
+- **80 actors** $|V| = 80$ (co-)appearing in one or several of **288 chapters** ($n = 288$);
+- $e_i = (S_i, t_i)$ is a **hyperevent** (a chapter) involving a set of co-appearing actors $S_i$. In this case, $t_i$ is simply a counter for the chapter;
+- $\text{female}(i)$ is a **binary gender attribute** for each actor. 
+
+b)  **Open the file `jean_events.csv`. How are the events reported? Does it contain only event information?**
+
+The file `jean_events.csv` contains three types of entries (which can be distinguished using the column `type`), namely `add.actor`, `is.female`, and `chapter`. Each entry involves only one actor at a time. A chapter is therefore represented by as many rows as the number of actors involved.
+
+c)  **Open the configuration file `jean.config.small.txt` in `eventnet` and inspect the different windows.**
+
+See the tutorial notebook for more information on how the data is treated in `eventnet`.
+
+d) **Load the input data `jean_events_EVENTS.csv` located in `01-Data`. Is this a case-1-control dataset? If not, how do you think it can be constructed?**
+
+In`eventnet` we computed the necessary statistics to support the inference techniques that will be explored. Upon inspecting the dataset, you may notice the presence of missing values (NA) in some columns.
+
+In particular, the `TARGET` column contains only missing values, while the `SOURCE` column includes multiple entries. This indicates that we are dealing with \textbf{undirected relational hyper-events}, where the sender set is a subset of the vertices in a relational hypergraph $V$, and the receiver set is empty.
+
+Additionally, the `EVENT_INTERVAL_ID` column does not hold interpretable values, as in this application we just know the order of events. The `IS_OBSERVED` column is used to distinguish between actual observed events and non-events (i.e., events that could have occurred but did not).
+
+```{r}
+data_original <- read.csv("01-Data/jean_events_EVENTS.csv")
+```
+
+```{r}
+head(data_original)
+```
+
+In this application, the `num.actors` column is also unnecessary. This is because non-events have been sampled to match the cardinality of the observed events, meaning that the effect of event size cannot be meaningfully estimated.
+
+To simplify visualization, we proceed by removing all unnecessary columns from the dataset.
+
+```{r}
+data <- data_original[,setdiff(colnames(data_original), 
+                               c("TARGET", "TYPE", "EVENT_INTERVAL_ID", "EVENT", 
+                                 "INTEGER_TIME", "TIME_POINT", 
+                                 "TIME_UNIT", "num.actors"))]
+rm(data_original)
+head(data)
+```
+
+The object `data` is not a case-1-control dataset. To construct it, we first create two separate objects for the datasets containing events and non-events, respectively. We then merge these datasets using a set of variables that identify which event each non-event refers to. Among the non-events satisfying this condition, we sample only one. 
+
+```{r}
+data_ev <- data %>% filter(IS_OBSERVED == 1)
+data_nv <- data %>% filter(IS_OBSERVED == 0)
+```
+
+```{r}
+# Add a new column to label each row in 'data_ev' and 'data_nv' 
+# as event data and non-event data respectively
+data_ev_tagged <- data_ev %>%
+  mutate(.row_type = "ev")
+data_nv_tagged <- data_nv %>%
+  mutate(.row_type = "nv")
+head(data_ev_tagged)
+# head(data_nv_tagged)
+rm(data_ev)
+rm(data_nv)
+```
+
+```{r}
+set.seed(1234)
+merge_id_cols <- c("EVENT_INTERVAL")
+
+# For each group defined by the merge_id_cols, take one random non-event
+data_nv_1_sampled <- data_nv_tagged %>%
+  group_by(across(all_of(merge_id_cols))) %>%
+  slice_sample(n = 1) %>%
+  ungroup()
+
+# Perform a left join: 
+# for each row in data_ev, attach the corresponding non-event row (if available)
+# based on matching values in the merge_id_cols
+# The suffixes "_ev" and "_nv" will be added to columns from data_ev and data_nv 
+dat_gam_1 <- data_ev_tagged %>%
+  left_join(data_nv_1_sampled, 
+            by = merge_id_cols, suffix = c("_ev", "_nv"))
+rm(data_nv_1_sampled)
+```
+
+## 2. Model fitting: conditional and degenerate logistic regression
+
+a) **Based on the data structures you were given and those you constructed, which inference techniques can you apply?**
+
+**OPTION 1**
+
+Since we do not have access to timing information for the events and we have a case-control sampling with 20 non-events, we use the `clogit` function in R to fit our model (conditional logistic regression). When applied in this context, `clogit` internally calls the `coxph` routine.
+
+```{r}
+clogit_fit <- clogit(IS_OBSERVED ~ 
+                         + diff.female
+                         + female
+                         + individual.activity 
+                         + dyadic.activity 
+                         + strata(EVENT_INTERVAL)
+                         , data = data)
+summary(clogit_fit)
+```
+
+We find a \textcolor{myred}{positive effect of individual, dyadic}. This suggests that prior (co-)presence in previous chapters - whether alone or in pairs - increases the rate of participating in events. A negative effect for diff.female suggests a positive effect for gender homophily, favouring  co-appearence with other actors of the same gender.
+
+**OPTION 2**
+
+Using the case-1-control dataset, it is also possible to fit a degenerate logistic regression without an intercept, where the covariates are defined as the differences between the covariates for the events and those for the non-events, and the response variable is constant and equal to 1. 
+
+```{r}
+# covariates defined as difference between 
+# covariate values for event and corresponding non-event
+dat_gam_1$female <- 
+  dat_gam_1$female_ev - dat_gam_1$female_nv
+dat_gam_1$diff_female <- 
+  dat_gam_1$diff.female_ev - dat_gam_1$diff.female_nv
+dat_gam_1$individual_activity <- 
+  dat_gam_1$individual.activity_ev - dat_gam_1$individual.activity_nv
+dat_gam_1$dyadic_activity <- 
+  dat_gam_1$dyadic.activity_ev - dat_gam_1$dyadic.activity_nv
+dat_gam_1$closure <- 
+  dat_gam_1$closure_ev - dat_gam_1$closure_nv
+
+# constant response equal to 1
+dat_gam_1$y <- 1
+```
+
+```{r}
+gam_fit <- glm(y ~ 
+                + diff_female
+                + female
+                + individual_activity 
+                + dyadic_activity 
+                - 1 # no intercept
+               , data = dat_gam_1, 
+               family="binomial")
+summary(gam_fit)
+```
+
+As before, we find a positive effect of individual, dyadic and a negative main effect for female gender and a positive effect for gender homophily.
