@@ -450,7 +450,7 @@ Trade depends both on species and region (and explicitely on time as well). So i
 
 To compute this covariate, we need the \textcolor{cerulean}{set of invaded regions} by species $s$ by time $t$ and this is an \textcolor{mauvetaupe}{endougenous} type of information, arising from the network. Nevertheless, \textcolor{mauvetaupe}{exogenous} information is also present, concerning the flows among countries. 
 
-b)  **Estimate the \textcolor{mauvetaupe}{time-varying effect} of trade and interpret the resulting estimate.
+b)  **Estimate the \textcolor{mauvetaupe}{time-varying effect} of trade and interpret the resulting estimate.**
 
 Let `x.ev` and `x.nv` be $n\times 1$ vectors of trade covariate evaluated for events \& non-events. Then: `x = x.ev - x.nv`. Let `stp` be $n\times 1$ vector of event-times. Fit the model incorporating a time-varying effect for `x` and interpret the estimate.
 
@@ -532,7 +532,7 @@ We compute \textbf{distance} for the dyad (species-region) as the shortest dista
 
 `data_distance` is a matrix with rownames and colnames referring to the regions. The corresponding element in the matrix reports the distance between the two.
 
-a)  Consider the function `log_distance` \textcolor{cerulean}{that, given a relational event (and all the relevant information that is required), computes the shortest distance among the regions in which the species is already present at that time}. Apply the function to the events and the sampled non-events.
+a)  **Consider the function `log_distance` \textcolor{cerulean}{that, given a relational event (and all the relevant information that is required), computes the shortest distance among the regions in which the species is already present at that time}. Apply the function to the events and the sampled non-events.**
 
 ```{r, echo=FALSE}
 knitr::include_graphics("03-Images/distance-covariate-computation.pdf")
@@ -578,19 +578,15 @@ dat.gam$d2 <- apply(dat.gam[,c("sp2.num", "r2.num", "year")], 1,
 dat.gam$d = dat.gam$d1 - dat.gam$d2
 ```
 
-
-
 ```{r, echo=FALSE}
 knitr::include_graphics("03-Images/distance-covariate-computation.pdf")
 ```
 
-
 When dealing with non-linear effects, the impact of the covariate is expressed by a non-linear function of the covariate itself. In the following we will inspect a suitable non-linear function of distance, which depends on parameters that need to be estimated through our model. 
 
-b)  Estimate the \textcolor{mauvetaupe}{non-linear effect} of distance and interpret the resulting estimate.
+b)  **Estimate the \textcolor{mauvetaupe}{non-linear effect} of distance and interpret the resulting estimate.**
+
 Let `x.ev` and `x.nv` be $n\times 1$ vectors of distance covariate evaluated for events \& non-events. Then: `x = x.ev - x.nv`.  Let `unit` be $n\times 1$ unit vector. Fit the model incorporating a non-linear effect for `x` and interpret the estimate.
-
-
 
 ```{r}
 x.ev <- dat.gam$d1
@@ -606,8 +602,6 @@ gam_d.only <- gam(y ~ s(X, by=I) - 1,
 plot(gam_d.only)
 
 ```
-
- 
 
 ```{r}
 lp_matrix <- predict.gam(gam_d.only, type="lpmatrix",
@@ -663,7 +657,7 @@ load("01-Data/01-Inputs/input02.RData")
 
 Existing literature already underlined the importance of taking into account, together with the relevant external drivers, the heterogeneity due to the species invasiveness (Pysek et al., 2020). We do this by including random effects related to the species factor.
 
-a)  Define the covariate: $z_{s}(t)$: \textcolor{cerulean}{involvement of species} $s$ in first record occurring at $t$. Create a $n \times 2$ matrix \texttt{sp} containing in the fist column \texttt{spec} levels related to species involved in the events and in the second those involved in the non-events. Is it node- or dyad- level?
+a)  **Create a $n \times 2$ matrix \texttt{sp} containing in the fist column \texttt{spec} levels related to species involved in the events and in the second those involved in the non-events. Is $v_{s}(t)$ a node- or dyad- level?**
 
 ```{r}
 sp1 <- dat.gam$sp1
@@ -673,10 +667,9 @@ dim(sp) <- c(length(sp1),2)
 ```
 
 
-It is just reporting the label of the involved species $s$, so the covariate $z_{s}(t)$ is monadic. 
+It is just reporting the label of the involved species $s$, so the covariate $v_{s}(t)$ is monadic. 
 
-
-b)  Fit the model incorporating a random effect for species invasiveness and interpret the estimates.
+b)  **Fit the model incorporating a random effect for species invasiveness and interpret the estimates.**
 
 REMARK: default spline is type for `gam` in `mgcv` consists of \textcolor{mauvetaupe}{thin plate regression spline}. Instead, we need to specify that we aim to fit a random effect. 
 
