@@ -183,3 +183,13 @@ summary(gam_fit)
 ```
 
 As before, we find a positive effect of individual, dyadic and a negative main effect for female gender and a positive effect for gender homophily.
+
+## References
+
+- Knuth, D. E. (1993). The Stanford GraphBase: a platform for combinatorial computing (Vol. 1). New York: AcM Press.
+
+- Lerner, J., Hâncean, M. G., & Perc, M. (2025). Modeling temporal hypergraphs. Journal of Complex Networks, 13(6).
+
+- Lerner, J., & Lomi, A. (2020). Reliability of relational event model estimates under sampling: How to fit a relational event model to 360 million dyadic events. Network Science, 8(1), 97-135.
+
+- Lerner, J., & Lomi, A. (2023). Relational hyperevent models for polyadic interaction networks. Journal of the Royal Statistical Society Series A: Statistics in Society, 186(3), 577-600.
