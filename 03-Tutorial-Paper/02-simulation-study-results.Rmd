@@ -1,0 +1,122 @@
+---
+title: 'Simulation Study: Implementation'
+author: "Boschi, Martina"
+date: "2026-04-01"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Synthetic Data: Academics moving in US states.
+
+## Preliminarities
+
+More details about the preliminaries can be found in the document: `01-simulation-study-implementation`.
+
+```{r pressure, echo=FALSE, message=FALSE, warning=FALSE}
+source("script/packages.R")
+```
+
+```{r}
+load(file="output/remdats_data.RData")
+load(file="output/gam.fits.RData")
+load(file="output/shifted_rems.RData")
+load(file="output/gam.fits_shifted.RData")
+```
+
+```{r message=FALSE, warning=FALSE}
+source("script/states.R")
+source("script/input_distance.R")
+source("script/true_coefficients.R")
+```
+
+```{r}
+n_sim = 100
+```
+
+## Fixed Effects
+
+```{r}
+# Create the data frame as you did
+fixed_results <- data.frame(
+  recicrocity_no_shift = unlist(lapply(gam.fits, function(x) x$coefficients[1])),
+  recicrocity_shift = unlist(lapply(gam.fits_shifted, function(x) x$coefficients[1])), 
+  weekday_shift = unlist(lapply(gam.fits_shifted, function(x) x$coefficients[2]))
+)
+
+# Reshape data to long format for ggplot
+fixed_results_long <- fixed_results %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value")
+
+coefficients_fixed <- ggplot(fixed_results_long, aes(x = Variable, y = Value)) +
+  geom_boxplot(aes(fill = Variable), color = "black", alpha = 0.5) +  # Boxplot with color
+  geom_point(data = data.frame(Variable = c("recicrocity_no_shift", 
+                                            "recicrocity_shift", 
+                                            "weekday_shift"), 
+                               Value = c(b1, b1, b0)),
+             aes(x = Variable, y = Value), 
+             color = "lightcoral", size = 4, shape = 19) +  # Add points
+  labs(title = "ESTIMATED vs TRUE coefficients for linear-effect covariates",
+       x = "Covariate - Presence of shifting",
+       y = "Coefficient Value") +
+  scale_fill_manual(values = c("recicrocity_no_shift" = "lightgray", 
+                               "recicrocity_shift" = "lightgray", 
+                               "weekday_shift" = "lightgray")) +  # Custom colors
+  theme_minimal() +
+  theme(legend.position = "none",  # Remove legend as it's not needed
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+        axis.text.y = element_text(size = 18),
+        axis.title.x = element_text(size = 20, face = "bold"),
+        axis.title.y = element_text(size = 20, face = "bold"),
+        )  
+coefficients_fixed
+```
+
+```{r}
+pdf("pictures/simulation/estimates_simulation_complete.pdf", width=10, height=7)
+coefficients_fixed
+dev.off()
+```
+
+## Non-linear effect
+
+```{r}
+b.dist_shift.objects <- lapply(gam.fits_shifted, getViz)
+data <- data.frame(x = as.vector(dist_matrix),
+                   y = spline_function(as.vector(dist_matrix), fit))
+coefficients_plot_shifted <- ggplot(data=data, aes(x, y)) +
+  geom_line(data=data,
+            linetype = 1, col="lightcoral",
+            size=1)
+for (iter in 1:n_sim){
+  b.iter <- b.dist_shift.objects[[iter]]
+  o.iter <- plot(sm(b.iter, 1))
+  coefficients_plot_shifted <- coefficients_plot_shifted + 
+    geom_line(data=o.iter$data$fit, 
+              linetype = 3, col="lightgray", 
+              size=0.5)
+}
+coefficients_plot_shifted <- coefficients_plot_shifted +
+  geom_line(data=data,
+            linetype = 1, col="lightcoral",
+            size=1) +
+  labs(title = "ESTIMATED vs TRUE non-linear effect (Model with SHIFTING)",
+       x = "Covariate",
+       y = "Log-hazard contribution") +
+  theme_minimal() +
+  theme(legend.position = "none",  # Remove legend as it's not needed
+        axis.text.x = element_text(size = 18),
+        axis.text.y = element_text(size = 18),
+        axis.title.x = element_text(size = 20, face = "bold"),
+        axis.title.y = element_text(size = 20, face = "bold"),
+        ) 
+coefficients_plot_shifted
+```
+
+```{r}
+pdf("pictures/simulation/non-linear-effect-simulation.pdf", width = 10, height = 7)
+coefficients_plot_shifted
+dev.off()
+```

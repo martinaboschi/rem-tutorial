@@ -1,0 +1,305 @@
+---
+title: "Running Example: Inference via Poisson / CoxPH / C-Logit / Logistic Regression"
+author: "Boschi, M."
+date: "2026-04-01"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Synthetic Data: Academics moving in US states. 
+
+## Preliminarities
+
+More details about the preliminaries can be found in the document: `01-simulation-study-implementation`.
+
+```{r pressure, echo=FALSE, message=FALSE, warning=FALSE}
+source("script/packages.R")
+```
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+source("script/states.R")
+source("script/input_distance.R")
+source("script/true_coefficients.R")
+```
+
+```{r}
+n_sim = 1
+```
+
+```{r}
+load(file="output/running_example_data.RData")
+load(file="output/running_example_gam.fits.RData")
+load(file="output/running_example_shifted_data.RData")
+load(file="output/running_example_gam.fits_shifted.RData")
+```
+
+```{r}
+rem_data <- remdats_cox[[1]][[1]]
+cox_data <- remdats_cox[[1]][[3]]
+sampled_data <- remdats_cox[[1]][[4]]
+```
+
+```{r}
+(x1 <- which(rem_data$rec==1))
+(x2 <- which(cox_data$tms==rem_data[x1,"tms"] & cox_data$event==1))
+(x3 <- which(sampled_data$tms==rem_data[x1,"tms"] & sampled_data$event==1))
+```
+
+## Poisson Regression
+
+```{r}
+poisson_data <- cox_data
+poisson_data$logtm  <- log(poisson_data$stop-poisson_data$start)
+```
+
+```{r}
+poisson_display <- poisson_data[x2:(x2+7),c("s", "r", "start", "stop", 
+                                                    "event", "rec", "logtm")]
+poisson_display$start <- round(poisson_display$start, 2)
+poisson_display$stop <- round(poisson_display$stop, 2)
+poisson_display$logtm <- round(poisson_display$logtm, 2)
+poisson_display <- rbind(rep("...", ncol(poisson_display)),
+                        poisson_display, 
+                        rep("...", ncol(poisson_display)))
+colnames(poisson_display) <- c("sender", "receiver", 
+                              "start", "stop", "event",
+                              "x", "log_exposure")
+rownames(poisson_display) <- NULL
+
+poisson_display <- rbind(poisson_display, 
+                          rep(" ", ncol(poisson_display)))
+poisson_display
+```
+
+```{r}
+ft <- flextable(poisson_display) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  width(j = c(7), width = 1.4) %>%      # Adjust columns 1 to 6
+  fontsize(size = 10, part = "all")
+save_as_image(ft, path="pictures/inference/poisson_display.png")
+```
+
+
+```{r}
+poisson_data$x <- poisson_data$rec
+poisson_fit <-  glm(event ~ x + offset(logtm), 
+      family = poisson(link = "log"), 
+      data = poisson_data)
+summary(poisson_fit)
+```
+
+## CoxPH Regression
+
+```{r}
+cox_data_display <- cox_data[x2:(x2+7),c("s", "r", "start", "stop", 
+                                          "event", "rec")]
+cox_data_display$start <- round(cox_data_display$start, 2)
+cox_data_display$stop <- round(cox_data_display$stop, 2)
+cox_data_display <- rbind(rep("...", ncol(cox_data_display)),
+                        cox_data_display, 
+                        rep("...", ncol(cox_data_display)))
+colnames(cox_data_display) <- c("sender", "receiver", 
+                              "start", "stop", "event",
+                              "x")
+rownames(cox_data_display) <- NULL
+cox_data_display <- rbind(cox_data_display, 
+                          rep(" ", ncol(cox_data_display)))
+cox_data_display
+```
+
+```{r}
+ft <- flextable(cox_data_display) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  fontsize(size = 10, part = "all")
+save_as_image(ft, path="pictures/inference/cox_data_display.png")
+cox_data_display
+```
+
+```{r}
+cox_data$x <- cox_data$rec
+cox_fit <- coxph(Surv(start,stop,event) ~ x, data = cox_data)
+summary(cox_fit)
+```
+
+```{r}
+clogit_fit <- clogit(event ~ x + strata(tms), data = cox_data)
+summary(clogit_fit)
+```
+
+## Conditional Logistic Regression in Practice 
+
+```{r}
+sampled_data_display <- sampled_data[x3:(x3+7),c("s", "r", "start", "stop", 
+                                          "event", "rec")]
+sampled_data_display$start <- round(sampled_data_display$start, 2)
+sampled_data_display$stop <- round(sampled_data_display$stop, 2)
+sampled_data_display <- rbind(rep("...", ncol(sampled_data_display)),
+                        sampled_data_display, 
+                        rep("...", ncol(sampled_data_display)))
+colnames(sampled_data_display) <- c("sender", "receiver", 
+                              "start", "stop", "event",
+                              "x")
+sampled_data_display <- rbind(sampled_data_display, 
+                          rep(" ", ncol(sampled_data_display)))
+rownames(sampled_data_display) <- NULL
+sampled_data_display
+```
+
+
+```{r}
+ft <- flextable(sampled_data_display) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  fontsize(size = 10, part = "all")
+save_as_image(ft, path="pictures/inference/sampled_data_display.png")
+```
+
+```{r}
+sampled_data$x <- sampled_data$rec
+clogit_fit <- clogit(event ~ x + strata(tms), data = sampled_data)
+summary(clogit_fit)
+```
+
+## Case-Control Partial Likelihood via GAM
+
+```{r}
+rem_data_display <- rem_data[x1:(x1+4),c("tms", "s", "r", "non.s", "non.r",
+                                         "rec", "non.rec", "delta.rec")]
+rem_data_display$tms <- round(rem_data_display$tms, 2)
+rem_data_display$id_ev <- 1
+rem_data_display$id_non_ev <- -1
+rem_data_display$y <- 1
+rem_data_display <- rbind(rep("...", ncol(rem_data_display)),
+                        rem_data_display, 
+                        rep("...", ncol(rem_data_display)))
+rem_data_display <- rbind(rem_data_display, 
+                          rep(" ", ncol(rem_data_display)))
+colnames(rem_data_display) <- c("time", "sender_ev", "receiver_ev", 
+                                "sender_non_ev", "receiver_non_ev", 
+                                "x_ev", "x_non_ev", "delta_x", 
+                                "id_ev", "id_non_ev", "y")
+rownames(rem_data_display) <- NULL
+rem_data_display
+```
+
+```{r}
+ft <- flextable(rem_data_display) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  fontsize(size = 9, part = "all")
+save_as_image(ft, path="pictures/inference/rem_data_display.png")
+```
+
+## Shifted Case-Control Partial Likelihood via GAM
+
+```{r}
+shifted_data <- shifted_rems[[1]][1:100,]
+head(shifted_data)
+```
+
+```{r}
+all(rem_data$s==shifted_data$s)
+all(rem_data$r==shifted_data$r)
+colnames(shifted_data)
+```
+
+```{r}
+shifted_data_display <- shifted_data[x1:(x1+4),c("tms", "s", "r", 
+                                                "non.tms", "non.s", "non.r",
+                                                "weekday", "non.weekday", 
+                                                "delta.wkday")]
+shifted_data_display$tms <- round(shifted_data_display$tms, 2)
+shifted_data_display$non.tms <- round(shifted_data_display$non.tms, 2)
+shifted_data_display$y <- 1
+shifted_data_display <- rbind(rep("...", ncol(shifted_data_display)),
+                        shifted_data_display, 
+                        rep("...", ncol(shifted_data_display)))
+shifted_data_display <- rbind(shifted_data_display, 
+                          rep(" ", ncol(shifted_data_display)))
+colnames(shifted_data_display) <- c("time_ev", "sender_ev", "receiver_ev", 
+                                    "time_non_ev", "sender_non_ev", 
+                                    "receiver_non_ev", 
+                                    "weekday_ev", "weekday_non_ev", 
+                                    "delta_weekday", "y")
+rownames(shifted_data_display) <- NULL
+shifted_data_display
+```
+
+```{r}
+ft <- flextable(shifted_data_display) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  fontsize(size = 9, part = "all")
+save_as_image(ft, path="pictures/inference/shifted_data_display.png")
+```
+
+```{r}
+shifted_ncc_data <- shifted_data
+shifted_ncc_data$y <- 1
+shifted_ncc_data$delta_weekday <- shifted_data$delta.wkday
+gam(y ~ -1 + delta_weekday, family="binomial"(link = "logit"),
+    data = shifted_ncc_data)
+summary(gam(y ~ -1 + delta_weekday, family="binomial"(link = "logit"),
+    data = shifted_ncc_data))
+```
+
+## Case-Control Partial Likelihood via GAM (estimating random effects)
+
+```{r}
+rem_data_display <- rem_data[x1:(x1+4),c("tms", "s", "r", "non.s", "non.r")]
+rem_data_display$tms <- round(rem_data_display$tms, 2)
+rem_data_display$id_ev <- 1
+rem_data_display$id_non_ev <- -1
+rem_data_display$y <- 1
+ncc_data <- rem_data_display
+colnames(rem_data_display) <- colnames(ncc_data) <- c("time", "sender_ev", 
+                                                      "receiver_ev", 
+                                "sender_non_ev", "receiver_non_ev", 
+                                "id_ev", "id_non_ev", "y")
+rem_data_display <- rbind(rep("...", ncol(rem_data_display)),
+                        rem_data_display, 
+                        rep("...", ncol(rem_data_display)))
+rem_data_display <- rbind(rem_data_display, 
+                          rep(" ", ncol(rem_data_display)))
+rownames(rem_data_display) <- NULL
+rem_data_display
+```
+
+```{r}
+ft <- flextable(rem_data_display) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  fontsize(size = 9, part = "all")
+save_as_image(ft, path="pictures/inference/rem_data_display_random_effect.png")
+```
+
+```{r}
+by_matrix = cbind(ncc_data$id_ev,-ncc_data$id_ev)	
+sender_act <- factor(c(ncc_data$sender_ev,ncc_data$sender_non_ev))
+dim(sender_act) <- c(nrow(ncc_data), 2)
+receiver_pop <- factor(c(ncc_data$receiver_ev,ncc_data$receiver_non_ev))
+dim(receiver_pop) <- c(nrow(ncc_data), 2)
+gam(y ~ s(sender_act, by=by_matrix, bs="re") + 
+        s(receiver_pop, by=by_matrix, bs="re")  - 1, 
+    family="binomial"(link = 'logit'),
+    data=ncc_data)
+```
+
+```{r}
+# rem_data <- remdats_nocox[[1]][[1]]
+# rem_data_display <- rem_data[,c("tms", "s", "r", "non.s", "non.r",
+#                                          "rec", "non.rec", "delta.rec")]
+# rem_data_display$tms <- round(rem_data_display$tms, 2)
+# rem_data_display$id_ev <- 1
+# rem_data_display$id_non_ev <- -1
+# rem_data_display$y <- 1
+# colnames(rem_data_display) <- c("time", "sender_ev", "receiver_ev", 
+#                                 "sender_non_ev", "receiver_non_ev", 
+#                                 "x_ev", "x_non_ev", "delta_x", 
+#                                 "id_ev", "id_non_ev", "y")
+# rownames(rem_data_display) <- NULL
+# ncc_data <- rem_data_display
+# x_matrix <- cbind(ncc_data$x_ev, ncc_data$x_non_ev)
+# by_matrix <- cbind(ncc_data$id_ev, ncc_data$id_non_ev)
+# gam(y ~ -1 + s(x_matrix, by=by_matrix, k=4),
+#         family="binomial"(link = "logit"), data = ncc_data)
+```

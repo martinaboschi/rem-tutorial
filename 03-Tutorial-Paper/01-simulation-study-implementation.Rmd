@@ -1,0 +1,259 @@
+---
+title: 'Simulation Study: Implementation'
+author: "Boschi, Martina"
+date: "2026-04-01"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Synthetic Data: Academics moving in US states
+
+The following simulation study includes: 
+-   First part: REM including a linear effect for reciprocity and a non-linear effect for distance;
+-   Second part: REM including a linear effect for reciprocity and a non-linear effect for distance plus a global effect for the day of the week. 
+
+## Preliminarities
+
+```{r pressure, echo=FALSE, message=FALSE, warning=FALSE}
+source("script/packages.R")
+```
+
+### Members, Size, and Order of the temporal network
+
+```{r message=FALSE, warning=FALSE}
+source("script/states.R")
+```
+
+### True non-linear effect of distance
+
+Distance is an example of exogenous information that is external to the relational event network. We exploit this information to compute an endogenous covariate. 
+
+Source for distance: [Walker, 2024] [Pebesma, 2018] [Hijmans, 2022]
+
+We assume the contribution of distance being a non-linear function of distance itself. 
+
+The true value for the coefficients is retrieved in such a way the final contribution is similar to a negative contribution of the logarithm of the original covariate, namely:
+
+```{r}
+source("script/input_distance.R")
+```
+
+### Linear effect of weekday and reciprocity
+
+The baseline of a interstate academic conference is assumed to be smaller during the weekends with respect to the weekdays.
+
+```{r}
+source("script/true_coefficients.R")
+```
+
+## Event Simulation (no shifting)
+
+```{r}
+event_simulator <- function(states, p, n, b0, b1, fit, seed) {
+  
+  set.seed(seed)
+  print(seed)
+  
+  # some constants
+  current.tm<-0
+  rec<-matrix(0,ncol=p,nrow=p)
+  
+  #where to save
+  dat<-NULL
+  nondat<-NULL
+  tms<-NULL
+  tm = 0  # Initialize time to 0
+  
+  # Initialize the invaded list with a random sample of states
+  last_contacted <- matrix(NA, nrow=n+1, ncol=p)
+  last_contacted[1,] <- sample(states, p)
+  colnames(last_contacted) <- states
+  
+  # Compute the distance matrix for each state and potential state pairs
+  dist.m <- t(sapply(states, function(st) 
+    sapply(states, function(pot.st)
+      dist_matrix[pot.st, last_contacted[1,st]])))
+  distance <- matrix(spline_function(as.vector(dist.m),
+                                     fit), 
+                     nrow=p, ncol=p)
+  
+  #simulation of events
+  i<-1
+  while (i <=n){
+    
+    if(i%%100==0) print(i)
+    current.weekday<-1*(current.tm%%7>=2)
+    hazard<- exp(b0*current.weekday+b1*rec+distance)/(p^2)
+    
+    # time increase
+    dt<-rexp(1,sum(hazard))
+    
+    # check if this change meant that the event 
+    # moved from weekend to weekday or vice-versa:
+    new.weekday<-1*((current.tm+dt)%%7>=2)
+    if (dt>5| new.weekday!=current.weekday){
+      current.tm<- (current.tm%/%7)*7+2+current.weekday*5
+    } else {
+      current.tm<-current.tm+dt
+      tms<-c(tms,current.tm)
+      event.id<-sample(1:p^2, 1,prob = hazard/sum(hazard))
+      s<-(event.id-1)%%p+1
+      r<-(event.id-1)%/%p+1
+      dat<-rbind(dat,c(current.tm,s,r,event.id,
+                       current.weekday,
+                       dist.m[s,r],
+                       rec[s,r]))
+      
+      non.event.id <- sample(setdiff(1:p^2, event.id),1)
+      non.s <- (non.event.id-1)%%p+1
+      non.r <- (non.event.id-1)%/%p+1
+      nondat <- rbind(nondat,c(non.s,non.r,non.event.id,
+                               dist.m[non.s,non.r],
+                               rec[non.s,non.r]))
+      
+      rec[r,s] <- rec[r,s] + 1
+      last_contacted[i+1,] <- last_contacted[i,]
+      last_contacted[i+1,states[s]] <- states[r]
+      
+      dist.m <- t(sapply(states, function(st) 
+        sapply(states, function(pot.st)
+          dist_matrix[pot.st, last_contacted[i+1,st]])))
+      distance <- matrix(spline_function(as.vector(dist.m),
+                                         fit), 
+                         nrow=p, ncol=p)
+      hazard<- exp(b0*current.weekday+b1*rec+distance)/(p^2)
+      
+      i<-i+1
+    }
+  }
+  
+  remdat <- cbind(1:n, dat, nondat,
+                  dat[,6]-nondat[,4],
+                  dat[,7]-nondat[,5],
+                  1)
+  colnames(remdat) <- c("index", "tms","s","r","event.id",
+                        "weekday","distance", "rec",
+                        "non.s","non.r","non.event.id",
+                        "non.distance", "non.rec",
+                        "delta.dist", "delta.rec","one")
+  remdat <- as.data.frame(remdat)
+  
+  return(list(remdat, last_contacted))
+}
+```
+
+```{r eval=FALSE}
+n_sim = 100
+set.seed(1234)
+remdats <- sapply(1:n_sim, function(x)
+  event_simulator(states = states, p = length(states), n = n,
+                  b0 = b0, b1 = b1, fit, seed=x),
+  simplify =FALSE)
+save(remdats, file="output/remdats_data.RData")
+```
+
+## Model Fitting (no shifting)
+
+For each of the simulated dataset, we fit a model including a linear effect fir reciprocity and a non-linear effect for distance. Particularly, for each event we did sample one non-event and the distance between the covariates is taken into account.
+
+```{r eval=FALSE}
+load(file="output/remdats_data.RData")
+remdats_data <- lapply(remdats, function(x) x[[1]])
+gam.fits <- lapply(remdats_data, function(x){
+  dist_MAT <- cbind(x$distance, x$non.distance)
+  ONE <- cbind(x$one, -x$one)
+  fit <- gam(one ~ s(dist_MAT, by=ONE) + 
+               delta.rec - 1,
+             family="binomial",
+             data=x)
+  return(fit)
+}
+)
+save(gam.fits, file="output/gam.fits.RData")
+```
+
+## Event Shifting
+
+```{r}
+remdat_shifting <- function(remdat, last_contacted, p, n, seed){
+  
+  set.seed(seed)
+  
+  T<-max(remdat$tms)
+  shifts<-rexp(p^2,1/T)
+  remdat_complete<-NULL
+  
+  for (i in 1:n){
+    
+    current.tm <- remdat[i,2]
+    
+    atrisk<-(shifts<current.tm+shifts[remdat[i,5]]) & 
+            (shifts+T>current.tm+shifts[remdat[i,5]])
+    
+    non.event.id <- sample(1:p^2,1,prob = atrisk/sum(atrisk))
+    non.s<-(non.event.id-1)%%p+1
+    non.r<-(non.event.id-1)%/%p+1
+    
+    non.current.weekday<-1*((current.tm+shifts[remdat[i,5]]-
+                               shifts[non.event.id])%%7>=2)
+    non.rec<-sum((remdat[,2]<current.tm+shifts[remdat[i,5]]-
+                    shifts[non.event.id])&(remdat[,3]==non.r)&
+                   (remdat[,4]==non.s))
+    
+    dist.m <- t(sapply(states, function(st) 
+      sapply(states, function(pot.st)
+        dist_matrix[pot.st, last_contacted[i+1,st]])))
+    
+    remdat_complete<-rbind(remdat_complete,
+                           unlist(c(remdat[i,1:8],
+                                    non.s,non.r,non.event.id,
+                                    non.current.weekday,
+                                    dist.m[non.s,non.r],non.rec)))
+  }
+  
+  colnames(remdat_complete) <- c(colnames(remdat)[1:8],
+                                 "non.s","non.r","non.event.id",
+                                 "non.weekday","non.distance","non.rec")
+  remdat_complete <- as.data.frame(remdat_complete)
+  
+  remdat_complete$delta.dist = remdat_complete$distance - 
+    remdat_complete$non.distance 
+  remdat_complete$delta.wkday = remdat_complete$weekday - 
+    remdat_complete$non.weekday
+  remdat_complete$delta.rec = remdat_complete$rec - 
+    remdat_complete$non.rec
+  remdat_complete$one = 1
+  
+  return(remdat_complete) 
+  
+}
+```
+
+```{r eval=FALSE}
+shifted_rems <- sapply(1:n_sim, function(x)
+  remdat_shifting(remdats[[x]][[1]], remdats[[x]][[2]], p, n, seed=x), 
+  simplify = FALSE)
+save(shifted_rems, file="output/shifted_rems.RData")
+length(shifted_rems)
+```
+
+## Model Fitting (shifting)
+
+```{r eval=FALSE}
+load(file="output/shifted_rems.RData")
+gam.fits_shifted <- lapply(shifted_rems, function(x){
+  dist_MAT <- cbind(as.numeric(x$distance), 
+                    as.numeric(x$non.distance))
+  ONE <- cbind(x$one, -x$one)
+  fit <- gam(one ~ s(dist_MAT, by=ONE, k=11, bs="bs") + 
+               delta.rec + delta.wkday - 1,
+             family="binomial",
+             data=x)
+  return(fit)
+}
+)
+save(gam.fits_shifted, file="output/gam.fits_shifted.RData")
+```

@@ -1,0 +1,399 @@
+---
+title: "Overview: Basics of REMs."
+author: "Boschi, M."
+date: "2026-04-01"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Synthetic Data: Academics moving in US states. 
+
+## Preliminarities
+
+More details about the preliminaries can be found in the document: `01-simulation-study-implementation`.
+
+```{r pressure, echo=FALSE, message=FALSE, warning=FALSE}
+source("script/packages.R")
+```
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+source("script/states.R")
+source("script/input_distance.R")
+source("script/true_coefficients.R")
+```
+
+```{r}
+n_sim = 1
+```
+
+```{r}
+load(file="output/running_example_data.RData")
+load(file="output/running_example_gam.fits.RData")
+load(file="output/running_example_shifted_data.RData")
+load(file="output/running_example_gam.fits_shifted.RData")
+```
+
+```{r}
+remdat <- remdats_nocox[[1]][[1]]
+last_visited <- remdats_nocox[[1]][[2]]
+shifted_remdat <- shifted_rems[[1]]
+```
+
+```{r}
+# check an event whose reciprocal is close in time
+unlist(sapply(which(remdat$rec==1),
+              function(x){
+                if(min(abs(which(remdat$s==remdat[x,"r"] &
+                                 remdat$r==remdat[x,"s"]) - x) < 10)){
+                  return(x)
+                }
+              }))
+```
+
+```{r}
+x1 <- 795
+x2 <- 805
+```
+
+```{r}
+which(remdat$s==remdat[x2,"r"] & remdat$r==remdat[x2,"s"])
+```
+
+```{r}
+remdat[c(795:805),]
+```
+
+
+```{r}
+# 26 repeats twice as sender
+# check the previous occurrence
+which(remdat$s==26)
+# select the closest to selected events
+x3 <- 720
+```
+
+## Table 1: Case-Control Dataset
+
+```{r}
+base_date <- as.Date("2023-01-01")
+```
+
+```{r}
+remdat_display <- remdat[c(x3,x1:x2),c("tms", 
+                                 "s", "r", 
+                                 "non.s", "non.r")]
+remdat_display <- remdat_display %>%
+  mutate(tms = format(base_date + floor(tms), "%d.%m.%Y"))
+# remdat_display$tms <- round(remdat_display$tms, 2)
+remdat_display$s <- states[remdat_display$s]
+remdat_display$r <- states[remdat_display$r]
+remdat_display$non.s <- states[remdat_display$non.s]
+remdat_display$non.r <- states[remdat_display$non.r]
+
+remdat_display <- rbind(rep("...", ncol(remdat_display)),
+                        remdat_display[1,],
+                        rep("...", ncol(remdat_display)),
+                        remdat_display[-1,], 
+                        rep("...", ncol(remdat_display)))
+
+colnames(remdat_display) <- c("Time", 
+                              "Origin (Event)", "Destination (Event)", 
+                              "Origin (Non-Event)", "Destination (Non-Event)")
+rownames(remdat_display) <- NULL
+(remdat_display <- rbind(remdat_display, 
+                          rep(" ", ncol(remdat_display))))
+```
+
+```{r}
+ft <- flextable(remdat_display) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  width(j = c(2:5), width = 2) %>%   
+  fontsize(size = 9, part = "all")
+save_as_image(ft, path="pictures/overview/overview_case_control.png")
+```
+
+## Table 2: Covariate Computation
+
+```{r}
+remdat_display <- remdat[c(x3,x1:x2),c("tms", 
+                                 "s", "r", 
+                                 "distance", "rec", "weekday")]
+remdat_display <- remdat_display %>%
+  mutate(tms = format(base_date + floor(tms), "%d.%m.%Y"))
+remdat_display$s <- states[remdat_display$s]
+remdat_display$r <- states[remdat_display$r]
+remdat_display$distance <- round(remdat_display$distance, 2)
+remdat_display <- rbind(rep("...", ncol(remdat_display)),
+                        remdat_display[1,],
+                        rep("...", ncol(remdat_display)),
+                        remdat_display[-1,], 
+                        rep("...", ncol(remdat_display)))
+colnames(remdat_display) <- c("Time", 
+                              "Origin (Event)", "Destination (Event)", 
+                              "Distance", "Reciprocity", "Weekday (Event)")
+rownames(remdat_display) <- NULL
+remdat_display <- rbind(remdat_display, 
+                          rep(" ", ncol(remdat_display)))
+remdat_display
+```
+
+```{r}
+dist_matrix["Texas","Hawaii"]
+```
+
+
+```{r}
+ft <- flextable(remdat_display) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  width(j = c(2:5), width = 2) %>%   
+  fontsize(size = 9, part = "all")%>%
+  bg(i = 5, j = 3, bg = "#FFE4E1")%>%
+  bg(i = 5, j = 2, bg = "#FFE4E1")%>%
+  bg(i = 14, j = 5, bg = "#FFE4E1")%>%
+  bg(i = 14, j = 2, bg = "#FFE4E1")%>%
+  bg(i = 14, j = 3, bg = "#FFE4E1")%>%
+   
+  bg(i = 2, j = 2, bg = "#ADD8E6")%>%
+  bg(i = 10, j = 2, bg = "#ADD8E6")%>%
+  bg(i = 12, j = 2, bg = "#ADD8E6")%>%
+  
+  bg(i = 2, j = 3, bg = "#FFFACD")%>%
+ 
+  bg(i = 10, j = 3, bg = "#FFFACD")%>%
+  bg(i = 10, j = 4, bg = "#FFFACD")%>%
+   
+  bg(i = 12, j = 3, bg = "#FFFACD")%>% 
+  bg(i = 12, j = 4, bg = "#FFFACD")
+save_as_image(ft, path="pictures/overview/overview_covariate_computation.png")
+```
+
+## Table 3: Model Fitting
+
+```{r}
+rem_data_display <- remdat[,c("tms", "rec", "non.rec", "delta.rec",
+                                   "distance", "non.distance")]
+rem_data_display <- rem_data_display %>%
+  mutate(tms = format(base_date + floor(tms), "%d.%m.%Y"))
+rem_data_display$distance <- round(rem_data_display$distance, 2)
+rem_data_display$non.distance <- round(rem_data_display$non.distance, 2)
+rem_data_display$id_ev <- 1
+rem_data_display$id_non_ev <- -1
+rem_data_display$y <- 1
+colnames(rem_data_display) <- c("time",  
+                                "rec_ev", "rec_non_ev", "delta.rec",
+                                "dist_ev", "dist_non_ev",
+                                "id_ev", "id_non_ev", "y")
+rownames(rem_data_display) <- NULL
+ncc_data <- rem_data_display
+library(mgcv)
+dist_matrix <- cbind(ncc_data$dist_ev, ncc_data$dist_non_ev)
+by_matrix <- cbind(ncc_data$id_ev, ncc_data$id_non_ev)
+gam_fit <- gam(y ~ -1 + s(dist_matrix, by=by_matrix) + delta.rec,
+               family="binomial"(link = "logit"), data = ncc_data)
+plot(gam_fit)
+```
+
+```{r}
+rem_data_display <- rem_data_display[c(x3,x1:x2),]
+rem_data_display <- rbind(rep("...", ncol(rem_data_display)),
+                        rem_data_display[1,],
+                        rep("...", ncol(rem_data_display)),
+                        rem_data_display[-1,], 
+                        rep("...", ncol(rem_data_display)))
+rem_data_display <- rbind(rem_data_display, 
+                          rep(" ", ncol(rem_data_display)))
+ft <- flextable(rem_data_display) %>%
+  set_table_properties(layout = "fixed", width = 1)
+save_as_image(ft, path="pictures/overview/overview_data_fitting.png")
+```
+
+
+## Model Comparison
+
+```{r}
+summary(gam_fit)
+AIC(gam_fit)
+```
+
+```{r}
+dat_gam <- remdat
+
+linear_fit_both <-  gam(one ~ delta.dist + 
+                          delta.rec - 1,
+                        family="binomial",
+                        data=dat_gam)
+
+linear_rec <- gam(one ~ delta.rec - 1,
+                  family="binomial",
+                  data=dat_gam)
+
+linear_dist <- gam(one ~ delta.dist - 1,
+                   family="binomial",
+                   data=dat_gam)
+
+dist_MAT <- cbind(as.numeric(dat_gam$distance), 
+                  as.numeric(dat_gam$non.distance))
+ONE <- cbind(dat_gam$one, -dat_gam$one)
+non_linear_dist <- gam(one ~ s(dist_MAT, by=ONE, k=11, bs="bs") - 1,
+                       family="binomial",
+                       data=dat_gam)
+
+```
+
+```{r}
+AIC(gam_fit)
+AIC(non_linear_dist)
+AIC(linear_fit_both)
+AIC(linear_rec)
+AIC(linear_dist)
+```
+
+```{r}
+# set.seed(1234)
+# BB9 <- BB.single(dim.k = 9)
+```
+
+```{r}
+# coefficients(gam_fit)[1]
+# GOF_univariate(data = dat_gam, gam.fit = gam_fit,index = 1)[[1]]
+```
+
+```{r}
+# coefficients(gam_fit)[2:10]
+# GOF_multivariate(data = dat_gam, gam.fit = gam_fit,
+#                  index = 2:10, BB.stat = BB9[[2]])[[1]]
+# plot(
+#   dat_gam$tms,
+#   apply(GOF_multivariate(data = dat_gam, gam.fit = gam_fit,
+#         index = 2:10, BB.stat = BB9[[2]])[[2]], 1, function(x) crossprod(x,x)),
+#   type="l",
+#   lwd=2,
+#   col="black",
+#   xlab="Time Points",
+#   ylab="Squared Norm of the Martingale-Residual Process",
+#   main="Goodness of Fit of Individual Activity with TVE",
+#   ylim=c(0,max(BB9[[1]]))
+# )
+# for (iter in 1:100){
+#   lines(
+#     dat_gam$tms,
+#     BB9[[1]][seq(1, 2000,
+#                   length.out=length(dat_gam$tms)),iter],
+#     col="darkgray", lwd=1,
+#     lty=3)
+# }
+```
+
+
+```{r}
+create_plots <- function(gam_fit, elements, ranges, 
+                         x_labs, y_labs, titles, subtitle){
+  
+  viz_obj <- getViz(gam_fit)
+  
+  plots <- list()
+  
+  for (element in elements){
+    
+    x_lab <- x_labs[element]
+    y_lab <- y_labs[element]
+    main_title <- titles[element]
+    
+    sm <- plot(sm(viz_obj, select=element))
+    data <- sm$ggObj$data
+
+    data$upper <- data$y + 1.96 * data$se
+    data$lower <- data$y - 1.96 * data$se
+    
+    plots[[element]] <- ggplot(data, aes(x = x, y = y)) +
+      geom_line(color = "black", linewidth = 0.8) +
+      geom_line(aes(y = upper), linetype = "dashed", 
+                color = "black", linewidth = 0.6) +
+      geom_line(aes(y = lower), linetype = "dashed", 
+                color = "black", linewidth = 0.6) +
+      labs(
+        x = x_lab,
+        y = y_lab,
+        title = main_title,
+        subtitle = subtitle,
+      ) +
+      theme_minimal(base_size = 14) +
+      theme(
+        plot.title = element_text(size = 22, face = "bold", hjust = 0.5),      
+        plot.subtitle = element_text(size = 18, face = "bold", hjust = 0.5),      
+        axis.title.x = element_text(size = 16),                  
+        axis.title.y = element_text(size = 16),                  
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.text = element_text(size = 13)                                    
+      ) + 
+      ylim(c(ranges[element,]))
+    
+  }
+  
+  return(plots)
+  
+}
+
+plots <- create_plots(gam_fit = gam_fit, 
+                      elements = c(1), 
+                      ranges = rbind(c(-0.5,1.2)),
+                      x_labs = c("Distance"), 
+                      y_labs = c("Contribution to Log-Hazard"), 
+                      titles = c("Non-Linear Effect of Distance"),
+                      subtitle = "")
+
+pdf("pictures/overview/distance_overview.pdf", width=6, height=6)
+plots[[1]]
+dev.off()
+```
+
+```{r}
+exp(coefficients(gam_fit)[1])
+```
+
+
+```{r}
+shifted_remdat_display <- shifted_remdat[x1:x2,c("tms", "s", "r", "weekday",
+                                 "non.tms","non.s", "non.r", "non.weekday")]
+
+shifted_remdat_display$tms <- round(shifted_remdat_display$tms, 2)
+shifted_remdat_display$non.tms <- round(shifted_remdat_display$non.tms, 2)
+shifted_remdat_display$s <- states[shifted_remdat_display$s]
+shifted_remdat_display$r <- states[shifted_remdat_display$r]
+shifted_remdat_display$non.s <- states[shifted_remdat_display$non.s]
+shifted_remdat_display$non.r <- states[shifted_remdat_display$non.r]
+
+shifted_remdat_display <- rbind(rep("...", ncol(shifted_remdat_display)),
+                        shifted_remdat_display, 
+                        rep("...", ncol(shifted_remdat_display)))
+colnames(shifted_remdat_display) <- c("Time (Event)", 
+                              "Origin (Event)", "Destination (Event)", 
+                              "Weekeday (Event)",
+                              "Time (Non-Event)", "Origin (Non-Event)", 
+                              "Destination (Non-Event)", "Weekeday (Non-Event)")
+
+shifted_remdat_display <- rbind(shifted_remdat_display, 
+                          rep(" ", ncol(shifted_remdat_display)))
+rownames(shifted_remdat_display) <- NULL
+shifted_remdat_display
+```
+
+```{r echo}
+ft <- flextable(shifted_remdat_display) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  width(j = c(1:8), width = 1.5) %>%   
+  fontsize(size = 9, part = "all")%>%
+  bg(i = 6, j = 4, bg = "#FFE4E1")%>%
+  bg(i = 6, j = 8, bg = "#FFE4E1")%>%
+  bg(i = 8, j = 4, bg = "#FFE4E1")%>%
+  bg(i = 8, j = 8, bg = "#FFE4E1")%>%
+  bg(i = 9, j = 4, bg = "#FFE4E1")%>%
+  bg(i = 9, j = 8, bg = "#FFE4E1")%>%
+  bg(i = 12, j = 4, bg = "#FFE4E1")%>%
+  bg(i = 12, j = 8, bg = "#FFE4E1")
+save_as_image(ft, path="pictures/overview/overview_shifted_data.png")
+```

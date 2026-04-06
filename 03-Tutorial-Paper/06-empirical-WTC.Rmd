@@ -1,0 +1,70 @@
+---
+title: "Empirical Applications (1): World Trade Center"
+author: "Martina Boschi"
+date: "2026-04-06"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Basics: Modeling Phone Calls in an Emergency Context
+
+## Preliminarities
+
+The following section aims to load the necessary packages and import the data. Furthermore, we modify the data to facilitate their use within `eventnet`.
+
+Specifically:
+- We include rows that list the actors in the system. This allows us to construct the risk set.
+- We provide the exogenous information in a format that can be read as actor-specific attributes by `eventnet`.
+
+```{r pressure, echo=FALSE, message=FALSE, warning=FALSE}
+source("script/packages.R")
+```
+
+```{r}
+load(file="input/WTC.RData")
+```
+
+```{r}
+data <- WTCPoliceCalls[,c("source", "recipient", "number")]
+colnames(data) <- c("s1", "r1", "time")
+data$type <- "call"
+```
+
+```{r}
+num.actors <- length(WTCPoliceIsICR)
+actors <- 1:num.actors
+```
+
+```{r}
+before.min.time <- min(data$time) - 1
+dummy.events <- data.frame(actors, actors,
+                           rep(before.min.time,num.actors),
+                           rep("add.actor",num.actors))
+colnames(dummy.events) <- colnames(data)
+head(dummy.events)
+```
+
+```{r}
+events <- rbind(dummy.events, data)
+```
+
+```{r}
+ICR <- which(WTCPoliceIsICR)
+num.ICR <- length(ICR)
+dummy.events <- data.frame(ICR, ICR,
+                           rep(before.min.time,num.ICR),
+                           rep("is.ICR",num.ICR))
+colnames(dummy.events) <- colnames(events)
+events <- rbind(dummy.events, events)
+```
+
+```{r}
+events <- events[order(events$time),]
+write.csv(events, file="input/WTC_data.csv", row.names = F)
+```
+
+The dataset `WTC_data.csv` is then processed in `eventnet`, and the corresponding configuration file can be found at `eventnet/configuration_WTC.txt`.
+
