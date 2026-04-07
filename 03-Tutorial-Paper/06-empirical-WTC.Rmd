@@ -23,22 +23,22 @@ Specifically:
 source("script/packages.R")
 ```
 
-```{r}
+```{r eval=FALSE}
 load(file="input/WTC.RData")
 ```
 
-```{r}
+```{r eval=FALSE}
 data <- WTCPoliceCalls[,c("source", "recipient", "number")]
 colnames(data) <- c("s1", "r1", "time")
 data$type <- "call"
 ```
 
-```{r}
+```{r eval=FALSE}
 num.actors <- length(WTCPoliceIsICR)
 actors <- 1:num.actors
 ```
 
-```{r}
+```{r eval=FALSE}
 before.min.time <- min(data$time) - 1
 dummy.events <- data.frame(actors, actors,
                            rep(before.min.time,num.actors),
@@ -47,11 +47,11 @@ colnames(dummy.events) <- colnames(data)
 head(dummy.events)
 ```
 
-```{r}
+```{r eval=FALSE}
 events <- rbind(dummy.events, data)
 ```
 
-```{r}
+```{r eval=FALSE}
 ICR <- which(WTCPoliceIsICR)
 num.ICR <- length(ICR)
 dummy.events <- data.frame(ICR, ICR,
@@ -61,10 +61,295 @@ colnames(dummy.events) <- colnames(events)
 events <- rbind(dummy.events, events)
 ```
 
-```{r}
+```{r eval=FALSE}
 events <- events[order(events$time),]
 write.csv(events, file="input/WTC_data.csv", row.names = F)
 ```
 
 The dataset `WTC_data.csv` is then processed in `eventnet`, and the corresponding configuration file can be found at `eventnet/configuration_WTC.txt`.
+
+## Model fitting
+
+```{r}
+data_original <- read.csv("input/WTC_data_FULL.csv")
+data_full <- data_original[,setdiff(colnames(data_original), 
+                                    c("TYPE", 
+                                      "EVENT_INTERVAL_ID", "EVENT", 
+                                      "INTEGER_TIME", "TIME_POINT", 
+                                      "TIME_UNIT", "num.actors"))]
+rm(data_original)
+head(data_full)
+```
+
+```{r}
+clogit_fit_full <- clogit(IS_OBSERVED ~ 
+                          + sender_activity
+                          + receiver_popularity 
+                          + repetition 
+                          + reciprocity
+                          + closure
+                          + is.ICRs 
+                          + is.ICRr
+                          + strata(EVENT_INTERVAL)
+                          , data = data_full)
+s_clogit_fit_full <- summary(clogit_fit_full)
+```
+
+### Results
+
+```{r}
+s_clogit_fit_full
+```
+
+
+```{r}
+names <- c("Sender Activity","Receiver Popularity","Repetition",
+           "Reciprocity", "Closure", "Sender is ICR", "Receiver is ICR")
+
+summary <- as.data.frame(s_clogit_fit_full$coefficients[,c(1:3)])
+summary <- round(summary, 3)
+summary <- cbind(rownames(s_clogit_fit_full$coefficients), summary)
+colnames(summary) <- c("Explanatory Variable",
+                       "Estimate", 
+                       "Exp(Estimate)",
+                       "S.E.(Estimate)")
+rownames(summary) <- NULL
+```
+
+```{r}
+ft <- flextable(summary) %>%
+  set_table_properties(layout = "fixed", width = 1) %>%
+  width(j = c(1), width = 2) %>%      
+  fontsize(size = 10, part = "all")
+save_as_image(ft, path="pictures/empirical/WTC/summary_WTC.png")
+```
+
+## Case-m-control sampling
+
+```{r}
+ensure_non_events <- function(data_sampled, data_full, m = 1, seed = 1234) {
+  
+  set.seed(seed)
+  
+  # Separate events and non-events from sampled data
+  events_sampled <- data_sampled %>% filter(IS_OBSERVED == 1)
+  non_events_sampled <- data_sampled %>% filter(IS_OBSERVED == 0)
+  
+  # Group events by TIME and EVENT_INTERVAL
+  events_grouped <- events_sampled %>%
+    distinct(TIME, EVENT_INTERVAL)
+  
+  # For each event group, check number of available non-events
+  additions <- events_grouped %>%
+    rowwise() %>%
+    do({
+      t <- .$TIME
+      ei <- .$EVENT_INTERVAL
+      
+      # Existing non-events for this (TIME, EVENT_INTERVAL)
+      current_non_events <- non_events_sampled %>%
+        filter(TIME == t, EVENT_INTERVAL == ei)
+      
+      n_missing <- m - nrow(current_non_events)
+      
+      if (n_missing > 0) {
+        # Get candidates from full data
+        candidates <- data_full %>%
+          filter(IS_OBSERVED == 0, TIME == t, EVENT_INTERVAL == ei)
+        
+        # Sample min(n_missing, number of available candidates)
+        n_to_sample <- min(n_missing, nrow(candidates))
+        
+        if (n_to_sample > 0) {
+          sampled <- candidates %>% sample_n(n_to_sample)
+          sampled
+        } else {
+          tibble()  # no candidates available
+        }
+      } else {
+        tibble()  # no missing non-events
+      }
+    }) %>%
+    ungroup()
+  
+  # Combine original sampled data with additions
+  data_fixed <- bind_rows(data_sampled, additions)
+  
+  return(data_fixed)
+}
+```
+
+```{r}
+sum(data_full$IS_OBSERVE==1)
+nrow(data_full)/480
+37*37 - 37
+```
+
+### m = 1
+
+```{r}
+data_original <- read.csv("input/WTC_data_NCC_1.csv")
+data_sampled_1 <- data_original[,setdiff(colnames(data_original), 
+                                    c("TYPE", "EVENT_INTERVAL_ID", "EVENT", 
+                                      "INTEGER_TIME", "TIME_POINT", 
+                                      "TIME_UNIT", "num.actors"))]
+```
+
+```{r}
+sum(data_sampled_1$IS_OBSERVED==0)
+sum(data_sampled_1$IS_OBSERVED==1)
+```
+
+
+```{r}
+data_sampled_1 <- ensure_non_events(data_sampled_1, data_full, 
+                                    m = 1, seed = 1234)
+```
+
+```{r}
+sum(data_sampled_1$IS_OBSERVED==0)
+sum(data_sampled_1$IS_OBSERVED==1)
+```
+
+```{r}
+rm(data_original)
+```
+
+```{r}
+clogit_fit_m1 <- clogit(IS_OBSERVED ~ 
+                            + sender_activity
+                          + receiver_popularity 
+                          + repetition 
+                          + reciprocity
+                          + closure
+                          + is.ICRs 
+                          + is.ICRr
+                          + strata(EVENT_INTERVAL)
+                          , data = data_sampled_1)
+s_clogit_fit_m1 <- summary(clogit_fit_m1)
+s_clogit_fit_m1
+```
+
+### m = 5
+
+```{r}
+data_original <- read.csv("input/WTC_data_NCC_5.csv")
+data_sampled_5 <- data_original[,setdiff(colnames(data_original), 
+                                         c("TYPE", "EVENT_INTERVAL_ID", "EVENT", 
+                                           "INTEGER_TIME", "TIME_POINT", 
+                                           "TIME_UNIT", "num.actors"))]
+rm(data_original)
+```
+
+```{r}
+sum(data_sampled_5$IS_OBSERVED==0)
+sum(data_sampled_5$IS_OBSERVED==1) * 5
+```
+
+```{r}
+data_sampled_5 <- ensure_non_events(data_sampled_5, data_full, 
+                                    m = 5, seed = 1)
+```
+
+```{r}
+sum(data_sampled_5$IS_OBSERVED==0)
+sum(data_sampled_5$IS_OBSERVED==1) * 5
+```
+
+```{r}
+rm(data_original)
+```
+
+```{r}
+clogit_fit_m5 <- clogit(IS_OBSERVED ~ 
+                          + sender_activity
+                        + receiver_popularity 
+                        + repetition 
+                        + reciprocity
+                        + closure
+                        + is.ICRs 
+                        + is.ICRr
+                        + strata(EVENT_INTERVAL)
+                        , data = data_sampled_5)
+s_clogit_fit_m5 <- summary(clogit_fit_m5)
+s_clogit_fit_m5
+```
+
+### m = 20
+
+```{r}
+data_original <- read.csv("input/WTC_data_NCC_20.csv")
+data_sampled_20 <- data_original[,setdiff(colnames(data_original), 
+                                         c("TYPE", "EVENT_INTERVAL_ID", "EVENT", 
+                                           "INTEGER_TIME", "TIME_POINT", 
+                                           "TIME_UNIT", "num.actors"))]
+```
+
+```{r}
+sum(data_sampled_20$IS_OBSERVED==0)
+sum(data_sampled_20$IS_OBSERVED==1) * 20
+```
+
+```{r}
+data_sampled_20 <- ensure_non_events(data_sampled_5, data_full, 
+                                    m = 20, seed = 1234)
+```
+
+```{r}
+sum(data_sampled_20$IS_OBSERVED==0)
+sum(data_sampled_20$IS_OBSERVED==1) * 20
+```
+
+```{r}
+clogit_fit_m20 <- clogit(IS_OBSERVED ~ 
+                          + sender_activity
+                        + receiver_popularity 
+                        + repetition 
+                        + reciprocity
+                        + closure
+                        + is.ICRs 
+                        + is.ICRr
+                        + strata(EVENT_INTERVAL)
+                        , data = data_sampled_20)
+s_clogit_fit_m20 <- summary(clogit_fit_m20)
+s_clogit_fit_m20
+```
+
+### Results
+
+```{r}
+# Extract coefficients
+coef_full <- coefficients(clogit_fit_full)
+coef_m20  <- coefficients(clogit_fit_m20)
+coef_m5   <- coefficients(clogit_fit_m5)
+coef_m1   <- coefficients(clogit_fit_m1)
+
+# Extract standard errors
+se_full <- s_clogit_fit_full$coefficients[,3]
+se_m20  <- s_clogit_fit_m20$coefficients[,3]
+se_m5   <- s_clogit_fit_m5$coefficients[,3]
+se_m1   <- s_clogit_fit_m1$coefficients[,3]
+
+# Variable names
+variables <- names(coef_full)
+
+# Create table with formatted coefficient (SE)
+results_table <- data.frame(
+  Variable = variables,
+  `Full Model` = sprintf("%.3f (%.3f)", coef_full, se_full),
+  `m20 Model`  = sprintf("%.3f (%.3f)", coef_m20, se_m20),
+  `m5 Model`   = sprintf("%.3f (%.3f)", coef_m5, se_m5),
+  `m1 Model`   = sprintf("%.3f (%.3f)", coef_m1, se_m1),
+  stringsAsFactors = FALSE
+)
+```
+
+```{r}
+latex_table <- xtable(results_table, 
+                      caption = "Coefficients and Standard Errors from Conditional Logistic Regression Models", 
+                      label = "tab:clogit_results", 
+                      align = c("l", "l", "c", "c", "c", "c"))
+print(latex_table, include.rownames = FALSE, 
+      sanitize.text.function = identity)
+```
 

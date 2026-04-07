@@ -51,4 +51,13 @@
   <observation name="FULL" type="DEFAULT_DYADIC_OBS" exclude.loops="true" source.is.non.zero.on.attr="at_risk" target.is.non.zero.on.attr="at_risk">
     <consider.event.type name="call"/>
   </observation>
+  <observation name="NCC_1" type="DEFAULT_DYADIC_OBS" exclude.loops="true" apply.case.control.sampling="true" number.of.non.events="1" source.is.non.zero.on.attr="at_risk" target.is.non.zero.on.attr="at_risk">
+    <consider.event.type name="call"/>
+  </observation>
+  <observation name="NCC_5" type="DEFAULT_DYADIC_OBS" exclude.loops="true" apply.case.control.sampling="true" number.of.non.events="5" source.is.non.zero.on.attr="at_risk" target.is.non.zero.on.attr="at_risk">
+    <consider.event.type name="call"/>
+  </observation>
+  <observation name="NCC_20" type="DEFAULT_DYADIC_OBS" exclude.loops="true" apply.case.control.sampling="true" number.of.non.events="20" source.is.non.zero.on.attr="at_risk" target.is.non.zero.on.attr="at_risk">
+    <consider.event.type name="call"/>
+  </observation>
 </eventnet.configuration>
