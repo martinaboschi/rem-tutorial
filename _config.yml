@@ -8,7 +8,7 @@ header_pages:
 exclude:
   - 01-Introduction-to-REM/02-Alien-Species-Invasions/Intro-REM.Rmd
   - 02-All-you-need-to-know-RHEM/01-Les-Miserables/AYNTK-RHEM-Les-Miserables.Rmd
-  - 02-All-you-need-to-know-RHEM/02-Scientific-Innovation/AYNTK-RHEM-Les-Miserables.Rmd
+  - 02-All-you-need-to-know-RHEM/02-Scientific-Innovation/AYNTK-RHEM-Scientific-Innovation.Rmd
   
 kramdown:
   math_engine: mathjax
