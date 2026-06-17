@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Practical 1: Simulating Relational Events | REM Tutorials</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Practical 1: Simulating Relational Events" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Tutorials on Relational (Hyper) Event Modeling" />
+<meta name="twitter:description" property="og:description" content="Tutorials on Relational (Hyper) Event Modeling" />
+<link rel="canonical" href="http://localhost:4000/01-Introduction-to-REM/01-Simulating-REM-Data/" />
+<meta property="og:url" content="http://localhost:4000/01-Introduction-to-REM/01-Simulating-REM-Data/" />
+<meta property="og:site_name" content="REM Tutorials" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Practical 1: Simulating Relational Events" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Tutorials on Relational (Hyper) Event Modeling","headline":"Practical 1: Simulating Relational Events","url":"http://localhost:4000/01-Introduction-to-REM/01-Simulating-REM-Data/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="REM Tutorials" /></head>
+<link rel="stylesheet" href="/assets/css/custom.css">
+  <body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">REM Tutorials</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <h1 id="practical-1-simulating-relational-events">Practical 1: Simulating Relational Events</h1>
+
+<div class="download-box">
+  <strong>📥 Download files</strong>
+  <ul>
+    <li><a href="Simulating-REM-Data.R" download="">Simulating-REM-Data.R</a> — R script</li>
+    <li><a href="Simulating-REM-Data.Rmd" download=""> Simulating-REM-Data.Rmd</a> — R Markdown source</li>
+  </ul>
+</div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># remotes::install_github("franciscorichter/amore")
+library(amore)
+library(knitr)
+</code></pre></div></div>
+
+<h2 id="1">1.</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set.seed(1)
+raw_data_m1 &lt;- simulate_relational_events(
+  n_events           = 1000,
+  senders            = paste0("a", 1:20),
+  receivers          = paste0("a", 1:20),
+  baseline_rate      = 1,
+  n_controls         = 1,
+  endogenous_stats   = "reciprocity_count", 
+  endogenous_effects = c(reciprocity_count = 0.6)
+)
+
+head(raw_data_m1,20)
+</code></pre></div></div>
+
+<pre><code>##    stratum event sender receiver        time reciprocity_count
+## 1        1     1     a3       a8 0.001987321                 0
+## 2        1     0    a17       a9 0.001987321                 0
+## 3        2     1    a20      a18 0.002354409                 0
+## 4        2     0    a14      a16 0.002354409                 0
+## 5        3     1    a11      a20 0.003031029                 0
+## 6        3     0    a17      a10 0.003031029                 0
+## 7        4     1     a2      a14 0.007734052                 0
+## 8        4     0    a10       a5 0.007734052                 0
+## 9        5     1    a14       a5 0.009142085                 0
+## 10       5     0     a8      a18 0.009142085                 0
+## 11       6     1    a16      a18 0.010586697                 0
+## 12       6     0     a3       a5 0.010586697                 0
+## 13       7     1     a5       a3 0.011374750                 0
+## 14       7     0    a12       a6 0.011374750                 0
+## 15       8     1    a20      a11 0.014583015                 1
+## 16       8     0    a14       a9 0.014583015                 0
+## 17       9     1     a1      a10 0.017310914                 0
+## 18       9     0    a14       a5 0.017310914                 0
+## 19      10     1    a15      a16 0.022153557                 0
+## 20      10     0     a4      a16 0.022153557                 0
+</code></pre>
+
+<h2 id="2-construct-datasets-for-two-inference-procedures">2. Construct datasets for two inference procedures</h2>
+
+<h3 id="21-case-7-control-for-inference-via-conditional-logistic-regression">2.1. Case-7-control for inference via conditional logistic regression</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set.seed(1)
+raw_data_m7 &lt;- simulate_relational_events(
+  n_events           = 1000,
+  senders            = paste0("a", 1:20),
+  receivers          = paste0("a", 1:20),
+  baseline_rate      = 1,
+  n_controls         = 7,
+  endogenous_stats   = "reciprocity_count", 
+  endogenous_effects = c(reciprocity_count = 0.6),
+)
+
+head(raw_data_m7,10)
+</code></pre></div></div>
+
+<pre><code>##    stratum event sender receiver        time reciprocity_count
+## 1        1     1     a3       a8 0.001987321                 0
+## 2        1     0    a17       a9 0.001987321                 0
+## 3        1     0    a16       a7 0.001987321                 0
+## 4        1     0    a15      a16 0.001987321                 0
+## 5        1     0     a5      a15 0.001987321                 0
+## 6        1     0    a18      a10 0.001987321                 0
+## 7        1     0     a4      a17 0.001987321                 0
+## 8        1     0    a10       a5 0.001987321                 0
+## 9        2     1    a15       a5 0.003404473                 0
+## 10       2     0     a8      a18 0.003404473                 0
+</code></pre>
+
+<h3 id="22-case-1-control-dataset-in-wide-format-for-inference-via-degenerate-logistic-regression">2.2. Case-1-control dataset in “wide” format for inference via degenerate logistic regression</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wide_data_m1 &lt;- widen_case_control(raw_data_m1, case = "event", stratum= "stratum")
+head(wide_data_m1)
+</code></pre></div></div>
+
+<pre><code>##   stratum sender_ev sender_nv receiver_ev receiver_nv     time_ev     time_nv
+## 1       1        a3       a17          a8          a9 0.001987321 0.001987321
+## 2      10       a15        a4         a16         a16 0.022153557 0.022153557
+## 3     100        a3        a2         a15          a1 0.207398477 0.207398477
+## 4    1000       a18        a8         a20          a2 0.565565424 0.565565424
+## 5     101        a2       a12         a17         a19 0.210725053 0.210725053
+## 6     102       a11       a19         a13         a11 0.212042188 0.212042188
+##   d_time reciprocity_count_ev reciprocity_count_nv d_reciprocity_count
+## 1      0                    0                    0                   0
+## 2      0                    0                    0                   0
+## 3      0                    1                    0                   1
+## 4      0                  336                    2                 334
+## 5      0                    0                    0                   0
+## 6      0                    0                    1                  -1
+</code></pre>
+
+<h2 id="3-inference-procedures">3. Inference procedures</h2>
+
+<h3 id="31-conditional-logistic-regression">3.1. Conditional logistic regression</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fit_clogit &lt;- rem(event ~ reciprocity_count, data = raw_data_m7, method = "clogit")
+summary(fit_clogit)
+</code></pre></div></div>
+
+<pre><code>## Call:
+## coxph(formula = Surv(rep(1, 8000L), .case) ~ reciprocity_count + 
+##     strata(.strat), data = cl, method = "exact")
+## 
+##   n= 8000, number of events= 1000 
+## 
+##                      coef exp(coef) se(coef)     z Pr(&gt;|z|)    
+## reciprocity_count 0.66848   1.95126  0.08316 8.039 9.07e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                   exp(coef) exp(-coef) lower .95 upper .95
+## reciprocity_count     1.951     0.5125     1.658     2.297
+## 
+## Concordance= 0.898  (se = 0.066 )
+## Likelihood ratio test= 517.3  on 1 df,   p=&lt;2e-16
+## Wald test            = 64.62  on 1 df,   p=9e-16
+## Score (logrank) test = 798.1  on 1 df,   p=&lt;2e-16
+</code></pre>
+
+<h3 id="32-degenerate-logistic-regression">3.2. Degenerate logistic regression</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fit_glm &lt;- rem(~ reciprocity_count, data = wide_data_m1, method = "gam")
+summary(fit_glm)
+</code></pre></div></div>
+
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## one ~ -1 + reciprocity_count
+## 
+## Parametric coefficients:
+##                   Estimate Std. Error z value Pr(&gt;|z|)    
+## reciprocity_count  0.54154    0.09815   5.518 3.44e-08 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## 
+## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
+## UBRE = -0.55893  Scale est. = 1         n = 1000
+</code></pre>
+
+<h2 id="4-replicate-the-simulation-study-100-times">4. Replicate the simulation study 100 times</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># parameters
+N_SIM        &lt;- 100
+N_EVENTS     &lt;- 1000
+TRUE_BETA    &lt;- 0.6        
+SENDERS      &lt;- paste0("a", 1:20)
+RECEIVERS    &lt;- paste0("a", 1:20)
+
+# storage
+coefs &lt;- data.frame(
+  glm_1   = numeric(N_SIM),   # degenerate logistic, 1 control
+  clogit_7  = numeric(N_SIM), # conditional logit,   7 controls
+  clogit_20 = numeric(N_SIM)  # conditional logit,  20 controls
+)
+
+for (i in seq_len(N_SIM)) {
+  
+  set.seed(i)
+  
+  # case-1-control dataset
+  d1 &lt;- simulate_relational_events(
+    n_events           = N_EVENTS,
+    senders            = SENDERS,
+    receivers          = RECEIVERS,
+    baseline_rate      = 1,
+    n_controls         = 1,
+    endogenous_stats   = "reciprocity_count", 
+    endogenous_effects = c(reciprocity_count = TRUE_BETA),
+  )
+  
+  # fit degenerate logistic regression
+  wide_d1 &lt;- widen_case_control(d1, case = "event", stratum = "stratum")
+  fit_glm &lt;- rem(~ reciprocity_count, data = wide_d1, method = "gam")
+  coefs$glm_1[i] &lt;- coef(fit_glm)[["reciprocity_count"]]
+  
+  
+  # case-7-control dataset
+  d7 &lt;- simulate_relational_events(
+    n_events           = N_EVENTS,
+    senders            = SENDERS,
+    receivers          = RECEIVERS,
+    baseline_rate      = 1,
+    n_controls         = 7,
+    endogenous_stats   = "reciprocity_count", 
+    endogenous_effects = c(reciprocity_count = TRUE_BETA)
+  )
+  
+  fit_clogit_7 &lt;- rem(event ~ reciprocity_count, data = d7, method = "clogit")
+  coefs$clogit_7[i] &lt;- coef(fit_clogit_7)[["reciprocity_count"]]
+  
+  # case-20-control dataset
+  d20 &lt;- simulate_relational_events(
+    n_events           = N_EVENTS,
+    senders            = SENDERS,
+    receivers          = RECEIVERS,
+    baseline_rate      = 1,
+    n_controls         = 20,
+    endogenous_stats   = "reciprocity_count", 
+    endogenous_effects = c(reciprocity_count = TRUE_BETA),
+  )
+  
+  fit_clogit_20 &lt;- rem(event ~ reciprocity_count, data = d20, method = "clogit")
+  coefs$clogit_20[i] &lt;- coef(fit_clogit_20)[["reciprocity_count"]]
+  
+  if (i %% 10 == 0) message(sprintf("  Completed %d / %d replications", i, N_SIM))
+  
+  
+}
+
+##   Completed 10 / 100 replications
+
+##   Completed 20 / 100 replications
+
+##   Completed 30 / 100 replications
+
+##   Completed 40 / 100 replications
+
+##   Completed 50 / 100 replications
+
+##   Completed 60 / 100 replications
+
+##   Completed 70 / 100 replications
+
+##   Completed 80 / 100 replications
+
+##   Completed 90 / 100 replications
+
+##   Completed 100 / 100 replications
+
+coefs_long &lt;- stack(coefs)
+levels(coefs_long$ind) &lt;- c(
+  "Logistic\n(1 control)",
+  "Cond. logit\n(7 controls)",
+  "Cond. logit\n(20 controls)"
+)
+cols &lt;- c("#4E79A7", "#F28E2B", "#59A14F")
+
+boxplot(
+  values ~ ind,
+  data       = coefs_long,
+  col        = cols,
+  border     = darken &lt;- adjustcolor(cols, red.f = 0.6, green.f = 0.6, blue.f = 0.6),
+  outcol     = cols,
+  outpch     = 16,
+  cex        = 0.6,
+  las        = 1,
+  xlab       = "",
+  ylab       = expression(hat(beta)),
+  main       = expression(
+    "Estimated "*beta*" for reciprocity_count across 100 replications"
+  ),
+  cex.main   = 1.0,
+  cex.lab    = 0.95,
+  frame.plot = FALSE
+)
+abline(h = TRUE_BETA, lty = 2, lwd = 1.8, col = "black")
+</code></pre></div></div>
+
+<p><img src="Simulating-REM-Data_files/figure-markdown_strict/simulation_varying_m-1.png" alt="" /></p>
+
+<h2 id="references">References</h2>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">REM Tutorials</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">REM Tutorials</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Tutorials on Relational (Hyper) Event Modeling</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script type="text/javascript" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+  </body>
+</html>

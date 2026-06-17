@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Practical 2: Alien Species Invasions | REM Tutorials</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Practical 2: Alien Species Invasions" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Tutorials on Relational (Hyper) Event Modeling" />
+<meta name="twitter:description" property="og:description" content="Tutorials on Relational (Hyper) Event Modeling" />
+<link rel="canonical" href="http://localhost:4000/01-Introduction-to-REM/02-Alien-Species-Invasions/" />
+<meta property="og:url" content="http://localhost:4000/01-Introduction-to-REM/02-Alien-Species-Invasions/" />
+<meta property="og:site_name" content="REM Tutorials" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Practical 2: Alien Species Invasions" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Tutorials on Relational (Hyper) Event Modeling","headline":"Practical 2: Alien Species Invasions","url":"http://localhost:4000/01-Introduction-to-REM/02-Alien-Species-Invasions/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="REM Tutorials" /></head>
+<link rel="stylesheet" href="/assets/css/custom.css">
+  <body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">REM Tutorials</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <h1 id="practical-1-simulating-relational-events">Practical 1: Simulating Relational Events</h1>
+
+<p><strong>Instructions.</strong>
+You may follow the tutorial directly on this page. Otherwise, if you wish to run things locally and play around with the code, you may download the  <code class="language-plaintext highlighter-rouge">R</code>/<code class="language-plaintext highlighter-rouge">Rmd</code> files below:</p>
+
+<div class="download-box">
+  <strong>📥 Download files</strong>
+  <ul>
+    <li><a href="alien_species_amore.R" download="">Alien-Species-Invasion.R</a> — R script</li>
+    <li><a href="alien_species_amore.Rmd" download=""> Alien-Species-Invasion.Rmd</a> — R Markdown source</li>
+
+  </ul>
+</div>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In this practical, we will show how to use relational event models
+beyond linear effect specification, in the context of the first time
+invasion of species into regions over time. (Boschi et al., 2025). We
+will show how to fit models with time-varying, non-linear and random
+effects to gain insight on how climatological, economical and
+geographical aspect might explain the dynamics of this ecological
+process.</p>
+
+<hr />
+
+<h2 id="1-package-requirements-and-setup">1. Package requirements and setup</h2>
+
+<p>If you are running this tutorial locally, make sure to uncomment the
+<code class="language-plaintext highlighter-rouge">remotes::install_github command</code> below to install the package.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># install.packages("remotes")
+# install.packages("pbapply")
+# remotes::install_github("franciscorichter/amore")
+
+library(amore)
+library(pbapply)
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="2-data-uploading-inspection-and-cleaning">2. Data uploading, inspection and cleaning</h2>
+
+<p>Load the input data <code class="language-plaintext highlighter-rouge">input00.RData</code> located in the <code class="language-plaintext highlighter-rouge">01-Data/01-Inputs</code>
+folder. Inspect the original data contained in . Have a look at the
+following columns of the object <code class="language-plaintext highlighter-rouge">FR</code>: <code class="language-plaintext highlighter-rouge">LifeForm</code>, <code class="language-plaintext highlighter-rouge">Taxon</code>, <code class="language-plaintext highlighter-rouge">Region</code>,
+<code class="language-plaintext highlighter-rouge">FirstRecord</code>, <code class="language-plaintext highlighter-rouge">Source</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>load(file="01-Data/01-Inputs/input00.RData")
+
+head(FR[,c("LifeForm", "Taxon",
+           "Region", "FirstRecord",
+           "Source")])
+</code></pre></div></div>
+
+<pre><code>##   LifeForm                     Taxon           Region FirstRecord
+## 1    Algae    Acanthophora muscoides           Turkey        1986
+## 2    Algae Acanthophora nayadiformis           Cyprus        1997
+## 3    Algae Acanthophora nayadiformis           Turkey        1970
+## 4    Algae    Acanthophora spicifera Hawaiian Islands        1952
+## 5    Algae    Acetabularia caliculus           Israel        1943
+## 6    Algae    Acetabularia caliculus            Spain        1957
+##                     Source
+## 1      Cinar et al. (2005)
+## 2                   DAISIE
+## 3      Cinar et al. (2005)
+## 4 Carlton &amp; Eldrege (2009)
+## 5                   DAISIE
+## 6                   DAISIE
+</code></pre>
+
+<p>We firstly show how data arrives from the original source (Seebens et
+al., 2018). These data involve 17 life forms. For each record, we are
+able to identify the <strong>species</strong> (<code class="language-plaintext highlighter-rouge">Taxon</code>) of a certain <strong>lifeform</strong>
+(<code class="language-plaintext highlighter-rouge">Lifeform</code>) that is invading a <strong>region</strong> (<code class="language-plaintext highlighter-rouge">Region</code>) in which it was
+not native and was not seen before the reported <strong>year</strong>
+(<code class="language-plaintext highlighter-rouge">FirstRecord</code>). The Alien Species First Records Database collects
+several sources: the source of each FR is reported in the column
+<code class="language-plaintext highlighter-rouge">Source</code>.</p>
+
+<p>A <strong>first record</strong> (FR) is the year <em>t</em> when a (non-native) species <em>s</em>
+first invades region <em>r</em>. The following dataset, <code class="language-plaintext highlighter-rouge">FR</code>, already contains
+information we need to interpret first records as <em>relational events</em>
+(<em>s</em>, <em>r</em>, <em>t</em>).</p>
+
+<p>Particularly, the <em>sender set</em> <em>V</em><sup><em>S</em></sup> is composed of the
+unique recorded species, while regions of the world (countries and
+islands) form the <em>receiver set</em> <em>V</em><sup><em>R</em></sup>. The <em>time window</em>
+spans from <em>t</em><sub>0</sub> = 1880 to <em>T</em> = 2005.</p>
+
+<p>A species’ <strong>native range</strong> (NR) is the collection of areas where it is
+indigenous. Slightly more liberally, we refer to native range as the set
+of sites where a species was already present before the start of the
+analysis period, which in this context is 1880. The object <code class="language-plaintext highlighter-rouge">native</code>
+contains such information.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>native[sample(1:nrow(native), 10), c("species", "region")]
+</code></pre></div></div>
+
+<pre><code>##                           species        region
+## 1033014          Vespula vulgaris United States
+## 1026455          Curculio conicus         Libya
+## 1032254         Vespula germanica    Luxembourg
+## 1020394            Tomicus erosus          Iran
+## 995806        Anastrepha suspensa         Haiti
+## 1007187     Euwallacea fornicatus         China
+## 1009337     Hypogeococcus pungens       Bolivia
+## 1030550       Solenopsis richteri       Uruguay
+## 1009058             Hylastes ater        Russia
+## 1037757 Xylosandrus crassiusculus      Thailand
+</code></pre>
+
+<p>This information is crucial for the definition of the <em>risk set</em>. If a
+species is native in a region, then such dyad is never at risk of
+occurring ever during our analyzed time window. Additionally, the
+relational event is <strong>non-recurrent</strong>, namely, the event first record,
+for its definition, occurs only once. This also means that the risk set
+is reducing over time: once the event is observed, it cannot be sampled
+anymore as a non-event. Also, if interested in computing <em>endogenous
+covariates</em> (that depend on prior interactions), such information is
+necessary for the events occurring at the beginning (1880).</p>
+
+<p>In this tutorial, in order to make the analysis easy to reproduce, we
+focus on <strong>insects</strong> only. <code class="language-plaintext highlighter-rouge">first_records</code> contains the insect FRs of
+interest.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>head(first_records[,c("year","lf",
+           "species", 
+           "region")])
+</code></pre></div></div>
+
+<pre><code>##       year      lf                species        region
+## 9337  1880 Insects  Adelges nordmannianae   Switzerland
+## 15937 1881 Insects   Pheidole megacephala        France
+## 16225 1884 Insects            Pineus pini   New Zealand
+## 12792 1886 Insects       Eulachnus rileyi United States
+## 14019 1887 Insects     Linepithema humile      Portugal
+## 11797 1889 Insects Ctenarytaina eucalypti   New Zealand
+</code></pre>
+
+<p>We know format the data in a convenient manner for analysis using
+<code class="language-plaintext highlighter-rouge">amore</code> package. We need to make sure that both the data structures for
+the sequence of relational events and the set of dyads not at risk at
+the beginning of the time-window contain a <code class="language-plaintext highlighter-rouge">sender</code> and <code class="language-plaintext highlighter-rouge">receiver</code>
+column.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>event_log &lt;- standardize_event_log(first_records[,c(1,3:4)],
+                                   sender_col = "species",
+                                   receiver_col = "region",
+                                   time_col = "year")
+  
+head(event_log)
+</code></pre></div></div>
+
+<pre><code>##                   sender      receiver time
+## 1  Adelges nordmannianae   Switzerland 1880
+## 2   Pheidole megacephala        France 1881
+## 3            Pineus pini   New Zealand 1884
+## 4       Eulachnus rileyi United States 1886
+## 5     Linepithema humile      Portugal 1887
+## 6 Ctenarytaina eucalypti   New Zealand 1889
+</code></pre>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>native_df&lt;-native[, c("species", "region")]
+colnames(native_df)&lt;-c("sender", "receiver")
+head(native_df)
+</code></pre></div></div>
+
+<pre><code>##                sender    receiver
+## 994830 Adelges piceae      Turkey
+## 994831 Adelges piceae Switzerland
+## 994832 Adelges piceae      Greece
+## 994833 Adelges piceae     Romania
+## 994834 Adelges piceae      Serbia
+## 994835 Adelges piceae     Germany
+</code></pre>
+
+<p>In addition we have information on 2 dyadic attribute, <strong>distance</strong> and
+<strong>trade</strong> between regions, and on a species-level attribute,
+<strong>temperature</strong>.</p>
+
+<p>Regarding climate, <code class="language-plaintext highlighter-rouge">data_temperature</code> contains the names of the
+countries in the first column and the average values of near-surface air
+temperature in the second column (Watanabe et al., 2011).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>head(data_temperature)
+</code></pre></div></div>
+
+<pre><code>##                  X     temp
+## 1           Turkey 12.76058
+## 2           Cyprus 19.20573
+## 3 Hawaiian Islands 23.70886
+## 4           Israel 19.81427
+## 5            Spain 14.10500
+## 6         Bulgaria 13.91744
+</code></pre>
+
+<p>For trade, the source information, derived from Barbieri et al. (2009),
+<code class="language-plaintext highlighter-rouge">data_trade</code> reports trade flows among countries.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>head(data_trade)
+</code></pre></div></div>
+
+<pre><code>##   X donorID recipientID year transfer  FromRegion ToRegion
+## 1 1       1           2 2007        0 Afghanistan  Albania
+## 2 2       1           2 2008        0 Afghanistan  Albania
+## 3 3       1           2 2009        0 Afghanistan  Albania
+## 4 4       1           3 1962        0 Afghanistan  Algeria
+## 5 5       1           3 1963        0 Afghanistan  Algeria
+## 6 6       1           3 1964        0 Afghanistan  Algeria
+</code></pre>
+
+<p>Distance between regions is computed referring to the closest borders
+and consequently is equal to zero for neighbours. Source data for this
+driver consists of the <code class="language-plaintext highlighter-rouge">R</code> package <code class="language-plaintext highlighter-rouge">geosphere</code> (Hijmans et al.,
+2017).<code class="language-plaintext highlighter-rouge">data_distance</code> is a matrix with dimension names referring to the
+regions. The corresponding element in the matrix reports the distance
+between the two.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data_distance[1:3,1:3]
+</code></pre></div></div>
+
+<pre><code>##                       Turkey      Cyprus Hawaiian Islands
+## Turkey               0.00000    95.54336         12894.77
+## Cyprus              95.54336     0.00000         13791.72
+## Hawaiian Islands 12894.76706 13791.71607             0.00
+</code></pre>
+
+<p>We will leverage this information to investigate the effect of
+temperature, trade and distance in the dynamics of species invasion.</p>
+
+<hr />
+
+<h2 id="3-case-control-sampling-from-the-risk-set">3. Case-control sampling from the risk set</h2>
+
+<p>To perform inference by maximizing the <em>sampled partial likelihood</em>
+through the fitting of a <em>degenerate logistic</em> model we need to perform
+<em>case-1-control sampling</em>. In particular, for each observed event, we
+sample uniformly at random from the risk set at the time of the event, a
+<em>non-event</em> dyad.</p>
+
+<p>Given the time granularity, we have that multiple invasions occur the
+same year. In order to address these <em>ties</em>, for each event, we exclude
+from the risk set at that time, all the first records that occurred in
+the same year.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set.seed(1234)
+cc &lt;- sample_non_events(event_log,
+                        n_controls = 1,              # 1 control is default
+                        scope         = "all",
+                        mode          = "two",
+                        risk          = "remove",          # drops past + concurrent
+                        exclude_pairs = native_df[,1:2])   ### excludes native dyads
+
+
+head(cc)
+</code></pre></div></div>
+
+<pre><code>##   stratum event                sender    receiver time
+## 1       1     1 Adelges nordmannianae Switzerland 1880
+## 2       1     0   Aonidomytilus albus      Greece 1880
+## 3       2     1  Pheidole megacephala      France 1881
+## 4       2     0  Epiphyas postvittana      Jordan 1881
+## 5       3     1           Pineus pini New Zealand 1884
+## 6       3     0   Xyleborus glabratus    Slovakia 1884
+</code></pre>
+
+<p>Notice the long format of the case-control dataset: events and
+non-events appear on different rows. In particular each event row
+(<code class="language-plaintext highlighter-rouge">event = 1</code>) is followed by the corresponding sample non-event
+(<code class="language-plaintext highlighter-rouge">event = 0</code>).</p>
+
+<hr />
+
+<h2 id="4-computing-endogenous-covariates-leveraging-exogenous-information">4. Computing endogenous covariates leveraging exogenous information</h2>
+
+<p>We now will combine the exogenous attributes with the relational event
+info and define 3 endogenous covariates, describing aspects of trade,
+distance and temperature that might explain invasion dynamics.</p>
+
+<p><strong>Climate dissimilarity (via temperature).</strong> This covariate, given a
+relational event (and all the relevant information), computes the
+minimum temperature difference between the region involved and the
+previously invaded regions by the considered species. It depends on both
+the sender and the receiver of the event and can therefore be considered
+a <em>dyad-level covariate</em>. It is <em>time-dependent</em> but does not
+incorporate information about internal time. It is <em>endogenous</em>, as it
+relies on the regions previously invaded by the species, but it also
+incorporates exogenous information.</p>
+
+<p><strong>Trade.</strong> In the existing literature, <strong>international trade</strong> has been
+recognized as a key factor in explaining the spread of alien species.
+Here, we consider trade as the yearly commerce between already-invaded
+territories and the involved region. This also is a dyad-level,
+endogenous covariate.</p>
+
+<p><strong>Distance.</strong> In this instance, given a relational event (and all the
+relevant information that is required), we compute the shortest distance
+among the regions in which the species is already present at that time
+and log-transform it.</p>
+
+<p>Notice that the endogenous component is common to all of them and it
+involves <strong>past invaded regions by the considered species</strong>. For the
+invasions occurring in 1880, the past invaded regions are the ones
+included in <code class="language-plaintext highlighter-rouge">native</code> for that species. To make sure the function treats
+it as such we hard-code a <code class="language-plaintext highlighter-rouge">time</code> column for these dyads with value 1879.
+In addition, note that such covariate computation is to be done for both
+events and non-events. For the latter ones, the past information must
+always be only relative the actual observed events.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Invaded regions ####
+native_df&lt;-data.frame(native_df, time = "1879")
+feats &lt;- compute_endogenous_features(cc, stats = "sender_receivers_set",
+                                         history_log = event_log, prior_log = native_df)
+
+## remove current region to avoid zero difference
+feats$invaded&lt;- mapply(setdiff,feats$sender_receivers_set,feats$receiver)
+
+print(feats[1:3,])
+</code></pre></div></div>
+
+<pre><code>##   stratum event                sender    receiver time
+## 1       1     1 Adelges nordmannianae Switzerland 1880
+## 2       1     0   Aonidomytilus albus      Greece 1880
+## 3       2     1  Pheidole megacephala      France 1881
+##                                                                                                                                                                                                                                                                                                                                             sender_receivers_set
+## 1                                                                                                                                                                                                                                                                                                                               Georgia, Turkey, Russia, Germany
+## 2 Grenada, Colombia, British Virgin Islands, Guadeloupe, Jamaica, Haiti, Antigua and Barbuda, Guyana, Cuba, Virgin Islands, US, Saint Vincent and the Grenadines, Honduras, Suriname, Dominica, Martinique, Dominican Republic, Brazil, French Guiana, Argentina, Saint Lucia, Puerto Rico, Saint Kitts and Nevis, Trinidad and Tobago, Montserrat, Peru, Mexico
+## 3                                                                                                                                Guinea, Sao Tome and Principe, Zanzibar Island, Eritrea, Ethiopia, Sudan, Kenya, Nigeria, Sierra Leone, Congo, Democratic Republic of the, Ghana, Angola, Cameroon, Gabon, Senegal, Mozambique, South Africa, Zimbabwe, Madeira
+##                                                                                                                                                                                                                                                                                                                                                          invaded
+## 1                                                                                                                                                                                                                                                                                                                               Georgia, Turkey, Russia, Germany
+## 2 Grenada, Colombia, British Virgin Islands, Guadeloupe, Jamaica, Haiti, Antigua and Barbuda, Guyana, Cuba, Virgin Islands, US, Saint Vincent and the Grenadines, Honduras, Suriname, Dominica, Martinique, Dominican Republic, Brazil, French Guiana, Argentina, Saint Lucia, Puerto Rico, Saint Kitts and Nevis, Trinidad and Tobago, Montserrat, Peru, Mexico
+## 3                                                                                                                                Guinea, Sao Tome and Principe, Zanzibar Island, Eritrea, Ethiopia, Sudan, Kenya, Nigeria, Sierra Leone, Congo, Democratic Republic of the, Ghana, Angola, Cameroon, Gabon, Senegal, Mozambique, South Africa, Zimbabwe, Madeira
+</code></pre>
+
+<p>The following code computes, for each event/non-event, the minimum
+absolute difference between the current region and all past invaded
+regions by the considered species. We refer to it as <strong>climate
+dissimilarity</strong>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Temperature ####
+
+compound_region_map &lt;- list(
+  "USACanada" = c("United States", "Canada")
+)
+
+get_temp &lt;- function(region,compound_areas = compound_region_map) {
+  if (region %in% data_temperature$X) {
+    return(data_temperature[data_temperature$X == region, "temp"][1])
+  }
+  if (region %in% names(compound_areas)) {
+    parts &lt;- compound_region_map[[region]]
+    temps &lt;- data_temperature[data_temperature$X %in% parts, "temp"]
+    if (length(temps) &gt; 0) return(mean(temps, na.rm = TRUE))
+  }
+  return(NA_real_)
+}
+
+dt_value &lt;- mapply(function(invaded_regions, current_region) {
+  
+  if (length(invaded_regions) == 0) return(NA_real_)
+  
+  avg_temp_invaded  &lt;- sapply(invaded_regions, get_temp)
+  avg_temp_interest &lt;- get_temp(current_region)
+  
+  if (is.na(avg_temp_interest) || all(is.na(avg_temp_invaded))) 
+    return(NA_real_)
+  
+  min(abs(avg_temp_invaded - avg_temp_interest), na.rm = TRUE)
+  
+}, feats$invaded, feats$receiver)
+
+feats$temp  &lt;- dt_value
+</code></pre></div></div>
+
+<p>The following code computes the <strong>trade</strong> variable that captures the
+log-transformed sum of the most recent recorded trade flows into a
+region from each previously invaded region. A few notes on data
+pre-processing:</p>
+
+<ul>
+  <li>
+    <p>Negative values of trade are considered equal to 0.</p>
+  </li>
+  <li>
+    <p>When a pair of nations is never mentioned in the source data, the
+trade volume is presumed to be 0, based on the idea that if a value
+is never recorded, it should be negligible.</p>
+  </li>
+  <li>
+    <p>When the pair is mentioned but there is a non-imputed gap at the
+time of interest, the trade flow is evaluated based on the latest
+available year for which information is available.</p>
+  </li>
+  <li>
+    <p>Because trade varies by orders of magnitude, we take a
+log-transformation for the analysis.</p>
+  </li>
+</ul>
+
+<!-- -->
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Trade ####
+
+t &lt;- which(data_trade$transfer &lt; 0)
+data_trade$transfer[t] &lt;- 0
+trade_value &lt;- pbmapply(function(invaded_regions, current_region, y) {
+  trade_funct_new &lt;- function(to_region) {
+    if (length(invaded_regions) == 0) return(0)
+    x &lt;- data_trade[
+      data_trade$FromRegion %in% invaded_regions &amp;
+        data_trade$ToRegion   == to_region &amp;
+        data_trade$year       &lt;= y,
+    ]
+    if (nrow(x) == 0) return(0)
+    most_recent &lt;- aggregate(x$year, list(x$FromRegion), FUN = max)
+    trade_vals &lt;- mapply(function(region, max_year) {
+      x$transfer[x$FromRegion == region &amp; x$year == max_year]
+    }, most_recent[, 1], most_recent[, 2])
+    log(sum(unlist(trade_vals), na.rm = TRUE) + 1)
+  }
+  if (current_region == "USACanada") {
+    mean(c(trade_funct_new("United States"),
+           trade_funct_new("Canada")))
+  } else {
+    trade_funct_new(current_region)
+  }
+}, feats$invaded, feats$receiver, feats$time)
+
+feats$trade&lt;- trade_value
+</code></pre></div></div>
+
+<p>Now we account for the geographic aspect, through <strong>distance</strong>, which is
+compute as the logged minimum geographic distance between the current
+region and any previously invaded region.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Distance ####
+
+distance_value &lt;- pbmapply(function(invaded_regions, current_region, y) {
+  
+  if (length(invaded_regions) == 0) return(NA_real_)
+  
+  distances &lt;- data_distance[current_region, invaded_regions]
+  
+  log(min(distances, na.rm = TRUE) + 1)
+  
+}, feats$invaded, feats$receiver, feats$time)
+
+feats$dist &lt;- distance_value
+</code></pre></div></div>
+
+<p>For fitting the models, it is convenient to transform the case-1-control
+dataset and related covariates, contained in <code class="language-plaintext highlighter-rouge">feats</code> from long-format
+(event on one row and corresponding non-event in the following row) to
+wide-format, in which the event and non-event appear in the same row.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cc_wide &lt;- widen_case_control(feats, case = "event",stratum = "stratum")
+head(cc_wide)
+</code></pre></div></div>
+
+<pre><code>##   stratum                sender_ev                sender_nv      receiver_ev
+## 1       1    Adelges nordmannianae      Aonidomytilus albus      Switzerland
+## 2      10 Simosyrphus grandicornis      Elatobium abietinum Hawaiian Islands
+## 3     100   Phloeomyzus passerinii        Bostrichus micans    United States
+## 4     101   Wasmannia auropunctata      Phlyctinus callosus          Bahamas
+## 5     102       Xyleborus germanus     Epiphyas postvittana          Germany
+## 6     103      Cerataphis lataniae Phylacteophaga froggatti          Germany
+##   receiver_nv time_ev time_nv d_time    temp_ev   temp_nv      d_temp trade_ev
+## 1      Greece    1880    1880      0 0.73696945  1.365423  -0.6284538 3.735030
+## 2     Morocco    1892    1892      0 1.16153585  5.598858  -4.4373218 0.000000
+## 3    Barbados    1950    1950      0 0.56376192 29.418563 -28.8548011 7.193977
+## 4       Aruba    1951    1951      0 0.01698433  7.596145  -7.5791606 2.200866
+## 5      Jordan    1951    1951      0 0.56376192  2.973945  -2.4101828 5.471700
+## 6        Cuba    1952    1952      0 1.54595500  3.482238  -1.9362830 4.827934
+##    trade_nv    d_trade  dist_ev  dist_nv    d_dist
+## 1 0.0000000  3.7350301 0.000000 8.927186 -8.927186
+## 2 0.7883392 -0.7883392 8.910215 6.741775  2.168439
+## 3 0.0000000  7.1939768 8.085052 9.054070 -0.969018
+## 4 0.0000000  2.2008664 5.197644 9.241599 -4.043955
+## 5 0.0000000  5.4717001 6.821410 8.147374 -1.325964
+## 6 0.0000000  4.8279338 0.000000 9.557024 -9.557024
+</code></pre>
+
+<h2 id="4-fitting-models-with-flexible-effects-using-degenerate-logistic-trick">4. Fitting models with flexible effects using degenerate logistic trick</h2>
+
+<p>We will now fit 3 separate models, each of them with one of the 3
+covariates and specify different type of effects.</p>
+
+<p>Let us start with a model that assume a <strong>linear effect on climatic
+dissimilarity</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Fixed linear effect of Temperature ####
+m1_only_temp_l&lt;- rem(~ temp, data = cc_wide, method = "gam")
+summary(m1_only_temp_l)
+</code></pre></div></div>
+
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## one ~ -1 + temp
+## 
+## Parametric coefficients:
+##      Estimate Std. Error z value Pr(&gt;|z|)    
+## temp -0.14915    0.02002  -7.448 9.44e-14 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## 
+## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
+## UBRE = 0.2584  Scale est. = 1         n = 586
+</code></pre>
+
+<p>The coefficient for climatic dissimilarity, which remains constant over
+time, is negative. This indicates that the rate of invasions tends to
+increase if the species has already invaded countries with similar
+temperatures.</p>
+
+<p>Now consider a model with a <strong>time-varying effect for trade</strong>. Note the
+effect changes over time, potentially non-linearly, but it is linear in
+the covariate. <code class="language-plaintext highlighter-rouge">tv()</code> and the specification of <code class="language-plaintext highlighter-rouge">time=...</code> are required
+for such an effect, when using <code class="language-plaintext highlighter-rouge">rem()</code> function.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Time-varying linear effect ####
+m2_only_trade_tv&lt;- rem(~ tv(trade),time = "time_ev", data = cc_wide, method = "gam")
+summary(m2_only_trade_tv)
+</code></pre></div></div>
+
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## one ~ -1 + s(.time, by = trade)
+## 
+## Approximate significance of smooth terms:
+##                  edf Ref.df Chi.sq p-value    
+## s(.time):trade 2.565  2.936  121.3  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
+## UBRE = 0.093859  Scale est. = 1         n = 586
+</code></pre>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>plot(m2_only_trade_tv)
+</code></pre></div></div>
+
+<p><img src="alien_species_amore_files/figure-markdown_strict/tve_trade-1.png" alt="" /></p>
+
+<p>The effect of trade is positive throughout but, appears to be decreasing
+over the time period. So greater trade flows between regions, increase
+the chance of an invasion but such trend used to be strongeri in the
+past. It could be the result of introduction of international norms and
+laws that regulate non-indigenous species importation.</p>
+
+<p>We now fit a model with a <strong>non-linear effect of distance</strong>. Notice the
+<code class="language-plaintext highlighter-rouge">nl()</code> to specify it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Non-linear effect of distance ####
+m3_only_dist_nl&lt;- rem(~ nl(dist), data = cc_wide, method = "gam")
+summary(m3_only_dist_nl)
+</code></pre></div></div>
+
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## one ~ -1 + s(.X_dist, by = .I)
+## 
+## Approximate significance of smooth terms:
+##                edf Ref.df Chi.sq p-value    
+## s(.X_dist):.I 2.67  3.241    153  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
+## UBRE = -0.037494  Scale est. = 1         n = 586
+</code></pre>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>plot(m3_only_dist_nl)
+</code></pre></div></div>
+
+<p><img src="alien_species_amore_files/figure-markdown_strict/nl_dist-1.png" alt="" /></p>
+
+<p>From the estimated non-linear effect, which presents an overall
+descreasing trend, we have that the greater the distance between 2
+countries the less likely it is for species to invade from one to other.</p>
+
+<p>We now consider a model with a <strong>sender-level random intercept</strong>. The
+purpose of random effects is to account for node/dyad-level
+heterogeneity. In this case, the assumption is that not all species are
+the same, in the sense that some might have a tendency to invade more
+than others. Such a random intercept accounts for that and is specified
+in the code using <code class="language-plaintext highlighter-rouge">re()</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>m4_only_sender_re&lt;- rem(~ re(sender), data = cc_wide, method = "gam")
+summary(m4_only_sender_re)
+</code></pre></div></div>
+
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## one ~ -1 + s(.RE_sender, by = .I, bs = "re")
+## 
+## Approximate significance of smooth terms:
+##                    edf Ref.df Chi.sq p-value    
+## s(.RE_sender):.I 66.17    113  187.7  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
+## UBRE = 0.090173  Scale est. = 1         n = 586
+</code></pre>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>re.species &lt;- coefficients(m4_only_sender_re)
+
+#### rem with re() effect specification fits a random intercept based on the specified group var
+#### it handles factor encoding internally which renders used of output less intuitive.
+#### the following replicates the mapping from group var format to factor in order to print results in the original format
+ev &lt;- cc_wide[["sender_ev"]]
+nv &lt;- cc_wide[["sender_nv"]]
+fmat &lt;- factor(c(as.character(ev), as.character(nv))) # Replicate what rem() does internally
+names(re.species) &lt;- levels(fmat)  # The mapping: index 1 = levels(fmat)[1], index 2 = levels(fmat)[2], etc.
+</code></pre></div></div>
+
+<p>The 5 most and less invasive species:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>print(sort(re.species, decreasing = TRUE)[1:5])
+</code></pre></div></div>
+
+<pre><code>## Frankliniella occidentalis        Bactrocera invadens 
+##                   2.274299                   1.639043 
+##   Maconellicoccus hirsutus            Cinara cupressi 
+##                   1.580303                   1.572862 
+##         Linepithema humile 
+##                   1.412004
+</code></pre>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>print(sort(re.species)[1:5])
+</code></pre></div></div>
+
+<pre><code>##         Curculio conicus    Euwallacea fornicatus      Aonidomytilus albus 
+##                -1.216330                -1.215159                -1.115053 
+## Phylacteophaga froggatti    Xylosandrus compactus 
+##                -1.111348                -1.078661
+</code></pre>
+
+<p>We conclude this section by fitting a model with all 4 effects combined
+and perform model comparison using AIC.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Full model ####
+m5_full &lt;- rem(~ temp + 
+                 tv(trade) + 
+                 nl(dist) +
+                 re(sender), time = "time_ev", data = cc_wide, method = "gam")
+
+aic_table &lt;- data.frame(
+  model     = c("dt_only", "tr_only", "d_only", "sp_only", "complete"),
+  AIC       = c(AIC(m1_only_temp_l), AIC(m2_only_trade_tv), AIC(m3_only_dist_nl),
+                AIC(m4_only_sender_re), AIC(m5_full))
+)
+aic_table &lt;- aic_table[order(aic_table$AIC), ]
+print(aic_table)
+</code></pre></div></div>
+
+<pre><code>##      model      AIC
+## 5 complete 443.2659
+## 3   d_only 564.0287
+## 4  sp_only 638.8412
+## 2  tr_only 641.0017
+## 1  dt_only 737.4233
+</code></pre>
+
+<p>Among the 5 fitted models, the complete one has better predictive
+performance.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li>
+    <p>Barbieri, K., Keshk, O. M. G., &amp; Pollins, B. M. (2009). Trading data: Evaluating our assumptions and coding rules. Conflict Management and Peace Science, 26(5), 471–491. https://doi.org/10.1177/0738894209343887</p>
+  </li>
+  <li>
+    <p>Boschi, M., Juozaitienė, R., &amp; Wit, E. C. (2026). Mixed additive modelling of global alien species co-invasions of plants and insects. Journal of the Royal Statistical Society Series C: Applied Statistics, 75(1), 57–78. https://doi.org/10.1093/jrsssc/qlaf034</p>
+  </li>
+  <li>
+    <p>Hijmans, R. J., Karney, C., Williams, E., &amp; Vennes, C. (2017). geosphere: Spherical trigonometry (R package version 1.5-7). CRAN. https://cran.r-project.org/web/packages/geosphere/index.html</p>
+  </li>
+  <li>
+    <p>Juozaitienė, R., Seebens, H., Latombe, G., Essl, F., &amp; Wit, E. C. (2023). Analysing ecological dynamics with relational event models: The case of biological invasions. Diversity &amp; Distributions, 29(10), 1208–1225. https://doi.org/10.1111/ddi.13752</p>
+  </li>
+  <li>
+    <p>Pyšek, P., Hulme, P. E., Simberloff, D., Bacher, S., Blackburn, T. M., Carlton, J. T., Dawson, W., Essl, F., Foxcroft, L. C., &amp; Genovesi, P. (2020). Scientists’ warning on invasive alien species. Biological Reviews, 95(6), 1511–1534. https://doi.org/10.1111/brv.12627</p>
+  </li>
+  <li>
+    <p>Seebens, H., Blackburn, T. M., Dyer, E. E., Genovesi, P., Hulme, P. E., Jeschke, J. M., Pagad, S., Pyšek, P., van Kleunen, M., Winter, M., Ansong, M., Arianoutsou, M., Bacher, S., Blasius, B., Brockerhoff, E. G., Brundu, G., Capinha, C., Causton, C. E., Celesti-Grapow, L., … Essl, F. (2018). Global rise in emerging alien species results from increased accessibility of new source pools. Proceedings of the National Academy of Sciences, 115(10), E2264–E2273. https://doi.org/10.1073/pnas.1719429115</p>
+  </li>
+  <li>
+    <p>Watanabe, S., Hajima, T., Sudo, K., Nagashima, T., Takemura, T., Okajima, H., Nozawa, T., Kawase, H., Abe, M., Yokohata, T., Ise, T., Sato, H., Kato, E., Takata, K., Emori, S., &amp; Kawamiya, M. (2011). MIROC-ESM 2010: Model description and basic results of CMIP5-20c3m experiments. Geoscientific Model Development, 4(4), 845–872. https://doi.org/10.5194/gmd-4-845-2011</p>
+  </li>
+</ul>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">REM Tutorials</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">REM Tutorials</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Tutorials on Relational (Hyper) Event Modeling</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script type="text/javascript" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+  </body>
+</html>
