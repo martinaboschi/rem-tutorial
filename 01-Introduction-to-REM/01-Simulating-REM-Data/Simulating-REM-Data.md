@@ -238,6 +238,13 @@ summary(fit_clogit)
 ## Score (logrank) test = 798.1  on 1 df,   p=<2e-16
 </code></pre>
 
+**Interpretation:** the estimated coefficient for `reciprocity_count` is
+0.669 and is highly significant. This means that the rate is multiplied
+by $\exp(0.669) \approx 1.95$; that is, a dyad with one prior
+reciprocated interaction is roughly twice as likely to interact next
+compared to a dyad with none. This was expected since the true value
+employed in simulation was 0.6.
+
 ### 3.2. Case-1-control partial likelihood via Degenerate logistic regression
 
 When considering only one non-event per event (\[Theoretical
@@ -276,94 +283,165 @@ summary(fit_glm)
 ## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
 ## UBRE = -0.55893  Scale est. = 1         n = 1000
 </code></pre>
-<!-- ## 4. Replicate the simulation study 100 times -->
-<!-- ```{r} -->
-<!-- # parameters -->
-<!-- N_SIM        <- 100 -->
-<!-- N_EVENTS     <- 1000 -->
-<!-- TRUE_BETA    <- 0.6         -->
-<!-- SENDERS      <- paste0("a", 1:20) -->
-<!-- RECEIVERS    <- paste0("a", 1:20) -->
-<!-- ``` -->
-<!-- ```{r} -->
-<!-- # storage -->
-<!-- coefs <- data.frame( -->
-<!--   glm_1   = numeric(N_SIM),   # degenerate logistic, 1 control -->
-<!--   clogit_7  = numeric(N_SIM), # conditional logit,   7 controls -->
-<!--   clogit_20 = numeric(N_SIM)  # conditional logit,  20 controls -->
-<!-- ) -->
-<!-- ``` -->
-<!-- ```{r} -->
-<!-- for (i in seq_len(N_SIM)) { -->
-<!--   set.seed(i) -->
-<!--   # case-1-control dataset -->
-<!--   d1 <- simulate_relational_events( -->
-<!--     n_events           = N_EVENTS, -->
-<!--     senders            = SENDERS, -->
-<!--     receivers          = RECEIVERS, -->
-<!--     baseline_rate      = 1, -->
-<!--     n_controls         = 1, -->
-<!--     endogenous_stats   = "reciprocity_count",  -->
-<!--     endogenous_effects = c(reciprocity_count = TRUE_BETA), -->
-<!--   ) -->
-<!--   # fit degenerate logistic regression -->
-<!--   wide_d1 <- widen_case_control(d1, case = "event", stratum = "stratum") -->
-<!--   fit_glm <- rem(~ reciprocity_count, data = wide_d1, method = "gam") -->
-<!--   coefs$glm_1[i] <- coef(fit_glm)[["reciprocity_count"]] -->
-<!--   # case-7-control dataset -->
-<!--   d7 <- simulate_relational_events( -->
-<!--     n_events           = N_EVENTS, -->
-<!--     senders            = SENDERS, -->
-<!--     receivers          = RECEIVERS, -->
-<!--     baseline_rate      = 1, -->
-<!--     n_controls         = 7, -->
-<!--     endogenous_stats   = "reciprocity_count",  -->
-<!--     endogenous_effects = c(reciprocity_count = TRUE_BETA) -->
-<!--   ) -->
-<!--   fit_clogit_7 <- rem(event ~ reciprocity_count, data = d7, method = "clogit") -->
-<!--   coefs$clogit_7[i] <- coef(fit_clogit_7)[["reciprocity_count"]] -->
-<!--   # case-20-control dataset -->
-<!--   d20 <- simulate_relational_events( -->
-<!--     n_events           = N_EVENTS, -->
-<!--     senders            = SENDERS, -->
-<!--     receivers          = RECEIVERS, -->
-<!--     baseline_rate      = 1, -->
-<!--     n_controls         = 20, -->
-<!--     endogenous_stats   = "reciprocity_count",  -->
-<!--     endogenous_effects = c(reciprocity_count = TRUE_BETA), -->
-<!--   ) -->
-<!--   fit_clogit_20 <- rem(event ~ reciprocity_count, data = d20, method = "clogit") -->
-<!--   coefs$clogit_20[i] <- coef(fit_clogit_20)[["reciprocity_count"]] -->
-<!--   if (i %% 10 == 0) message(sprintf("  Completed %d / %d replications", i, N_SIM)) -->
-<!-- } -->
-<!-- ``` -->
-<!-- ```{r} -->
-<!-- coefs_long <- stack(coefs) -->
-<!-- levels(coefs_long$ind) <- c( -->
-<!--   "Logistic\n(1 control)", -->
-<!--   "Cond. logit\n(7 controls)", -->
-<!--   "Cond. logit\n(20 controls)" -->
-<!-- ) -->
-<!-- cols <- c("#4E79A7", "#F28E2B", "#59A14F") -->
-<!-- ``` -->
-<!-- ```{r simulation_varying_m} -->
-<!-- boxplot( -->
-<!--   values ~ ind, -->
-<!--   data       = coefs_long, -->
-<!--   col        = cols, -->
-<!--   border     = darken <- adjustcolor(cols, red.f = 0.6, green.f = 0.6, blue.f = 0.6), -->
-<!--   outcol     = cols, -->
-<!--   outpch     = 16, -->
-<!--   cex        = 0.6, -->
-<!--   las        = 1, -->
-<!--   xlab       = "", -->
-<!--   ylab       = expression(hat(beta)), -->
-<!--   main       = expression( -->
-<!--     "Estimated "*beta*" for reciprocity_count across 100 replications" -->
-<!--   ), -->
-<!--   cex.main   = 1.0, -->
-<!--   cex.lab    = 0.95, -->
-<!--   frame.plot = FALSE -->
-<!-- ) -->
-<!-- abline(h = TRUE_BETA, lty = 2, lwd = 1.8, col = "black") -->
-<!-- ``` -->
+
+**Interpretation:** the estimated coefficient for `reciprocity_count`
+(0.542 in this case) is interpreted exactly as before.
+
+Why might we need more than one non-event per event, then?
+
+## 4. How different inference techniques compare
+
+To compare different inference methods - and specifically different
+numbers of non-events per event - we run a simulation study `N_SIM`
+times, with 100 replications. All other simulation parameters remain as
+before.
+
+``` r
+# parameters
+N_SIM        <- 100
+N_EVENTS     <- 1000
+TRUE_BETA    <- 0.6
+SENDERS      <- paste0("a", 1:20)
+RECEIVERS    <- paste0("a", 1:20)
+```
+
+``` r
+# storage
+coefs <- data.frame(
+  glm_1   = numeric(N_SIM),   # degenerate logistic, 1 control
+  clogit_7  = numeric(N_SIM), # conditional logit,   7 controls
+  clogit_20 = numeric(N_SIM)  # conditional logit,  20 controls
+)
+```
+
+For each iteration:
+
+-   we store the case-1-control dataset, compute the corresponding
+    wide-format dataset, and fit a degenerate logistic regression;
+-   we store case-7-control and case-20-control datasets and fit a
+    conditional logistic regression to each;
+-   we store the estimated coefficients from the three models.
+
+``` r
+for (i in seq_len(N_SIM)) {
+
+  set.seed(i)
+
+  # case-1-control dataset
+  d1 <- simulate_relational_events(
+    n_events           = N_EVENTS,
+    senders            = SENDERS,
+    receivers          = RECEIVERS,
+    baseline_rate      = 1,
+    n_controls         = 1,
+    endogenous_stats   = "reciprocity_count",
+    endogenous_effects = c(reciprocity_count = TRUE_BETA),
+  )
+
+  # fit degenerate logistic regression
+  wide_d1 <- widen_case_control(d1, case = "event", stratum = "stratum")
+  fit_glm <- rem(~ reciprocity_count, data = wide_d1, method = "gam")
+  coefs$glm_1[i] <- coef(fit_glm)[["reciprocity_count"]]
+
+
+  # case-7-control dataset
+  d7 <- simulate_relational_events(
+    n_events           = N_EVENTS,
+    senders            = SENDERS,
+    receivers          = RECEIVERS,
+    baseline_rate      = 1,
+    n_controls         = 7,
+    endogenous_stats   = "reciprocity_count",
+    endogenous_effects = c(reciprocity_count = TRUE_BETA)
+  )
+
+  # fit conditional logistic regression
+  fit_clogit_7 <- rem(event ~ reciprocity_count, data = d7, method = "clogit")
+  coefs$clogit_7[i] <- coef(fit_clogit_7)[["reciprocity_count"]]
+
+  # case-20-control dataset
+  d20 <- simulate_relational_events(
+    n_events           = N_EVENTS,
+    senders            = SENDERS,
+    receivers          = RECEIVERS,
+    baseline_rate      = 1,
+    n_controls         = 20,
+    endogenous_stats   = "reciprocity_count",
+    endogenous_effects = c(reciprocity_count = TRUE_BETA),
+  )
+
+  # fit conditional logistic regression
+  fit_clogit_20 <- rem(event ~ reciprocity_count, data = d20, method = "clogit")
+  coefs$clogit_20[i] <- coef(fit_clogit_20)[["reciprocity_count"]]
+
+  if (i %% 10 == 0) message(sprintf("  Completed %d / %d replications", i, N_SIM))
+
+
+}
+```
+
+    ##   Completed 10 / 100 replications
+
+    ##   Completed 20 / 100 replications
+
+    ##   Completed 30 / 100 replications
+
+    ##   Completed 40 / 100 replications
+
+    ##   Completed 50 / 100 replications
+
+    ##   Completed 60 / 100 replications
+
+    ##   Completed 70 / 100 replications
+
+    ##   Completed 80 / 100 replications
+
+    ##   Completed 90 / 100 replications
+
+    ##   Completed 100 / 100 replications
+
+We then plot the coefficients across iterations for the three models.
+
+``` r
+coefs_long <- stack(coefs)
+levels(coefs_long$ind) <- c(
+  "Logistic\n(1 control)",
+  "Cond. logit\n(7 controls)",
+  "Cond. logit\n(20 controls)"
+)
+cols <- c("#AEC6CF", "#E8D57A", "#FF9999")
+```
+
+``` r
+boxplot(
+  values ~ ind,
+  data       = coefs_long,
+  col        = cols,
+  border     = darken <- adjustcolor(cols, red.f = 0.6, green.f = 0.6, blue.f = 0.6),
+  outcol     = cols,
+  outpch     = 16,
+  cex        = 0.6,
+  las        = 1,
+  xlab       = "",
+  ylab       = expression(hat(beta)),
+  main       = expression(
+    "Estimated "*beta*" for reciprocity_count across 100 replications"
+  ),
+  cex.main   = 1.0,
+  cex.lab    = 0.95,
+  frame.plot = FALSE
+)
+abline(h = TRUE_BETA, lty = 2, lwd = 1.8, col = "black")
+```
+
+![](Simulating-REM-Data_files/figure-markdown/simulation_varying_m-1.png)
+
+As expected, reducing the number of controls **increases the variance**
+of the estimates, while the estimator remains **consistent** - all three
+distributions are centered around the true value of 0.6, but the
+case-1-control logistic regression shows noticeably more spread than the
+conditional logistic regression with 7 or 20 controls.
+
+However, this additional variance comes with a key advantage: the
+possibility to go **beyond linear effects**, which we will explore in
+the next practical.
