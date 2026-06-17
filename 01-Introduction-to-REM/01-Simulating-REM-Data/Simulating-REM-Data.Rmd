@@ -13,16 +13,13 @@ knitr::knit_hooks$set(purl = knitr::hook_purl)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Application to Alien Species Invasions
-
-## Setup
-
 ```{r message=FALSE, warning=FALSE}
 # remotes::install_github("franciscorichter/amore")
 library(amore)
 ```
 
 ## 1.
+
 
 
 

@@ -1,7 +1,3 @@
-# Application to Alien Species Invasions
-
-## Setup
-
 ``` r
 # remotes::install_github("franciscorichter/amore")
 library(amore)
