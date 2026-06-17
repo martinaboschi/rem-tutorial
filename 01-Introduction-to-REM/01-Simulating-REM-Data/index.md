@@ -19,7 +19,7 @@ This workshop focuses on **simulating relational events** using the `amore` pack
 
 ## References
 
-- [Reference amore - reported issue]
+- Richter F, Boschi M, Wit E, Lembo M (2026). amorem: Augmented Modelling of Relational Events. R package version 1.0.0, https://franciscorichter.github.io/amorem/.
 
 - Borgan, Ø., Goldstein, L., & Langholz, B. (1995). Methods for the analysis of sampled cohort data in the Cox proportional hazards model. *The Annals of Statistics, 23*, 1749–1778.
 
