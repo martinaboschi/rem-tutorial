@@ -14,25 +14,19 @@ render_with_liquid: false
 
 ## 1.
 
-*Content here.*
+{% include_relative Sections/simulation.md %}
 
 ---
 
 ## 2.
 
-*Content here.*
+{% include_relative Sections/inference.md %}
 
 ---
 
 ## 3.
 
-*Content here.*
-
----
-
-## 4.
-
-*Content here.*
+{% include_relative Sections/variance.md %}
 
 ---
 
