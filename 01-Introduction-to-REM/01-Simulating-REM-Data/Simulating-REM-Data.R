@@ -1,6 +1,9 @@
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::knit_hooks$set(purl = knitr::hook_purl)
 knitr::opts_chunk$set(echo = TRUE)
+knitr::knit_hooks$set(output = function(x, options) {
+  paste0('<div class="r-output"><pre><code>', x, '</code></pre></div>')
+})
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 # remotes::install_github("franciscorichter/amore")
@@ -129,7 +132,7 @@ levels(coefs_long$ind) <- c(
 )
 cols <- c("#4E79A7", "#F28E2B", "#59A14F")
 
-## -----------------------------------------------------------------------------
+## ----simulation_varying_m-----------------------------------------------------
 boxplot(
   values ~ ind,
   data       = coefs_long,

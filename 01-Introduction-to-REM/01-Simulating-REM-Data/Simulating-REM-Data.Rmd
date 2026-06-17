@@ -4,13 +4,17 @@ author: "Melania Lembo, Martina Boschi, Ernst C. Wit"
 date: "2026-07-17"
 output:
   md_document:
-    variant: gfm
+  variant: markdown
+  preserve_yaml: false
 subtitle: "Simulating Relational Events"
 ---
 
 ```{r setup, include=FALSE}
 knitr::knit_hooks$set(purl = knitr::hook_purl)
 knitr::opts_chunk$set(echo = TRUE)
+knitr::knit_hooks$set(output = function(x, options) {
+  paste0('<div class="r-output"><pre><code>', x, '</code></pre></div>')
+})
 ```
 
 ```{r message=FALSE, warning=FALSE}
@@ -168,7 +172,7 @@ levels(coefs_long$ind) <- c(
 cols <- c("#4E79A7", "#F28E2B", "#59A14F")
 ```
 
-```{r}
+```{r simulation_varying_m}
 boxplot(
   values ~ ind,
   data       = coefs_long,
