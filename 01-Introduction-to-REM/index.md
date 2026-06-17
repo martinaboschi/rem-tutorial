@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Introduction to REMs
+render_with_liquid: false
 ---
 
 # Introduction to Relational Event Models

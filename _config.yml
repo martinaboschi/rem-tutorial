@@ -16,3 +16,6 @@ include:
 
 exclude:
   - "**/*.Rmd"
+
+kramdown:
+  math_engine: mathjax

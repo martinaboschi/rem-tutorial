@@ -1,6 +1,7 @@
 ---
 layout: default
 title: All You Need to Know About RHEM
+render_with_liquid: false
 ---
 
 # All You Need to Know About Relational Hyper-Event Modeling
