@@ -8,17 +8,13 @@ render_with_liquid: false
 
 ## Introduction
 
-*Write your introduction here.*
+{% include_relative Sections/introduction.md %}
 
 ---
 
 ## 1.
 
 *Content here.*
-
-$\mathcal{C}$
-
-$$a^2 x^2 + c = 0$$
 
 ---
 
