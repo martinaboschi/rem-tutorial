@@ -3,3 +3,5 @@ title: REM Tutorial
 description: 
 
 include:  - index.md
+
+exclude:  - "**/*.Rmd"
