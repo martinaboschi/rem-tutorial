@@ -14,5 +14,8 @@ include:
   - 02-All-you-need-to-know-RHEM/01-Les-Miserables/index.md
   - 02-All-you-need-to-know-RHEM/02-Scientific-Innovation/index.md
 
+exclude:
+  - "**/*.Rmd"
+  
 kramdown:
   math_engine: mathjax
