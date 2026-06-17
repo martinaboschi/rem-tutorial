@@ -2,8 +2,6 @@
     library(amore)
     library(knitr)
 
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
-
 ## 1.
 
     set.seed(1)
@@ -16,8 +14,6 @@
       endogenous_stats   = "reciprocity_count", 
       endogenous_effects = c(reciprocity_count = 0.6)
     )
-
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
     head(raw_data_m1,20)
 
@@ -44,8 +40,6 @@
 ## 20      10     0     a4      a16 0.022153557                 0
 </code></pre>
 
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
-
 ## 2. Construct datasets for two inference procedures
 
 ### 2.1. Case-7-control for inference via conditional logistic regression
@@ -61,8 +55,6 @@
       endogenous_effects = c(reciprocity_count = 0.6),
     )
 
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
-
     head(raw_data_m7,10)
 
 <pre><code>##    stratum event sender receiver        time reciprocity_count
@@ -77,8 +69,6 @@
 ## 9        2     1    a15       a5 0.003404473                 0
 ## 10       2     0     a8      a18 0.003404473                 0
 </code></pre>
-
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
 ### 2.2. Case-1-control dataset in “wide” format for inference via degenerate logistic regression
 
@@ -100,8 +90,6 @@
 ## 5      0                    0                    0                   0
 ## 6      0                    0                    1                  -1
 </code></pre>
-
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
 ## 3. Inference procedures
 
@@ -130,8 +118,6 @@
 ## Score (logrank) test = 798.1  on 1 df,   p=<2e-16
 </code></pre>
 
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
-
 ### 3.2. Degenerate logistic regression
 
     fit_glm <- rem(~ reciprocity_count, data = wide_data_m1, method = "gam")
@@ -155,8 +141,6 @@
 ## UBRE = -0.55893  Scale est. = 1         n = 1000
 </code></pre>
 
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
-
 ## 4. Replicate the simulation study 100 times
 
     # parameters
@@ -166,16 +150,12 @@
     SENDERS      <- paste0("a", 1:20)
     RECEIVERS    <- paste0("a", 1:20)
 
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
-
     # storage
     coefs <- data.frame(
       glm_1   = numeric(N_SIM),   # degenerate logistic, 1 control
       clogit_7  = numeric(N_SIM), # conditional logit,   7 controls
       clogit_20 = numeric(N_SIM)  # conditional logit,  20 controls
     )
-
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
     for (i in seq_len(N_SIM)) {
       
@@ -251,8 +231,6 @@
 
     ##   Completed 100 / 100 replications
 
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
-
     coefs_long <- stack(coefs)
     levels(coefs_long$ind) <- c(
       "Logistic\n(1 control)",
@@ -260,8 +238,6 @@
       "Cond. logit\n(20 controls)"
     )
     cols <- c("#4E79A7", "#F28E2B", "#59A14F")
-
-/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
     boxplot(
       values ~ ind,
@@ -283,4 +259,4 @@
     )
     abline(h = TRUE_BETA, lty = 2, lwd = 1.8, col = "black")
 
-![](Simulating-REM-Data_files/figure-markdown_strict/simulation_varying_m-1.png)/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
+![](Simulating-REM-Data_files/figure-markdown_strict/simulation_varying_m-1.png)

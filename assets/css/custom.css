@@ -1,19 +1,17 @@
-/* Output blocks */
-div.r-output pre,
-div.r-output code,
-div.r-output pre code {
+/* Output blocks — plain pre>code with no class */
+pre:has(> code:not([class])) {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
+  padding: 1em;
+  border-left: 3px solid #ddd !important;
+}
+
+pre > code:not([class]) {
+  background: none !important;
   color: #555 !important;
   font-size: 0.9em;
   padding: 0;
-}
-
-div.r-output {
-  margin: 1em 0;
-  border-left: 3px solid #ddd;
-  padding-left: 1em;
 }
 
 /* Download box */
