@@ -87,9 +87,43 @@ the <em>receiver set</em> (<code class="language-plaintext highlighter-rouge">re
 provide to simulate our relational event sequence by means of the
 function <code class="language-plaintext highlighter-rouge">simulate_relational_events</code>.</p>
 
-<p>Furthermore, we sa</p>
+<p>We saw in [Theoretical reference] that relational events can be both
+described and simulated using a <em>rate function</em>. This rate function can
+be decomposed into three main blocks:</p>
 
-<p>We saw that the the dynamics of relational</p>
+<ol>
+  <li>
+    <p><em>Risk indicator</em>: equal to 1 if the dyad $(s,r)$ is at risk at time
+$t$. In this first practical, we assume that all potential dyads -
+except <em>self-loops</em> (by default, <code class="language-plaintext highlighter-rouge">allow_loops = FALSE</code>) - can be
+involved in an event. Please refer to the second practical of this
+tutorial for circumstances in which this is not the case.</p>
+  </li>
+  <li>
+    <p><em>Baseline hazard</em>: a time-varying function expressing the <em>global
+determinants</em> of the event rate. In its current state, <code class="language-plaintext highlighter-rouge">amore</code>
+supports a <strong>time-invariant</strong> baseline function, which can be
+specified via the <code class="language-plaintext highlighter-rouge">baseline_rate</code> argument using a positive scalar.</p>
+  </li>
+  <li>
+    <p><em>Event log-rate contribution</em>: expresses how <em>dyadic covariates</em>
+impact the event log-rate. In this first practical we focus on a
+<em>linear contribution</em>. To simulate events following a linear REM,
+the covariates of interest must be specified in the
+<code class="language-plaintext highlighter-rouge">endogenous_stats</code> argument (chosen among the endogenous mechanisms
+listed in the corresponding documentation). Each statistic is then
+associated with an <em>effect</em> in the <code class="language-plaintext highlighter-rouge">endogenous_effects</code> argument.</p>
+  </li>
+</ol>
+
+<p>Whenever the true parameters are unknown, inference is required. This
+requires not only <em>events</em> - i.e. interactions that have been observed -
+but also <em>non-events</em>, i.e. interactions involving dyads at risk at that
+time (i.e. included in the risk set). Depending on the inference method,
+a different number of non-events may be needed. The
+<code class="language-plaintext highlighter-rouge">simulate_relational_events</code> function allows you to specify this via the
+<code class="language-plaintext highlighter-rouge">n_controls</code> argument, i.e. the number of non-events to be stored for
+each event.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="w">
 </span><span class="n">raw_data_m1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">simulate_relational_events</span><span class="p">(</span><span class="w">
@@ -103,10 +137,9 @@ function <code class="language-plaintext highlighter-rouge">simulate_relational_
 </span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">head</span><span class="p">(</span><span class="n">raw_data_m1</span><span class="p">,</span><span class="m">20</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">head</span><span class="p">(</span><span class="n">raw_data_m1</span><span class="p">,</span><span class="m">16</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>::: r-output</p>
 <pre><code>##    stratum event sender receiver        time reciprocity_count
 ## 1        1     1     a3       a8 0.001987321                 0
 ## 2        1     0    a17       a9 0.001987321                 0
@@ -124,16 +157,38 @@ function <code class="language-plaintext highlighter-rouge">simulate_relational_
 ## 14       7     0    a12       a6 0.011374750                 0
 ## 15       8     1    a20      a11 0.014583015                 1
 ## 16       8     0    a14       a9 0.014583015                 0
-## 17       9     1     a1      a10 0.017310914                 0
-## 18       9     0    a14       a5 0.017310914                 0
-## 19      10     1    a15      a16 0.022153557                 0
-## 20      10     0     a4      a16 0.022153557                 0
 </code></pre>
-<p>:::</p>
 
-<h2 id="2-construct-datasets-for-two-inference-procedures">2. Construct datasets for two inference procedures</h2>
+<h2 id="2-how-to-structure-data-for-inference">2. How to structure data for inference</h2>
 
-<h3 id="21-case-7-control-for-inference-via-conditional-logistic-regression">2.1. Case-$7$-control for inference via conditional logistic regression</h3>
+<p>In [Theoretical reference], we covered a wide range of inference
+methods. Since most of the REM literature you are likely to encounter
+relies on <em>(sampled) partial likelihood estimation</em>, we start with a
+practical example of this approach. We then provide an example using the
+<em>case-1-control partial likelihood</em>, which opens the door to subsequent
+practicals where we move beyond linearity.</p>
+
+<p>Each approach requires a particular data structure. This tutorial
+distinguishes between two main data formats:</p>
+
+<ol>
+  <li>
+    <p><strong>Long format</strong>: each event and its associated non-events are stored
+as separate rows. An <code class="language-plaintext highlighter-rouge">event</code> variable distinguishes events from
+non-events, and all rows referring to the same event share the same
+value of <code class="language-plaintext highlighter-rouge">stratum</code>.</p>
+  </li>
+  <li>
+    <p><strong>Wide format</strong>: each non-event is paired with its corresponding
+event, so the information about both can be stored on the same row.</p>
+  </li>
+</ol>
+
+<h3 id="21-data-for-sampled-partial-likelihood">2.1. Data for Sampled partial likelihood</h3>
+
+<p>We simulate the events again, this time storing $7$ non-events per event
+in the long format, which is the default output format of
+<code class="language-plaintext highlighter-rouge">simulate_relational_events</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="w">
 </span><span class="n">raw_data_m7</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">simulate_relational_events</span><span class="p">(</span><span class="w">
@@ -150,7 +205,6 @@ function <code class="language-plaintext highlighter-rouge">simulate_relational_
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">head</span><span class="p">(</span><span class="n">raw_data_m7</span><span class="p">,</span><span class="m">10</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>::: r-output</p>
 <pre><code>##    stratum event sender receiver        time reciprocity_count
 ## 1        1     1     a3       a8 0.001987321                 0
 ## 2        1     0    a17       a9 0.001987321                 0
@@ -163,15 +217,27 @@ function <code class="language-plaintext highlighter-rouge">simulate_relational_
 ## 9        2     1    a15       a5 0.003404473                 0
 ## 10       2     0     a8      a18 0.003404473                 0
 </code></pre>
-<p>:::</p>
 
-<h3 id="22-case-1-control-dataset-in-wide-format-for-inference-via-degenerate-logistic-regression">2.2. Case-$1$-control dataset in “wide” format for inference via degenerate logistic regression</h3>
+<h3 id="22-data-for-case-1-control-partial-likelihood">2.2. Data for Case-1-control partial likelihood</h3>
+
+<p>As discussed in [Theoretical reference], when there is only one
+non-event per event, a <em>logistic regression</em> can be fitted. In this
+case, the statistical unit is the event/non-event pair. The logistic
+regression is fitted with a fixed response equal to 1 (which must
+therefore be included in the data) and covariates equal to the
+differences between the covariates of the event and those of the
+non-event. These differences must also be recorded in the data.</p>
+
+<p>The function <code class="language-plaintext highlighter-rouge">widen_case_control</code> transforms data from long format to
+wide format. To do so, we need to specify the <code class="language-plaintext highlighter-rouge">event</code> argument - the
+dummy variable that distinguishes events from non-events - and the
+<code class="language-plaintext highlighter-rouge">stratum</code> argument, namely the variable that identifies which non-event
+is associated with each event.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">wide_data_m1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">widen_case_control</span><span class="p">(</span><span class="n">raw_data_m1</span><span class="p">,</span><span class="w"> </span><span class="n">case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"event"</span><span class="p">,</span><span class="w"> </span><span class="n">stratum</span><span class="o">=</span><span class="w"> </span><span class="s2">"stratum"</span><span class="p">)</span><span class="w">
 </span><span class="n">head</span><span class="p">(</span><span class="n">wide_data_m1</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>::: r-output</p>
 <pre><code>##   stratum sender_ev sender_nv receiver_ev receiver_nv     time_ev     time_nv
 ## 1       1        a3       a17          a8          a9 0.001987321 0.001987321
 ## 2      10       a15        a4         a16         a16 0.022153557 0.022153557
@@ -187,9 +253,10 @@ function <code class="language-plaintext highlighter-rouge">simulate_relational_
 ## 5      0                    0                    0                   0
 ## 6      0                    0                    1                  -1
 </code></pre>
-<p>:::</p>
 
 <h2 id="3-inference-procedures">3. Inference procedures</h2>
+
+<h3 id="21-sampled-partial-likelihood-via-conditional-logistic-regression">2.1. Sampled partial likelihood via Conditional logistic regression</h3>
 
 <h3 id="31-conditional-logistic-regression">3.1. Conditional logistic regression</h3>
 
@@ -197,7 +264,6 @@ function <code class="language-plaintext highlighter-rouge">simulate_relational_
 </span><span class="n">summary</span><span class="p">(</span><span class="n">fit_clogit</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>::: r-output</p>
 <pre><code>## Call:
 ## coxph(formula = Surv(rep(1, 8000L), .case) ~ reciprocity_count + 
 ##     strata(.strat), data = cl, method = "exact")
@@ -217,7 +283,6 @@ function <code class="language-plaintext highlighter-rouge">simulate_relational_
 ## Wald test            = 64.62  on 1 df,   p=9e-16
 ## Score (logrank) test = 798.1  on 1 df,   p=&lt;2e-16
 </code></pre>
-<p>:::</p>
 
 <h3 id="32-degenerate-logistic-regression">3.2. Degenerate logistic regression</h3>
 
@@ -225,7 +290,6 @@ function <code class="language-plaintext highlighter-rouge">simulate_relational_
 </span><span class="n">summary</span><span class="p">(</span><span class="n">fit_glm</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>::: r-output</p>
 <pre><code>## 
 ## Family: binomial 
 ## Link function: logit 
@@ -243,133 +307,97 @@ function <code class="language-plaintext highlighter-rouge">simulate_relational_
 ## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
 ## UBRE = -0.55893  Scale est. = 1         n = 1000
 </code></pre>
-<p>:::</p>
-
-<h2 id="4-replicate-the-simulation-study-100-times">4. Replicate the simulation study 100 times</h2>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># parameters</span><span class="w">
-</span><span class="n">N_SIM</span><span class="w">        </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">100</span><span class="w">
-</span><span class="n">N_EVENTS</span><span class="w">     </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1000</span><span class="w">
-</span><span class="n">TRUE_BETA</span><span class="w">    </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0.6</span><span class="w">        
-</span><span class="n">SENDERS</span><span class="w">      </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"a"</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">20</span><span class="p">)</span><span class="w">
-</span><span class="n">RECEIVERS</span><span class="w">    </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"a"</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">20</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># storage</span><span class="w">
-</span><span class="n">coefs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="w">
-  </span><span class="n">glm_1</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">numeric</span><span class="p">(</span><span class="n">N_SIM</span><span class="p">),</span><span class="w">   </span><span class="c1"># degenerate logistic, 1 control</span><span class="w">
-  </span><span class="n">clogit_7</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">numeric</span><span class="p">(</span><span class="n">N_SIM</span><span class="p">),</span><span class="w"> </span><span class="c1"># conditional logit,   7 controls</span><span class="w">
-  </span><span class="n">clogit_20</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numeric</span><span class="p">(</span><span class="n">N_SIM</span><span class="p">)</span><span class="w">  </span><span class="c1"># conditional logit,  20 controls</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nf">seq_len</span><span class="p">(</span><span class="n">N_SIM</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
-  
-  </span><span class="n">set.seed</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w">
-  
-  </span><span class="c1"># case-1-control dataset</span><span class="w">
-  </span><span class="n">d1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">simulate_relational_events</span><span class="p">(</span><span class="w">
-    </span><span class="n">n_events</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="n">N_EVENTS</span><span class="p">,</span><span class="w">
-    </span><span class="n">senders</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">SENDERS</span><span class="p">,</span><span class="w">
-    </span><span class="n">receivers</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">RECEIVERS</span><span class="p">,</span><span class="w">
-    </span><span class="n">baseline_rate</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
-    </span><span class="n">n_controls</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
-    </span><span class="n">endogenous_stats</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">"reciprocity_count"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">endogenous_effects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">reciprocity_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TRUE_BETA</span><span class="p">),</span><span class="w">
-  </span><span class="p">)</span><span class="w">
-  
-  </span><span class="c1"># fit degenerate logistic regression</span><span class="w">
-  </span><span class="n">wide_d1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">widen_case_control</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span><span class="w"> </span><span class="n">case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"event"</span><span class="p">,</span><span class="w"> </span><span class="n">stratum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stratum"</span><span class="p">)</span><span class="w">
-  </span><span class="n">fit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">reciprocity_count</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wide_d1</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gam"</span><span class="p">)</span><span class="w">
-  </span><span class="n">coefs</span><span class="o">$</span><span class="n">glm_1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">coef</span><span class="p">(</span><span class="n">fit_glm</span><span class="p">)[[</span><span class="s2">"reciprocity_count"</span><span class="p">]]</span><span class="w">
-  
-  
-  </span><span class="c1"># case-7-control dataset</span><span class="w">
-  </span><span class="n">d7</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">simulate_relational_events</span><span class="p">(</span><span class="w">
-    </span><span class="n">n_events</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="n">N_EVENTS</span><span class="p">,</span><span class="w">
-    </span><span class="n">senders</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">SENDERS</span><span class="p">,</span><span class="w">
-    </span><span class="n">receivers</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">RECEIVERS</span><span class="p">,</span><span class="w">
-    </span><span class="n">baseline_rate</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
-    </span><span class="n">n_controls</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w">
-    </span><span class="n">endogenous_stats</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">"reciprocity_count"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">endogenous_effects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">reciprocity_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TRUE_BETA</span><span class="p">)</span><span class="w">
-  </span><span class="p">)</span><span class="w">
-  
-  </span><span class="n">fit_clogit_7</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">reciprocity_count</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d7</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"clogit"</span><span class="p">)</span><span class="w">
-  </span><span class="n">coefs</span><span class="o">$</span><span class="n">clogit_7</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">coef</span><span class="p">(</span><span class="n">fit_clogit_7</span><span class="p">)[[</span><span class="s2">"reciprocity_count"</span><span class="p">]]</span><span class="w">
-  
-  </span><span class="c1"># case-20-control dataset</span><span class="w">
-  </span><span class="n">d20</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">simulate_relational_events</span><span class="p">(</span><span class="w">
-    </span><span class="n">n_events</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="n">N_EVENTS</span><span class="p">,</span><span class="w">
-    </span><span class="n">senders</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">SENDERS</span><span class="p">,</span><span class="w">
-    </span><span class="n">receivers</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">RECEIVERS</span><span class="p">,</span><span class="w">
-    </span><span class="n">baseline_rate</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
-    </span><span class="n">n_controls</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w">
-    </span><span class="n">endogenous_stats</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">"reciprocity_count"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">endogenous_effects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">reciprocity_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TRUE_BETA</span><span class="p">),</span><span class="w">
-  </span><span class="p">)</span><span class="w">
-  
-  </span><span class="n">fit_clogit_20</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">reciprocity_count</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d20</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"clogit"</span><span class="p">)</span><span class="w">
-  </span><span class="n">coefs</span><span class="o">$</span><span class="n">clogit_20</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">coef</span><span class="p">(</span><span class="n">fit_clogit_20</span><span class="p">)[[</span><span class="s2">"reciprocity_count"</span><span class="p">]]</span><span class="w">
-  
-  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">%%</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="n">message</span><span class="p">(</span><span class="n">sprintf</span><span class="p">(</span><span class="s2">"  Completed %d / %d replications"</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">N_SIM</span><span class="p">))</span><span class="w">
-  
-  
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   Completed 10 / 100 replications
-
-##   Completed 20 / 100 replications
-
-##   Completed 30 / 100 replications
-
-##   Completed 40 / 100 replications
-
-##   Completed 50 / 100 replications
-
-##   Completed 60 / 100 replications
-
-##   Completed 70 / 100 replications
-
-##   Completed 80 / 100 replications
-
-##   Completed 90 / 100 replications
-
-##   Completed 100 / 100 replications
-</code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">coefs_long</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stack</span><span class="p">(</span><span class="n">coefs</span><span class="p">)</span><span class="w">
-</span><span class="n">levels</span><span class="p">(</span><span class="n">coefs_long</span><span class="o">$</span><span class="n">ind</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="w">
-  </span><span class="s2">"Logistic\n(1 control)"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"Cond. logit\n(7 controls)"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"Cond. logit\n(20 controls)"</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="n">cols</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"#4E79A7"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#F28E2B"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#59A14F"</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">boxplot</span><span class="p">(</span><span class="w">
-  </span><span class="n">values</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">ind</span><span class="p">,</span><span class="w">
-  </span><span class="n">data</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">coefs_long</span><span class="p">,</span><span class="w">
-  </span><span class="n">col</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">cols</span><span class="p">,</span><span class="w">
-  </span><span class="n">border</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">darken</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">adjustcolor</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span><span class="w"> </span><span class="n">red.f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.6</span><span class="p">,</span><span class="w"> </span><span class="n">green.f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.6</span><span class="p">,</span><span class="w"> </span><span class="n">blue.f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.6</span><span class="p">),</span><span class="w">
-  </span><span class="n">outcol</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">cols</span><span class="p">,</span><span class="w">
-  </span><span class="n">outpch</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="p">,</span><span class="w">
-  </span><span class="n">cex</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="m">0.6</span><span class="p">,</span><span class="w">
-  </span><span class="n">las</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
-  </span><span class="n">xlab</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-  </span><span class="n">ylab</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">hat</span><span class="p">(</span><span class="n">beta</span><span class="p">)),</span><span class="w">
-  </span><span class="n">main</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="w">
-    </span><span class="s2">"Estimated "</span><span class="o">*</span><span class="n">beta</span><span class="o">*</span><span class="s2">" for reciprocity_count across 100 replications"</span><span class="w">
-  </span><span class="p">),</span><span class="w">
-  </span><span class="n">cex.main</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">,</span><span class="w">
-  </span><span class="n">cex.lab</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">,</span><span class="w">
-  </span><span class="n">frame.plot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="n">abline</span><span class="p">(</span><span class="n">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TRUE_BETA</span><span class="p">,</span><span class="w"> </span><span class="n">lty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">lwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.8</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<p><img src="Simulating-REM-Data_files/figure-markdown/simulation_varying_m-1.png" alt="" /></p>
+<!-- ## 4. Replicate the simulation study 100 times -->
+<!-- ```{r} -->
+<!-- # parameters -->
+<!-- N_SIM        <- 100 -->
+<!-- N_EVENTS     <- 1000 -->
+<!-- TRUE_BETA    <- 0.6         -->
+<!-- SENDERS      <- paste0("a", 1:20) -->
+<!-- RECEIVERS    <- paste0("a", 1:20) -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- # storage -->
+<!-- coefs <- data.frame( -->
+<!--   glm_1   = numeric(N_SIM),   # degenerate logistic, 1 control -->
+<!--   clogit_7  = numeric(N_SIM), # conditional logit,   7 controls -->
+<!--   clogit_20 = numeric(N_SIM)  # conditional logit,  20 controls -->
+<!-- ) -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- for (i in seq_len(N_SIM)) { -->
+<!--   set.seed(i) -->
+<!--   # case-1-control dataset -->
+<!--   d1 <- simulate_relational_events( -->
+<!--     n_events           = N_EVENTS, -->
+<!--     senders            = SENDERS, -->
+<!--     receivers          = RECEIVERS, -->
+<!--     baseline_rate      = 1, -->
+<!--     n_controls         = 1, -->
+<!--     endogenous_stats   = "reciprocity_count",  -->
+<!--     endogenous_effects = c(reciprocity_count = TRUE_BETA), -->
+<!--   ) -->
+<!--   # fit degenerate logistic regression -->
+<!--   wide_d1 <- widen_case_control(d1, case = "event", stratum = "stratum") -->
+<!--   fit_glm <- rem(~ reciprocity_count, data = wide_d1, method = "gam") -->
+<!--   coefs$glm_1[i] <- coef(fit_glm)[["reciprocity_count"]] -->
+<!--   # case-7-control dataset -->
+<!--   d7 <- simulate_relational_events( -->
+<!--     n_events           = N_EVENTS, -->
+<!--     senders            = SENDERS, -->
+<!--     receivers          = RECEIVERS, -->
+<!--     baseline_rate      = 1, -->
+<!--     n_controls         = 7, -->
+<!--     endogenous_stats   = "reciprocity_count",  -->
+<!--     endogenous_effects = c(reciprocity_count = TRUE_BETA) -->
+<!--   ) -->
+<!--   fit_clogit_7 <- rem(event ~ reciprocity_count, data = d7, method = "clogit") -->
+<!--   coefs$clogit_7[i] <- coef(fit_clogit_7)[["reciprocity_count"]] -->
+<!--   # case-20-control dataset -->
+<!--   d20 <- simulate_relational_events( -->
+<!--     n_events           = N_EVENTS, -->
+<!--     senders            = SENDERS, -->
+<!--     receivers          = RECEIVERS, -->
+<!--     baseline_rate      = 1, -->
+<!--     n_controls         = 20, -->
+<!--     endogenous_stats   = "reciprocity_count",  -->
+<!--     endogenous_effects = c(reciprocity_count = TRUE_BETA), -->
+<!--   ) -->
+<!--   fit_clogit_20 <- rem(event ~ reciprocity_count, data = d20, method = "clogit") -->
+<!--   coefs$clogit_20[i] <- coef(fit_clogit_20)[["reciprocity_count"]] -->
+<!--   if (i %% 10 == 0) message(sprintf("  Completed %d / %d replications", i, N_SIM)) -->
+<!-- } -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- coefs_long <- stack(coefs) -->
+<!-- levels(coefs_long$ind) <- c( -->
+<!--   "Logistic\n(1 control)", -->
+<!--   "Cond. logit\n(7 controls)", -->
+<!--   "Cond. logit\n(20 controls)" -->
+<!-- ) -->
+<!-- cols <- c("#4E79A7", "#F28E2B", "#59A14F") -->
+<!-- ``` -->
+<!-- ```{r simulation_varying_m} -->
+<!-- boxplot( -->
+<!--   values ~ ind, -->
+<!--   data       = coefs_long, -->
+<!--   col        = cols, -->
+<!--   border     = darken <- adjustcolor(cols, red.f = 0.6, green.f = 0.6, blue.f = 0.6), -->
+<!--   outcol     = cols, -->
+<!--   outpch     = 16, -->
+<!--   cex        = 0.6, -->
+<!--   las        = 1, -->
+<!--   xlab       = "", -->
+<!--   ylab       = expression(hat(beta)), -->
+<!--   main       = expression( -->
+<!--     "Estimated "*beta*" for reciprocity_count across 100 replications" -->
+<!--   ), -->
+<!--   cex.main   = 1.0, -->
+<!--   cex.lab    = 0.95, -->
+<!--   frame.plot = FALSE -->
+<!-- ) -->
+<!-- abline(h = TRUE_BETA, lty = 2, lwd = 1.8, col = "black") -->
+<!-- ``` -->
 
 <h2 id="references">References</h2>
 
