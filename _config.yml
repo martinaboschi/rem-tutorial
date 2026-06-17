@@ -2,6 +2,9 @@ theme: minima
 title: REM Tutorials
 description: Tutorials on Relational (Hyper) Event Modeling
 
+header_pages:
+  - index.md
+
 include:
   - index.md
   - 01-Introduction-to-REM/index.md

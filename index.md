@@ -7,7 +7,7 @@ nav_order: 1
 
 In this site, you can find two tutorials on Relational (Hyper) Event Modeling.
 
-### [Part 1 — Introduction to Relational Event Models](01-Introduction-to-REM/)
+### [Part 1 - Introduction to Relational Event Models](01-Introduction-to-REM/)
 
 **Abstract:**
 
@@ -15,7 +15,7 @@ Many sociological processes unfold as sequences of temporally ordered interactio
 
 In this workshop, we will introduce the foundations of REMs and show how to construct covariates that represent exogenous drivers, endogenous mechanisms, and temporal features of these processes. We will then examine likelihood-based inference methods for estimating covariate effects and discuss extensions that enhance the flexibility of REMs, including non-linear and time-varying influences as well as random effects to account for network and actor heterogeneity.
 
-### [Part 2 — All You Need to Know About Relational Hyper-Event Modeling](02-All-you-need-to-know-RHEM/)
+### [Part 2 - All You Need to Know About Relational Hyper-Event Modeling](02-All-you-need-to-know-RHEM/)
 
 **Abstract:**
 
