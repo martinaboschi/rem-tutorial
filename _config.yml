@@ -1,9 +1,11 @@
 theme: minima
 title: REM Tutorial
-description: A tutorial on Relational Event Modelings
+description: A tutorial on Relational Event Modeling
 
 include:
   - index.md
+  - 01-Introduction-to-REM/index.md
+  - 02-All-you-need-to-know-RHEM/index.md
 
 exclude:
   - "**/*.Rmd"
