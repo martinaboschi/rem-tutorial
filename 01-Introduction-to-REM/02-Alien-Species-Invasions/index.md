@@ -1,6 +1,7 @@
 ---
 layout: default
 title: "Practical 2: Alien Species Invasions"
+render_with_liquid: false
 ---
 
 # Practical 2: Alien Species Invasions
@@ -18,6 +19,8 @@ title: "Practical 2: Alien Species Invasions"
 $\mathcal{C}$
 
 $$a^2 x^2 + c = 0$$
+
+test
 
 ---
 
