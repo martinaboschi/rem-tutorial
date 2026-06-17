@@ -1,7 +1,6 @@
 ---
 layout: default
 title: "Practical 1: Simulating Relational Events"
-render_with_liquid: false
 ---
 
 # Practical 1: Simulating Relational Events
