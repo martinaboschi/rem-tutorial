@@ -3,7 +3,7 @@ layout: default
 title: "Practical 2: Alien Species Invasions"
 ---
 
-# Practical 1: Simulating Relational Events
+# Practical 2: Alien Species Invasions
 
 **Instructions.**
 You may follow the tutorial directly on this page. Otherwise, if you wish to run things locally and play around with the code, you may download the  `R`/`Rmd` files below:
