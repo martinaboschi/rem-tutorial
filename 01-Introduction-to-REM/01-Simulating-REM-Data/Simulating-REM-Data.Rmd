@@ -16,9 +16,23 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r message=FALSE, warning=FALSE}
 # remotes::install_github("franciscorichter/amore")
 library(amore)
+library(knitr)
 ```
 
 ## 1.
+
+```{r}
+set.seed(1)
+raw_data_m1 <- simulate_relational_events(
+  n_events           = 1000,
+  senders            = paste0("a", 1:20),
+  receivers          = paste0("a", 1:20),
+  baseline_rate      = 1,
+  n_controls         = 1,
+  endogenous_stats   = "reciprocity_count",
+  endogenous_effects = c(reciprocity_count = 0.6)
+)
+```
 
 
 
