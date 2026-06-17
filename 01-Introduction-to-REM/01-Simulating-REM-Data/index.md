@@ -16,6 +16,10 @@ render_with_liquid: false
 
 *Content here.*
 
+$\mathcal{C}$
+
+$$a^2 x^2 + c = 0$$
+
 ---
 
 ## 2.
