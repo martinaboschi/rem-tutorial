@@ -1,33 +1,25 @@
-``` r
-# remotes::install_github("franciscorichter/amore")
-library(amore)
-library(knitr)
-```
+    # remotes::install_github("franciscorichter/amore")
+    library(amore)
+    library(knitr)
 
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
 ## 1.
 
-``` r
-set.seed(1)
-raw_data_m1 <- simulate_relational_events(
-  n_events           = 1000,
-  senders            = paste0("a", 1:20),
-  receivers          = paste0("a", 1:20),
-  baseline_rate      = 1,
-  n_controls         = 1,
-  endogenous_stats   = "reciprocity_count", 
-  endogenous_effects = c(reciprocity_count = 0.6)
-)
-```
+    set.seed(1)
+    raw_data_m1 <- simulate_relational_events(
+      n_events           = 1000,
+      senders            = paste0("a", 1:20),
+      receivers          = paste0("a", 1:20),
+      baseline_rate      = 1,
+      n_controls         = 1,
+      endogenous_stats   = "reciprocity_count", 
+      endogenous_effects = c(reciprocity_count = 0.6)
+    )
 
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
-``` r
-head(raw_data_m1,20)
-```
-
-<div class="r-output">
+    head(raw_data_m1,20)
 
 <pre><code>##    stratum event sender receiver        time reciprocity_count
 ## 1        1     1     a3       a8 0.001987321                 0
@@ -52,34 +44,26 @@ head(raw_data_m1,20)
 ## 20      10     0     a4      a16 0.022153557                 0
 </code></pre>
 
-</div>
-
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
 ## 2. Construct datasets for two inference procedures
 
-### 2.1. Case-$`7`$-control for inference via conditional logistic regression
+### 2.1. Case-7-control for inference via conditional logistic regression
 
-``` r
-set.seed(1)
-raw_data_m7 <- simulate_relational_events(
-  n_events           = 1000,
-  senders            = paste0("a", 1:20),
-  receivers          = paste0("a", 1:20),
-  baseline_rate      = 1,
-  n_controls         = 7,
-  endogenous_stats   = "reciprocity_count", 
-  endogenous_effects = c(reciprocity_count = 0.6),
-)
-```
+    set.seed(1)
+    raw_data_m7 <- simulate_relational_events(
+      n_events           = 1000,
+      senders            = paste0("a", 1:20),
+      receivers          = paste0("a", 1:20),
+      baseline_rate      = 1,
+      n_controls         = 7,
+      endogenous_stats   = "reciprocity_count", 
+      endogenous_effects = c(reciprocity_count = 0.6),
+    )
 
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
-``` r
-head(raw_data_m7,10)
-```
-
-<div class="r-output">
+    head(raw_data_m7,10)
 
 <pre><code>##    stratum event sender receiver        time reciprocity_count
 ## 1        1     1     a3       a8 0.001987321                 0
@@ -94,18 +78,12 @@ head(raw_data_m7,10)
 ## 10       2     0     a8      a18 0.003404473                 0
 </code></pre>
 
-</div>
-
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
-### 2.2. Case-$`1`$-control dataset in “wide” format for inference via degenerate logistic regression
+### 2.2. Case-1-control dataset in “wide” format for inference via degenerate logistic regression
 
-``` r
-wide_data_m1 <- widen_case_control(raw_data_m1, case = "event", stratum= "stratum")
-head(wide_data_m1)
-```
-
-<div class="r-output">
+    wide_data_m1 <- widen_case_control(raw_data_m1, case = "event", stratum= "stratum")
+    head(wide_data_m1)
 
 <pre><code>##   stratum sender_ev sender_nv receiver_ev receiver_nv     time_ev     time_nv
 ## 1       1        a3       a17          a8          a9 0.001987321 0.001987321
@@ -123,20 +101,14 @@ head(wide_data_m1)
 ## 6      0                    0                    1                  -1
 </code></pre>
 
-</div>
-
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
 ## 3. Inference procedures
 
 ### 3.1. Conditional logistic regression
 
-``` r
-fit_clogit <- rem(event ~ reciprocity_count, data = raw_data_m7, method = "clogit")
-summary(fit_clogit)
-```
-
-<div class="r-output">
+    fit_clogit <- rem(event ~ reciprocity_count, data = raw_data_m7, method = "clogit")
+    summary(fit_clogit)
 
 <pre><code>## Call:
 ## coxph(formula = Surv(rep(1, 8000L), .case) ~ reciprocity_count + 
@@ -158,18 +130,12 @@ summary(fit_clogit)
 ## Score (logrank) test = 798.1  on 1 df,   p=<2e-16
 </code></pre>
 
-</div>
-
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
 ### 3.2. Degenerate logistic regression
 
-``` r
-fit_glm <- rem(~ reciprocity_count, data = wide_data_m1, method = "gam")
-summary(fit_glm)
-```
-
-<div class="r-output">
+    fit_glm <- rem(~ reciprocity_count, data = wide_data_m1, method = "gam")
+    summary(fit_glm)
 
 <pre><code>## 
 ## Family: binomial 
@@ -189,89 +155,81 @@ summary(fit_glm)
 ## UBRE = -0.55893  Scale est. = 1         n = 1000
 </code></pre>
 
-</div>
-
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
 ## 4. Replicate the simulation study 100 times
 
-``` r
-# parameters
-N_SIM        <- 100
-N_EVENTS     <- 1000
-TRUE_BETA    <- 0.6        
-SENDERS      <- paste0("a", 1:20)
-RECEIVERS    <- paste0("a", 1:20)
-```
+    # parameters
+    N_SIM        <- 100
+    N_EVENTS     <- 1000
+    TRUE_BETA    <- 0.6        
+    SENDERS      <- paste0("a", 1:20)
+    RECEIVERS    <- paste0("a", 1:20)
 
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
-``` r
-# storage
-coefs <- data.frame(
-  glm_1   = numeric(N_SIM),   # degenerate logistic, 1 control
-  clogit_7  = numeric(N_SIM), # conditional logit,   7 controls
-  clogit_20 = numeric(N_SIM)  # conditional logit,  20 controls
-)
-```
+    # storage
+    coefs <- data.frame(
+      glm_1   = numeric(N_SIM),   # degenerate logistic, 1 control
+      clogit_7  = numeric(N_SIM), # conditional logit,   7 controls
+      clogit_20 = numeric(N_SIM)  # conditional logit,  20 controls
+    )
 
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
-``` r
-for (i in seq_len(N_SIM)) {
-  
-  set.seed(i)
-  
-  # case-1-control dataset
-  d1 <- simulate_relational_events(
-    n_events           = N_EVENTS,
-    senders            = SENDERS,
-    receivers          = RECEIVERS,
-    baseline_rate      = 1,
-    n_controls         = 1,
-    endogenous_stats   = "reciprocity_count", 
-    endogenous_effects = c(reciprocity_count = TRUE_BETA),
-  )
-  
-  # fit degenerate logistic regression
-  wide_d1 <- widen_case_control(d1, case = "event", stratum = "stratum")
-  fit_glm <- rem(~ reciprocity_count, data = wide_d1, method = "gam")
-  coefs$glm_1[i] <- coef(fit_glm)[["reciprocity_count"]]
-  
-  
-  # case-7-control dataset
-  d7 <- simulate_relational_events(
-    n_events           = N_EVENTS,
-    senders            = SENDERS,
-    receivers          = RECEIVERS,
-    baseline_rate      = 1,
-    n_controls         = 7,
-    endogenous_stats   = "reciprocity_count", 
-    endogenous_effects = c(reciprocity_count = TRUE_BETA)
-  )
-  
-  fit_clogit_7 <- rem(event ~ reciprocity_count, data = d7, method = "clogit")
-  coefs$clogit_7[i] <- coef(fit_clogit_7)[["reciprocity_count"]]
-  
-  # case-20-control dataset
-  d20 <- simulate_relational_events(
-    n_events           = N_EVENTS,
-    senders            = SENDERS,
-    receivers          = RECEIVERS,
-    baseline_rate      = 1,
-    n_controls         = 20,
-    endogenous_stats   = "reciprocity_count", 
-    endogenous_effects = c(reciprocity_count = TRUE_BETA),
-  )
-  
-  fit_clogit_20 <- rem(event ~ reciprocity_count, data = d20, method = "clogit")
-  coefs$clogit_20[i] <- coef(fit_clogit_20)[["reciprocity_count"]]
-  
-  if (i %% 10 == 0) message(sprintf("  Completed %d / %d replications", i, N_SIM))
-  
-  
-}
-```
+    for (i in seq_len(N_SIM)) {
+      
+      set.seed(i)
+      
+      # case-1-control dataset
+      d1 <- simulate_relational_events(
+        n_events           = N_EVENTS,
+        senders            = SENDERS,
+        receivers          = RECEIVERS,
+        baseline_rate      = 1,
+        n_controls         = 1,
+        endogenous_stats   = "reciprocity_count", 
+        endogenous_effects = c(reciprocity_count = TRUE_BETA),
+      )
+      
+      # fit degenerate logistic regression
+      wide_d1 <- widen_case_control(d1, case = "event", stratum = "stratum")
+      fit_glm <- rem(~ reciprocity_count, data = wide_d1, method = "gam")
+      coefs$glm_1[i] <- coef(fit_glm)[["reciprocity_count"]]
+      
+      
+      # case-7-control dataset
+      d7 <- simulate_relational_events(
+        n_events           = N_EVENTS,
+        senders            = SENDERS,
+        receivers          = RECEIVERS,
+        baseline_rate      = 1,
+        n_controls         = 7,
+        endogenous_stats   = "reciprocity_count", 
+        endogenous_effects = c(reciprocity_count = TRUE_BETA)
+      )
+      
+      fit_clogit_7 <- rem(event ~ reciprocity_count, data = d7, method = "clogit")
+      coefs$clogit_7[i] <- coef(fit_clogit_7)[["reciprocity_count"]]
+      
+      # case-20-control dataset
+      d20 <- simulate_relational_events(
+        n_events           = N_EVENTS,
+        senders            = SENDERS,
+        receivers          = RECEIVERS,
+        baseline_rate      = 1,
+        n_controls         = 20,
+        endogenous_stats   = "reciprocity_count", 
+        endogenous_effects = c(reciprocity_count = TRUE_BETA),
+      )
+      
+      fit_clogit_20 <- rem(event ~ reciprocity_count, data = d20, method = "clogit")
+      coefs$clogit_20[i] <- coef(fit_clogit_20)[["reciprocity_count"]]
+      
+      if (i %% 10 == 0) message(sprintf("  Completed %d / %d replications", i, N_SIM))
+      
+      
+    }
 
     ##   Completed 10 / 100 replications
 
@@ -295,38 +253,34 @@ for (i in seq_len(N_SIM)) {
 
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
-``` r
-coefs_long <- stack(coefs)
-levels(coefs_long$ind) <- c(
-  "Logistic\n(1 control)",
-  "Cond. logit\n(7 controls)",
-  "Cond. logit\n(20 controls)"
-)
-cols <- c("#4E79A7", "#F28E2B", "#59A14F")
-```
+    coefs_long <- stack(coefs)
+    levels(coefs_long$ind) <- c(
+      "Logistic\n(1 control)",
+      "Cond. logit\n(7 controls)",
+      "Cond. logit\n(20 controls)"
+    )
+    cols <- c("#4E79A7", "#F28E2B", "#59A14F")
 
 /Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
 
-``` r
-boxplot(
-  values ~ ind,
-  data       = coefs_long,
-  col        = cols,
-  border     = darken <- adjustcolor(cols, red.f = 0.6, green.f = 0.6, blue.f = 0.6),
-  outcol     = cols,
-  outpch     = 16,
-  cex        = 0.6,
-  las        = 1,
-  xlab       = "",
-  ylab       = expression(hat(beta)),
-  main       = expression(
-    "Estimated "*beta*" for reciprocity_count across 100 replications"
-  ),
-  cex.main   = 1.0,
-  cex.lab    = 0.95,
-  frame.plot = FALSE
-)
-abline(h = TRUE_BETA, lty = 2, lwd = 1.8, col = "black")
-```
+    boxplot(
+      values ~ ind,
+      data       = coefs_long,
+      col        = cols,
+      border     = darken <- adjustcolor(cols, red.f = 0.6, green.f = 0.6, blue.f = 0.6),
+      outcol     = cols,
+      outpch     = 16,
+      cex        = 0.6,
+      las        = 1,
+      xlab       = "",
+      ylab       = expression(hat(beta)),
+      main       = expression(
+        "Estimated "*beta*" for reciprocity_count across 100 replications"
+      ),
+      cex.main   = 1.0,
+      cex.lab    = 0.95,
+      frame.plot = FALSE
+    )
+    abline(h = TRUE_BETA, lty = 2, lwd = 1.8, col = "black")
 
-![](Simulating-REM-Data_files/figure-gfm/simulation_varying_m-1.png)<!-- -->/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
+![](Simulating-REM-Data_files/figure-markdown_strict/simulation_varying_m-1.png)/Users/martina.boschi/Dropbox/Martina/PhD/12-REM-tutorial/rem-tutorial/01-Introduction-to-REM/01-Simulating-REM-Data/Simulating-REM-Data.R
