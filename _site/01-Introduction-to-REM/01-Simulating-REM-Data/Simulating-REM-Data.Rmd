@@ -105,21 +105,37 @@ wide_data_m1 <- widen_case_control(raw_data_m1, case = "event", stratum= "stratu
 head(wide_data_m1)
 ```
 
-## 3. Inference procedures
+**Remark**: Time.
 
-### 2.1. Sampled partial likelihood via Conditional logistic regression
+## 3. How to fit models with linear effects
 
-### 3.1. Conditional logistic regression
+Once the data has been structured, we are ready to fit the model. We do that by using the `rem` function in `amore`. The desired inference method can be selected via the `method` argument.
+
+### 3.1. Sampled partial likelihood via Conditional logistic regression
+
+As discussed in [Theoretical reference], when considering more than one non-event per event, it can be shown that the partial likelihood coincides with that of a *conditional logistic regression* - hence we set the method to `clogit`.
 
 ```{r}
-fit_clogit <- rem(event ~ reciprocity_count, data = raw_data_m7, method = "clogit")
+fit_clogit <- rem(event ~ reciprocity_count, 
+                  data = raw_data_m7, 
+                  method = "clogit")
 summary(fit_clogit)
 ```
 
-### 3.2. Degenerate logistic regression
+### 3.2. Case-1-control partial likelihood via Degenerate logistic regression
+
+When considering only one non-event per event ([Theoretical reference]), it can be shown that the partial likelihood coincides with that of a *degenerate logistic regression*:
+
+- without an intercept term,
+- with a constant response equal to 1,
+- with covariates equal to the difference between the covariates of the event and those of the sampled non-event.
+
+This formulation allows the framework to be extended to additive effects, which is why the method here is `gam`.
 
 ```{r}
-fit_glm <- rem(~ reciprocity_count, data = wide_data_m1, method = "gam")
+fit_glm <- rem(~ reciprocity_count, 
+               data = wide_data_m1, 
+               method = "gam")
 summary(fit_glm)
 ```
 

@@ -254,13 +254,24 @@ is associated with each event.</p>
 ## 6      0                    0                    1                  -1
 </code></pre>
 
-<h2 id="3-inference-procedures">3. Inference procedures</h2>
+<p><strong>Remark</strong>: Time.</p>
 
-<h3 id="21-sampled-partial-likelihood-via-conditional-logistic-regression">2.1. Sampled partial likelihood via Conditional logistic regression</h3>
+<h2 id="3-how-to-fit-models-with-linear-effects">3. How to fit models with linear effects</h2>
 
-<h3 id="31-conditional-logistic-regression">3.1. Conditional logistic regression</h3>
+<p>Once the data has been structured, we are ready to fit the model. We do
+that by using the <code class="language-plaintext highlighter-rouge">rem</code> function in <code class="language-plaintext highlighter-rouge">amore</code>. The desired inference
+method can be selected via the <code class="language-plaintext highlighter-rouge">method</code> argument.</p>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fit_clogit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">reciprocity_count</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raw_data_m7</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"clogit"</span><span class="p">)</span><span class="w">
+<h3 id="31-sampled-partial-likelihood-via-conditional-logistic-regression">3.1. Sampled partial likelihood via Conditional logistic regression</h3>
+
+<p>As discussed in [Theoretical reference], when considering more than
+one non-event per event, it can be shown that the partial likelihood
+coincides with that of a <em>conditional logistic regression</em> - hence we
+set the method to <code class="language-plaintext highlighter-rouge">clogit</code>.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fit_clogit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">reciprocity_count</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raw_data_m7</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"clogit"</span><span class="p">)</span><span class="w">
 </span><span class="n">summary</span><span class="p">(</span><span class="n">fit_clogit</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
@@ -284,9 +295,25 @@ is associated with each event.</p>
 ## Score (logrank) test = 798.1  on 1 df,   p=&lt;2e-16
 </code></pre>
 
-<h3 id="32-degenerate-logistic-regression">3.2. Degenerate logistic regression</h3>
+<h3 id="32-case-1-control-partial-likelihood-via-degenerate-logistic-regression">3.2. Case-1-control partial likelihood via Degenerate logistic regression</h3>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">reciprocity_count</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wide_data_m1</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gam"</span><span class="p">)</span><span class="w">
+<p>When considering only one non-event per event ([Theoretical
+reference]), it can be shown that the partial likelihood coincides with
+that of a <em>degenerate logistic regression</em>:</p>
+
+<ul>
+  <li>without an intercept term,</li>
+  <li>with a constant response equal to 1,</li>
+  <li>with covariates equal to the difference between the covariates of
+the event and those of the sampled non-event.</li>
+</ul>
+
+<p>This formulation allows the framework to be extended to additive
+effects, which is why the method here is <code class="language-plaintext highlighter-rouge">gam</code>.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">reciprocity_count</span><span class="p">,</span><span class="w"> 
+               </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wide_data_m1</span><span class="p">,</span><span class="w"> 
+               </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gam"</span><span class="p">)</span><span class="w">
 </span><span class="n">summary</span><span class="p">(</span><span class="n">fit_glm</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
