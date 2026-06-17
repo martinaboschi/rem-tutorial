@@ -15,6 +15,10 @@ title: "Practical 2: Alien Species Invasions"
 
 *Content here.*
 
+$\mathcal{C}$
+
+$$a^2 x^2 + c = 0$$
+
 ---
 
 ## 2.
