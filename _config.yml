@@ -1,7 +1,9 @@
 theme: minima
 title: REM Tutorial
-description: 
+description: A tutorial on REM
 
-include:  - index.md
+include:
+  - index.md
 
-exclude:  - "**/*.Rmd"
+exclude:
+  - "**/*.Rmd"
