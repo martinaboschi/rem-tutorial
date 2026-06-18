@@ -9,11 +9,11 @@ nav_order: 1
 .rem-hero p { font-size: 1rem; color: #4b5563; line-height: 1.7; max-width: 680px; margin: 0; }
 .rem-grid-top { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 1.5rem 0 0; }
 .rem-grid-bot { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 0 1.5rem; width: 66.6%; margin: 16px auto 0; }
-.rem-box { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; text-decoration: none; display: flex; flex-direction: column; gap: 8px; height: 140px; box-sizing: border-box; }
+.rem-box { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; text-decoration: none; display: flex; flex-direction: column; gap: 6px; height: 190px; box-sizing: border-box; }
+.rem-title { font-size: 13px; font-weight: 700; color: #111827; margin: 0; line-height: 1.4; }
+.rem-sub { font-size: 11px; color: #6b7280; margin: 0; line-height: 1.5; }
 .rem-box:hover { filter: brightness(0.97); }
 .rem-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 8px; border-radius: 6px; display: inline-block; width: fit-content; }
-.rem-title { font-size: 14px; font-weight: 700; color: #111827; margin: 0; line-height: 1.4; }
-.rem-sub { font-size: 12px; color: #6b7280; margin: 0; line-height: 1.5; }
 .rem-arrow { font-size: 16px; color: #9ca3af; margin-top: auto; }
 .tag-yellow { background: #fef9c3; color: #854d0e; }
 .tag-blue   { background: #dbeafe; color: #1e3a8a; }
@@ -22,9 +22,9 @@ nav_order: 1
 .tag-gray   { background: #f3f4f6; color: #374151; }
 </style>
 
-## Welcome to this Relational Event Model (REM) tutorial space!
+## Welcome to this Relational (Hyper) Event Model tutorial space!
 
-This site collects teaching materials on **Relational Event Models** (REMs) and their extensions. Whether you are new to REMs or looking to deepen your understanding, you can find here theory, hands-on tutorials, software, and reading material. 
+This site collects teaching materials on **Relational (Hyper) Event Models** (RHEMs) and their extensions. Whether you are new to R(H)EMs (with or without H) or looking to deepen your understanding, you can find here **theory, hands-on tutorials, software, and reading material**. 
 
 <div class="rem-grid-top">
 
