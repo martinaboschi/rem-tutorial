@@ -44,10 +44,13 @@
 <div class="download-box">
   <strong>📥 Download files</strong>
   <ul>
-    <li><a href="Scientific-Innovation.R" download="">Scientific-Innovation.R</a> — R script</li>
-    <li><a href="Scientific-Innovation.Rmd" download=""> Scientific-Innovation.Rmd</a> — R Markdown source</li>
+    <li><a href="Scientific-Innovation.R" download="">Scientific-Innovation.R</a> — R script, for following along with the code</li>
+    <li><a href="Scientific-Innovation.Rmd" download="">Scientific-Innovation.Rmd</a> — R Markdown source file</li>
+    <li><a href="Scientific-Innovation.zip" download="">Scientific-Innovation.zip</a> — working directory with all data and image files needed to replicate the full analysis</li>
   </ul>
 </div>
+
+<p>If you plan to run the R Markdown file, make sure to place it in the same folder as the extracted contents of <code class="language-plaintext highlighter-rouge">Scientific-Innovation.zip</code>.</p>
 
 <h2 id="introduction-and-set-up">Introduction and Set up</h2>
 
@@ -581,7 +584,7 @@ the second approach.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">gam_tve</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-20-1.png" alt="" /></p>
+<p><img src="Scientific-Innovation_files/figure-markdown/gam_tve-1.png" alt="" /></p>
 
 <p><strong>Interpretation:</strong> The plot of the time-varying effect shows an
 increase; the confidence bands are very large at the beginning, probably
@@ -601,7 +604,7 @@ window, where, instead, confidence intervals are quite narrow.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">gam_tve_transformed</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-22-1.png" alt="" /></p>
+<p><img src="Scientific-Innovation_files/figure-markdown/gam_tve_transformed-1.png" alt="" /></p>
 
 <p><strong>Interpretation:</strong> As previously mentioned, fitting a model with smooth
 terms improves when the covariates do not exhibit major outliers. When
@@ -656,7 +659,7 @@ untransformed time, is captured here as well.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">gam_nle</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-25-1.png" alt="" /></p>
+<p><img src="Scientific-Innovation_files/figure-markdown/gam_nle-1.png" alt="" /></p>
 
 <p><strong>Interpretation:</strong> The plot of the non-linear effect clearly shows a
 non-monotonic pattern. Apparently, authors tend to publish together when
@@ -726,7 +729,7 @@ new paper.</p>
   </span><span class="n">scale_fill_viridis_c</span><span class="p">()</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-28-1.png" alt="" /></p>
+<p><img src="Scientific-Innovation_files/figure-markdown/gam_tvnle-1.png" alt="" /></p>
 
 <p><strong>Interpretation:</strong> By allowing both effects simultaneously, we can see
 that the non-linear effect remains clearly present, while the

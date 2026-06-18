@@ -12,8 +12,11 @@ The practical sessions of this workshop focus on **fitting relational hyper even
   <ul>
     <li><a href="Les-Miserables.R" download>Les-Miserables.R</a> — R script</li>
     <li><a href="Les-Miserables.Rmd" download> Les-Miserables.Rmd</a> — R Markdown source</li>
+    <li><a href="Les-Miserables.zip" download>Les-Miserables.zip</a> — working directory with all data and image files needed to replicate the full analysis</li>
   </ul>
 </div>
+
+If you plan to run the R Markdown file, make sure to place it in the same folder as the extracted contents of `Les-Miserables.zip`.
 
 {% include_relative Les-Miserables.md %}
 

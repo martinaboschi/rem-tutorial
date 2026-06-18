@@ -39,17 +39,20 @@
       <div class="wrapper">
         <h1 id="practical-2-alien-species-invasions">Practical 2: Alien Species Invasions</h1>
 
-<p><strong>Instructions.</strong>
-You may follow the tutorial directly on this page. Otherwise, if you wish to run things locally and play around with the code, you may download the  <code class="language-plaintext highlighter-rouge">R</code>/<code class="language-plaintext highlighter-rouge">Rmd</code> files below:</p>
+<p><strong>Instructions.</strong></p>
+
+<p>This practical session focuses on <strong>fitting relational event models with non-linear and time-varying effects</strong> using the <code class="language-plaintext highlighter-rouge">amorem</code> package. If you would like to replicate the code locally, feel free to download the files in the box below:</p>
 
 <div class="download-box">
   <strong>📥 Download files</strong>
   <ul>
-    <li><a href="alien_species_amore.R" download="">Alien-Species-Invasion.R</a> — R script</li>
-    <li><a href="alien_species_amore.Rmd" download=""> Alien-Species-Invasion.Rmd</a> — R Markdown source</li>
-
+    <li><a href="Alien-Species.R" download="">Alien-Species.R</a> — R script</li>
+    <li><a href="Alien-Species.Rmd" download=""> Alien-Species.Rmd</a> — R Markdown source</li>
+    <li><a href="Alien-Species.zip" download="">Alien-Species.zip</a> — working directory with all data and image files needed to replicate the full analysis</li>
   </ul>
 </div>
+
+<p>If you plan to run the R Markdown file, make sure to place it in the same folder as the extracted contents of <code class="language-plaintext highlighter-rouge">Alien-Species.zip</code>.</p>
 
 <h2 id="introduction">Introduction</h2>
 
@@ -136,17 +139,17 @@ contains such information.</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>native[sample(1:nrow(native), 10), c("species", "region")]
 </code></pre></div></div>
 
-<pre><code>##                           species        region
-## 1033014          Vespula vulgaris United States
-## 1026455          Curculio conicus         Libya
-## 1032254         Vespula germanica    Luxembourg
-## 1020394            Tomicus erosus          Iran
-## 995806        Anastrepha suspensa         Haiti
-## 1007187     Euwallacea fornicatus         China
-## 1009337     Hypogeococcus pungens       Bolivia
-## 1030550       Solenopsis richteri       Uruguay
-## 1009058             Hylastes ater        Russia
-## 1037757 Xylosandrus crassiusculus      Thailand
+<pre><code>##                        species         region
+## 996152     Aonidomytilus albus     Guadeloupe
+## 1006086        Diprion similis        Germany
+## 1009166  Bostrichus ligniperda         Azores
+## 1033793  Xyleborinus saxesenii          India
+## 995530  Anastrepha fraterculus      Venezuela
+## 1006034      Dinoderus minutus          China
+## 998499       Bombus terrestris        Georgia
+## 1037209  Xylosandrus compactus       Cambodia
+## 1008735      Harmonia axyridis Ryukyu Islands
+## 1022702 Phyllonorycter issikii    South Korea
 </code></pre>
 
 <p>This information is crucial for the definition of the <em>risk set</em>. If a
@@ -575,7 +578,7 @@ summary(m2_only_trade_tv)
 ## 
 ## Approximate significance of smooth terms:
 ##                  edf Ref.df Chi.sq p-value    
-## s(.time):trade 2.565  2.936  121.3  &lt;2e-16 ***
+## s(.time):trade 2.565  2.936  117.3  &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -586,7 +589,7 @@ summary(m2_only_trade_tv)
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>plot(m2_only_trade_tv)
 </code></pre></div></div>
 
-<p><img src="alien_species_amore_files/figure-markdown_strict/tve_trade-1.png" alt="" /></p>
+<p><img src="Alien-Species_files/figure-markdown_strict/tve_trade-1.png" alt="" /></p>
 
 <p>The effect of trade is positive throughout but, appears to be decreasing
 over the time period. So greater trade flows between regions, increase
@@ -622,7 +625,7 @@ summary(m3_only_dist_nl)
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>plot(m3_only_dist_nl)
 </code></pre></div></div>
 
-<p><img src="alien_species_amore_files/figure-markdown_strict/nl_dist-1.png" alt="" /></p>
+<p><img src="Alien-Species_files/figure-markdown_strict/nl_dist-1.png" alt="" /></p>
 
 <p>From the estimated non-linear effect, which presents an overall
 descreasing trend, we have that the greater the distance between 2

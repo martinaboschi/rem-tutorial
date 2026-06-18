@@ -553,7 +553,7 @@ summary(gam_tve)
 plot(gam_tve)
 ```
 
-![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-20-1.png)
+![](Scientific-Innovation_files/figure-markdown/gam_tve-1.png)
 
 **Interpretation:** The plot of the time-varying effect shows an
 increase; the confidence bands are very large at the beginning, probably
@@ -575,7 +575,7 @@ gam_tve_transformed <- rem(~ tv(diff.author.publication.activity) +
 plot(gam_tve_transformed)
 ```
 
-![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-22-1.png)
+![](Scientific-Innovation_files/figure-markdown/gam_tve_transformed-1.png)
 
 **Interpretation:** As previously mentioned, fitting a model with smooth
 terms improves when the covariates do not exhibit major outliers. When
@@ -633,7 +633,7 @@ summary(gam_nle)
 plot(gam_nle)
 ```
 
-![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-25-1.png)
+![](Scientific-Innovation_files/figure-markdown/gam_nle-1.png)
 
 **Interpretation:** The plot of the non-linear effect clearly shows a
 non-monotonic pattern. Apparently, authors tend to publish together when
@@ -706,7 +706,7 @@ ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +
   scale_fill_viridis_c()
 ```
 
-![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-28-1.png)
+![](Scientific-Innovation_files/figure-markdown/gam_tvnle-1.png)
 
 **Interpretation:** By allowing both effects simultaneously, we can see
 that the non-linear effect remains clearly present, while the

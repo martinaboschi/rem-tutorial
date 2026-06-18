@@ -10,10 +10,13 @@ The practical sessions of this workshop focus on **fitting relational hyper even
 <div class="download-box">
   <strong>📥 Download files</strong>
   <ul>
-    <li><a href="Scientific-Innovation.R" download>Scientific-Innovation.R</a> — R script</li>
-    <li><a href="Scientific-Innovation.Rmd" download> Scientific-Innovation.Rmd</a> — R Markdown source</li>
+    <li><a href="Scientific-Innovation.R" download>Scientific-Innovation.R</a> — R script, for following along with the code</li>
+    <li><a href="Scientific-Innovation.Rmd" download>Scientific-Innovation.Rmd</a> — R Markdown source file</li>
+    <li><a href="Scientific-Innovation.zip" download>Scientific-Innovation.zip</a> — working directory with all data and image files needed to replicate the full analysis</li>
   </ul>
 </div>
+
+If you plan to run the R Markdown file, make sure to place it in the same folder as the extracted contents of `Scientific-Innovation.zip`.
 
 {% include_relative Scientific-Innovation.md %}
 

@@ -273,7 +273,7 @@ gam_tve <- gam_tve <- rem(~ tv(diff.author.publication.activity) +
 summary(gam_tve)
 ```
 
-```{r}
+```{r gam_tve}
 plot(gam_tve)
 ```
 
@@ -288,7 +288,7 @@ gam_tve_transformed <- rem(~ tv(diff.author.publication.activity) +
                            data = dat_gam)
 ```
 
-```{r}
+```{r gam_tve_transformed}
 plot(gam_tve_transformed)
 ```
 
@@ -311,7 +311,7 @@ gam_nle <- rem(~ nl(diff.author.publication.activity)
 summary(gam_nle)
 ```
 
-```{r}
+```{r gam_nle}
 plot(gam_nle)
 ```
 
@@ -335,7 +335,7 @@ viz <- getViz(gam_tvnle$fit)
 summary(gam_tvnle)
 ```
 
-```{r}
+```{r gam_tvnle}
 plot_obj <- plot(viz)
 plot_data <- plot_obj$plots[[1]]$ggObj$data
 plot_data <- plot_data[!is.na(plot_data$z),]
