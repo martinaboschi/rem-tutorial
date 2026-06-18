@@ -17,9 +17,9 @@ If you are running this tutorial locally, make sure to uncomment the
 
     # install.packages("remotes")
     # install.packages("pbapply")
-    # remotes::install_github("franciscorichter/amore")
+    # remotes::install_github("franciscorichter/amorem")
 
-    library(amore)
+    library(amorem)
     library(pbapply)
 
 ------------------------------------------------------------------------
@@ -80,17 +80,17 @@ contains such information.
 
     native[sample(1:nrow(native), 10), c("species", "region")]
 
-<pre><code>##                           species        region
-## 1033014          Vespula vulgaris United States
-## 1026455          Curculio conicus         Libya
-## 1032254         Vespula germanica    Luxembourg
-## 1020394            Tomicus erosus          Iran
-## 995806        Anastrepha suspensa         Haiti
-## 1007187     Euwallacea fornicatus         China
-## 1009337     Hypogeococcus pungens       Bolivia
-## 1030550       Solenopsis richteri       Uruguay
-## 1009058             Hylastes ater        Russia
-## 1037757 Xylosandrus crassiusculus      Thailand
+<pre><code>##                        species              region
+## 1030552    Solenopsis richteri           Argentina
+## 1033105 Wasmannia auropunctata Trinidad and Tobago
+## 1016667       Opogona sacchari          Seychelles
+## 1009156  Bostrichus ligniperda             Denmark
+## 1033810  Xyleborinus saxesenii             Denmark
+## 1033020       Vespula vulgaris              Mexico
+## 1009170  Bostrichus ligniperda         Netherlands
+## 1021690   Pheidole megacephala               Kenya
+## 1038082     Xyleborus germanus             Vietnam
+## 1001334     Chilo suppressalis               China
 </code></pre>
 
 This information is crucial for the definition of the *risk set*. If a
@@ -121,7 +121,7 @@ interest.
 </code></pre>
 
 We know format the data in a convenient manner for analysis using
-`amore` package. We need to make sure that both the data structures for
+`amorem` package. We need to make sure that both the data structures for
 the sequence of relational events and the set of dyads not at risk at
 the beginning of the time-window contain a `sender` and `receiver`
 column.
