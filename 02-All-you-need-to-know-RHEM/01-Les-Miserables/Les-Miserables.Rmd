@@ -28,167 +28,187 @@ library(amorem)
 
 This practical also requires the `dplyr` library. If you do not have it installed, uncomment the `install.packages("dplyr")` line below.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 # install.packages("dplyr")
 library(dplyr)
 ```
 
-This practical is inspired by the analysis conducted in (Lerner et al., 2025), where, for illustrative purposes, RHEM is applied to the network of actor co-appearances in *Les Misérables*, compiled by Donald Knuth (Knuth, 1993). 
+This practical is inspired by the analysis conducted in (Lerner et al., 2025), where, for illustrative purposes, RHEM is applied to the network of actor co-appearances in *Les Misérables*, compiled by Donald Knuth (Knuth, 1993).
 
 The data comprises 80 actors (co-)appearing in one or several of 288 chapters. The (binary\footnote{only for mathematical purposes}) gender of the actors is known. 
 
-## 1. Covariate Computation in `eventnet`
-
-[Include tutorial about eventnet here]
-
-## 2. Importing Data After Pre-Processing in `eventnet`
-
-a)  **Given the information above, interpret this data as a relational hyper-event network. Define the components of the hyperevent sequence, the vertex set, its cardinality, and the available attributes.**
-
-- **80 actors** $|V| = 80$ (co-)appearing in one or several of **288 chapters** ($n = 288$);
-- $e_i = (S_i, t_i)$ is a **hyperevent** (a chapter) involving a set of co-appearing actors $S_i$. In this case, $t_i$ is simply a counter for the chapter;
-- $\text{female}(i)$ is a **binary gender attribute** for each actor. 
-
-b)  **Open the file `jean_events.csv`. How are the events reported? Does it contain only event information?**
-
-The file `jean_events.csv` contains three types of entries (which can be distinguished using the column `type`), namely `add.actor`, `is.female`, and `chapter`. Each entry involves only one actor at a time. A chapter is therefore represented by as many rows as the number of actors involved.
-
-c)  **Open the configuration file `jean.config.small.txt` in `eventnet` and inspect the different windows.**
-
-See the tutorial notebook for more information on how the data is treated in `eventnet`.
-
-d) **Load the input data `jean_events_EVENTS.csv` located in `01-Data`. Is this a case-1-control dataset? If not, how do you think it can be constructed?**
-
-In`eventnet` we computed the necessary statistics to support the inference techniques that will be explored. Upon inspecting the dataset, you may notice the presence of missing values (NA) in some columns.
-
-In particular, the `TARGET` column contains only missing values, while the `SOURCE` column includes multiple entries. This indicates that we are dealing with \textbf{undirected relational hyper-events}, where the sender set is a subset of the vertices in a relational hypergraph $V$, and the receiver set is empty.
-
-Additionally, the `EVENT_INTERVAL_ID` column does not hold interpretable values, as in this application we just know the order of events. The `IS_OBSERVED` column is used to distinguish between actual observed events and non-events (i.e., events that could have occurred but did not).
+## 1. Data import and Covariate computation in `eventnet`
 
 ```{r}
-data_original <- read.csv("01-Data/jean_events_EVENTS.csv")
-```
-
-```{r}
+data_original <- read.csv("00-eventnet/jean_events.csv")
 head(data_original)
 ```
 
-In this application, the `num.actors` column is also unnecessary. This is because non-events have been sampled to match the cardinality of the observed events, meaning that the effect of event size cannot be meaningfully estimated.
+Inspecting the data, we can interpret it as a relational hyper-event network:
 
-To simplify visualization, we proceed by removing all unnecessary columns from the dataset.
+- The network consists of **80 actors** ($|V| = 80$) co-appearing in one or several of **288 chapters** ($n = 288$);
+- $e_i = (S_i, t_i)$ is a *hyperevent* (a chapter) involving a set of co-appearing actors (i.e. the *senders* of the event) $S_i$, where $t_i$ is simply a counter for the chapter;
+- $\text{female}(i)$ is a **binary gender attribute** for each actor.
+
+The file `jean_events.csv` contains three types of entries (which can be distinguished using the column `type`), namely `add.actor`, `is.female`, and `chapter`. Each entry involves only one actor at a time. A chapter is therefore represented by as many rows as the number of actors involved.
 
 ```{r}
-data <- data_original[,setdiff(colnames(data_original), 
-                               c("TARGET", "TYPE", "EVENT_INTERVAL_ID", "EVENT", 
-                                 "INTEGER_TIME", "TIME_POINT", 
-                                 "TIME_UNIT", "num.actors"))]
-rm(data_original)
-head(data)
+table(data_original$TYPE)
 ```
 
-The object `data` is not a case-1-control dataset. To construct it, we first create two separate objects for the datasets containing events and non-events, respectively. We then merge these datasets using a set of variables that identify which event each non-event refers to. Among the non-events satisfying this condition, we sample only one. 
+To show how to analyze the data in `eventnet`, we refer explicitly to the tutorials
+[Basic tutorial](https://github.com/juergenlerner/eventnet/wiki/Basic-tutorial) and
+[RHEM first steps](https://github.com/juergenlerner/eventnet/wiki/RHEM-first-steps-(tutorial)).
+You can find the **configuration file** `jean.config.small.txt` in the materials above, which can be directly uploaded into `eventnet`. The configuration file tells the software how the input data should be interpreted and processed. Once you have uploaded the file in `eventnet`, you can explore the different windows:
+
+- **(i) files**: allows you to specify one or more input files, define the corresponding CSV settings (e.g., delimiter, quote character, header, etc.), and set an output directory. In the given example, there are three columns named `event.id`, `participant`, and `type`. 
+
+![Files tab where you can specify input directory, CSV settings, and the output directory](02-Pictures/file-tab.png)
+
+- **(ii) events**: allows you to map different components of an event to columns of the input file and define whether the event network is one-mode or multi-mode.
+
+  1. `SOURCE`: identifies who initiates the event;
+  2. `TARGET`: identifies who receives the event. Undirected hyperevents should map `SOURCE` and `TARGET` to the same column indicating the participants;
+  3. `TIME`: the time of the event. Time can be expressed in several ways, including integers, decimal numbers, or date–time strings. Additional information must be specified in the Time tab. If time is implied, events are implicitly numbered 1, 2, 3, …, and these numbers are taken as the event time;
+  4. `TYPE`: information about what the source does to the target. If the type is implied, it is implicitly set to `EVENT`;
+  5. `WEIGHT`: specifies the strength, magnitude, or intensity of the event. If weight is implied, it is implicitly set to one;
+  6. `EVENT_INTERVAL_ID`: marks sub-sequences of simultaneous events. It must necessarily be mapped to a column in the input file;
+  7. `NETWORK_ID`: marks sub-sequences that occur within the same event network.
+
+In the **network mode** section, you can specify whether the network is one- or multi-mode. In our case, the network is one-mode and includes actors only.
+Once the column for `TYPE` has been set, you can click on the button `learn event types from file`. It is then possible to view the different event types in the section `assign event type to node sets`. The Events tab for this application is shown below.
+
+![Events tab where you can specify which event component can be found in which column of the CSV file](02-Pictures/event-tab.png)
+
+- **(iii) time**: in this window, we focus our attention on the `event interval type` section, which defines which events are considered simultaneous. Several options are available: each event can be treated as occurring alone (`EVENT`); events with the same time value can be considered simultaneous (`TIME`); events occurring within the same time unit can be treated as simultaneous; and finally, our case: events that are assigned the same event interval ID are considered simultaneous (`EVENT_INTERVAL`). Whenever richer information about time is available, it is possible to specify the format and the decimal precision. The Time tab for this application is shown in Figure 3.
+
+![Time tab where you can specify the format of the time variable and which events are considered as simultaneous.](02-Pictures/time-tab.png)
+
+- **(iv) attributes**: Attributes include information about past events and assign values to nodes, to the entire network, or to hyperedges of any size. In this example, we define two `NODE_LEVEL`, one `DYAD_LEVEL`, and one `UNDIR_HYPER_LEVEL` attribute. The values of attributes generally change over time. Attributes are then used to define explanatory variables (statistics).
+
+  - **`NODE_LEVEL`**:
+    
+    - **at.risk**: a function of events of type `add_actor`.
+    The type is `DEFAULT_NODE_LEVEL_ATTRIBUTE`. The update type is `SET_VALUE_TO`, meaning that the values of this attribute are set to (rather than incremented by) the values of the events specified in the `updates by events` section at the bottom. The direction set to `OUT` means that the source node of the event has its value updated. In this case, using `IN` would lead to the same result.
+    
+    - **is.female**: defined in the same way as **at.risk**.
+  
+  - **`UNDIR_HYPER_LEVEL`**:
+  
+    - **prior.events**: a function of events of type `chapter`.
+    The type is `DEFAULT_UHE_ATTRIBUTE`. For each hyperevent and time-point, the attribute counts the number of past events and whose set of participants are exactly the members of the hyperevent. The update type is `INCREMENT_VALUE_BY`, meaning that the values of the events specified in the `updates by events` get added to the current attribute value on the same hyperedge.
+
+  - **`DYAD_LEVEL`**:
+  
+    - **prior.events.dyadics**: a function of events of type `chapter`. This allows to compute, for each pair of actors, the number of previous events in which both jointly participated.
+    The type is `DYAD_LEVEL_ATTRIBUTE_FROM_UHE`.
+
+The Attributes tab for this application is shown below.
+
+![Attribute tab allows to specify and compute attributes for nodes, dyads, entire network, or hyperedges.](02-Pictures/attribute-tab.png)
+
+- **(v) statistics**: Hyperedge statistics are computed by aggregating attributes and, therefore, might be functions of previous history of events. The values of hyperedge statistics are computed for all observed hyperevents and for all, or a subset of, non-events. Even though the configuration file includes information about closure, we focus on five statistics in this tutorial:
+
+1. **num.actors**: a statistic of type `UHE_SIZE_STAT`. It computes the size of the hyperevent and requires no additional settings.
+2. **individual.activity** and **dyadic.activity**: both are of type `UHE_SUB_REPETITION_STAT`. According to the discussion on subset repetition, these statistics rely on the attribute `prior_events`. The individual and dyadic versions differ in the hyperedge size, which is equal to 1 and 2, respectively. At the bottom, one can specify how to aggregate the values over the different participant subsets; in this case, they are summed (`SUM`).
+3. **female** and **diff.female**: both are of type `UHE_NODE_STAT`. They are computed from the attribute `is.female` and aggregated by summing (`SUM`) to evaluate the main effect, and by `SUMABSDIFF` to evaluate homophily.
+
+![Statistics are the variables that explain the event rate as a function of previous history of events, that is, as a function of attributes defined in the attribute tab.](02-Pictures/statistics-tab.png)
+
+- **(vi) observations**: this tab allows you to specify which hyperevents are considered and which ones, and how many, can be sampled as non-events. In the uploaded configuration, the observation is named `EVENTS_CONDITIONAL_SIZE` and has type `COND_SIZE_UHE_OBS`. It considers only events of type `event` (and not the other event type `add_actor`) and - importantly - has the option `apply case-control sampling` checked. The observation compares each observed hyperevent with all hyperevents of the same size. The Observations tab is reported in Figure 6.
+
+![Observation generators (observations) allow the definition of the risk set and how to sample from it.](02-Pictures/observations-tab.png)
+
+## 2. Importing data after pre-processing in `eventnet`
+
+We load the data after pre-processing in `eventnet`.
 
 ```{r}
-data_ev <- data %>% filter(IS_OBSERVED == 1)
-data_nv <- data %>% filter(IS_OBSERVED == 0)
+data_preproc <- read.csv("01-Data/jean_events_EVENTS.csv")
+head(data_preproc)
 ```
 
-```{r}
-# Add a new column to label each row in 'data_ev' and 'data_nv' 
-# as event data and non-event data respectively
-data_ev_tagged <- data_ev %>%
-  mutate(.row_type = "ev")
-data_nv_tagged <- data_nv %>%
-  mutate(.row_type = "nv")
-head(data_ev_tagged)
-# head(data_nv_tagged)
-rm(data_ev)
-rm(data_nv)
-```
+Upon inspecting the dataset, you may notice the presence of missing values (`NA`) in some columns.
+In particular, the `TARGET` column contains only missing values, while the `SOURCE` column includes multiple entries. This indicates that we are dealing with undirected relational hyper-events, where the sender set is a subset of the vertices in a relational hypergraph $V$, and the receiver set is empty.
+
+Additionally, the `EVENT_INTERVAL_ID` column does not hold interpretable values, as in this application we only know the order of events. The `IS_OBSERVED` column distinguishes between actual observed events and non-events (i.e., events that could have occurred but did not).
+
+The `num.actors` column is also unnecessary in this application, since non-events have been sampled to match the cardinality of the observed events, meaning that the effect of event size cannot be meaningfully estimated.
+
+To simplify the analysis, we remove all unnecessary columns from the dataset.
 
 ```{r}
+raw_data_m20 <- data_preproc[,setdiff(colnames(data_preproc),
+                              c("TARGET", "TYPE", "EVENT_INTERVAL_ID", "EVENT",
+                                "INTEGER_TIME", "TIME_POINT",
+                                "TIME_UNIT", "num.actors"))]
+rm(data_preproc)
+head(raw_data_m20)
+```
+
+The object `raw_data_m20` is in **long format** with 20 non-events per event.
+
+We further construct the *case-1-control dataset* in **wide format**. To do so, we first create two separate objects for events and non-events, respectively. We then merge these datasets using the set of variables that identify which event each non-event refers to. Among the non-events satisfying this condition, we sample only one. Once the sampled non-event is stored alongside its corresponding event, we use the `widen_case_control` function to create the desired structure.
+
+```{r}
+data_ev <- raw_data_m20 %>% filter(IS_OBSERVED == 1)
+data_nv <- raw_data_m20 %>% filter(IS_OBSERVED == 0)
 set.seed(1234)
 merge_id_cols <- c("EVENT_INTERVAL")
-
 # For each group defined by the merge_id_cols, take one random non-event
-data_nv_1_sampled <- data_nv_tagged %>%
-  group_by(across(all_of(merge_id_cols))) %>%
+data_nv_sampled <- data_nv %>% 
+  group_by(across(all_of(merge_id_cols))) %>% 
   slice_sample(n = 1) %>%
   ungroup()
-
-# Perform a left join: 
-# for each row in data_ev, attach the corresponding non-event row (if available)
-# based on matching values in the merge_id_cols
-# The suffixes "_ev" and "_nv" will be added to columns from data_ev and data_nv 
-dat_gam_1 <- data_ev_tagged %>%
-  left_join(data_nv_1_sampled, 
-            by = merge_id_cols, suffix = c("_ev", "_nv"))
-rm(data_nv_1_sampled)
+raw_data_m1 <- bind_rows(data_ev, data_nv_sampled) %>%
+  arrange(EVENT_INTERVAL)
 ```
 
-## 2. Model fitting: conditional and degenerate logistic regression
-
-a) **Based on the data structures you were given and those you constructed, which inference techniques can you apply?**
-
-**OPTION 1**
-
-Since we do not have access to timing information for the events and we have a case-control sampling with 20 non-events, we use the `clogit` function in R to fit our model (conditional logistic regression). When applied in this context, `clogit` internally calls the `coxph` routine.
+The function `widen_case_control` transforms data from long format to wide format. To do so, we need to specify the `event` argument - the dummy variable that distinguishes events from non-events - and the `stratum` argument, namely the variable that identifies which non-event is associated with each event.
 
 ```{r}
-# clogit_fit <- clogit(IS_OBSERVED ~ 
-#                          + diff.female
-#                          + female
-#                          + individual.activity 
-#                          + dyadic.activity 
-#                          + strata(EVENT_INTERVAL)
-#                          , data = data)
-# summary(clogit_fit)
+ncc_data <- widen_case_control(raw_data_m1, 
+                               case = "IS_OBSERVED", 
+                               stratum = "EVENT_INTERVAL")
 ```
 
-We find a \textcolor{myred}{positive effect of individual, dyadic}. This suggests that prior (co-)presence in previous chapters - whether alone or in pairs - increases the rate of participating in events. A negative effect for diff.female suggests a positive effect for gender homophily, favouring  co-appearence with other actors of the same gender.
+## 2. Model fitting
 
-**OPTION 2**
+Based on the data structures constructed above, we can apply two different inference methods.
 
-Using the case-1-control dataset, it is also possible to fit a degenerate logistic regression without an intercept, where the covariates are defined as the differences between the covariates for the events and those for the non-events, and the response variable is constant and equal to 1. 
+### 2.1. Sampled partial likelihood via Conditional logistic regression
+
+Since we do not have access to timing information for the events and we have a case-control sample with 20 non-events, we fit a *conditional logistic regression*.
 
 ```{r}
-# covariates defined as difference between 
-# covariate values for event and corresponding non-event
-dat_gam_1$female <- 
-  dat_gam_1$female_ev - dat_gam_1$female_nv
-dat_gam_1$diff_female <- 
-  dat_gam_1$diff.female_ev - dat_gam_1$diff.female_nv
-dat_gam_1$individual_activity <- 
-  dat_gam_1$individual.activity_ev - dat_gam_1$individual.activity_nv
-dat_gam_1$dyadic_activity <- 
-  dat_gam_1$dyadic.activity_ev - dat_gam_1$dyadic.activity_nv
-dat_gam_1$closure <- 
-  dat_gam_1$closure_ev - dat_gam_1$closure_nv
-
-# constant response equal to 1
-dat_gam_1$y <- 1
+fit_clogit <- rem(IS_OBSERVED ~ diff.female
+                  + female + individual.activity 
+                  + dyadic.activity, 
+                  method = "clogit", 
+                  data = raw_data_m20, 
+                  stratum = "EVENT_INTERVAL")
+summary(fit_clogit)
 ```
+
+**Interpretation:** We find a **positive effect of individual and dyadic activity**. This suggests that prior (co-)presence in previous chapters — whether alone or in pairs — increases the rate of participating in events. The negative effect of `diff.female` indicates a positive gender homophily effect, favouring co-appearance with actors of the same gender.
+
+### 2.2. Case-1-control partial likelihood via Degenerate logistic regression
+
+When considering only one non-event per event ([Theoretical reference]), it can be shown that the partial likelihood coincides with that of a *degenerate logistic regression*:
+
+- without an intercept term,
+- with a constant response equal to 1,
+- with covariates equal to the difference between the covariates of the event and those of the sampled non-event.
+
+This formulation allows the framework to be extended to additive effects, which is why the method here is `gam`.
 
 ```{r}
-# gam_fit <- glm(y ~ 
-#                 + diff_female
-#                 + female
-#                 + individual_activity 
-#                 + dyadic_activity 
-#                 - 1 # no intercept
-#                , data = dat_gam_1, 
-#                family="binomial")
-# summary(gam_fit)
+fit_glm <- rem(~ d_diff.female + d_female 
+               + d_individual.activity 
+               + d_dyadic.activity 
+               - 1, data = ncc_data, 
+               method="gam")
+summary(fit_glm)
 ```
 
-As before, we find a positive effect of individual, dyadic and a negative main effect for female gender and a positive effect for gender homophily.
-
-## References
-
-- Knuth, D. E. (1993). The Stanford GraphBase: a platform for combinatorial computing (Vol. 1). New York: AcM Press.
-
-- Lerner, J., Hâncean, M. G., & Perc, M. (2025). Modeling temporal hypergraphs. Journal of Complex Networks, 13(6).
-
-- Lerner, J., & Lomi, A. (2020). Reliability of relational event model estimates under sampling: How to fit a relational event model to 360 million dyadic events. Network Science, 8(1), 97-135.
-
-- Lerner, J., & Lomi, A. (2023). Relational hyperevent models for polyadic interaction networks. Journal of the Royal Statistical Society Series A: Statistics in Society, 186(3), 577-600.
+As before, we find a positive effect of individual and dyadic activity, a negative main effect for female gender, and a positive effect for gender homophily.
