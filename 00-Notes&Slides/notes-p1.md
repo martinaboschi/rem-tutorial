@@ -55,7 +55,7 @@ where:
 
 ---
 
-**Longitudinal network / multivariate counting process** (Perry & Zhu, 2013):
+**Longitudinal network / multivariate counting process** (Perry & Wolfe, 2013):
 
 $$\{N_{sr}(t)\}_{s \in V^S,\ r \in V^R,\ t \geq 0}$$
 
