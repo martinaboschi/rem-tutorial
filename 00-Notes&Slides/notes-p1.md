@@ -5,6 +5,32 @@ parent: Notes and Slides
 math: mathjax
 ---
 
+<style>
+blockquote {
+  background: #f0f7ff;
+  border-left: 3px solid #93c5fd;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  color: #111;
+}
+blockquote p { margin: 0.4rem 0; }
+blockquote strong { color: #000; }
+pre, code {
+  background: #f8f8f8;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+pre {
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+}
+code {
+  padding: 2px 5px;
+  font-size: 13px;
+}
+</style>
+
 # Introduction to Relational Event Models
 
 ## 1. Core REMs
@@ -31,7 +57,7 @@ where:
 - $V^S$: **set of senders** in the system;
 - $V^R$: **set of receivers** in the system.
 
-If senders/receivers belong to the same group, then $V^S = V^R = V$ (**vertex set**), with $p = |V|$.
+If senders/receivers belong to the same group, then $V^S = V^R = V$ (**vertex set**), with $p=\lvert V \rvert$.
 
 **Doob-Meyer decomposition theorem:**
 
