@@ -6,76 +6,76 @@ nav_order: 1
 <style>
 .rem-hero { padding: 2rem 0 1.5rem; border-bottom: 1px solid #e5e7eb; margin-bottom: 2rem; }
 .rem-hero h2 { font-size: 1.6rem; font-weight: 700; color: #111827; margin: 0 0 0.75rem; }
-.rem-hero p { font-size: 1rem; color: #4b5563; line-height: 1.7; max-width: 680px; margin: 0 0 1rem; }
-.rem-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 0.5rem; }
-.rem-pill { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; background: #f3f4f6; color: #374151; }
-.rem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 1.5rem 0; }
-.rem-box { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem 1.25rem; text-decoration: none; display: flex; flex-direction: column; gap: 10px; }
-.rem-box:hover { filter: brightness(0.96); }
-.rem-tag { font-size: 11px; font-weight: 600; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; display: inline-block; }
-.rem-icon { font-size: 26px; }
-.rem-title { font-size: 15px; font-weight: 600; color: #111827; margin: 0; line-height: 1.4; }
-.rem-sub   { font-size: 13px; color: #555; margin: 0; line-height: 1.5; }
-.yellow { background: #fffbeb; border-color: #fde68a; }
-.tag-yellow { background: #fde68a; color: #78350f; }
-.blue { background: #eff6ff; border-color: #bfdbfe; }
-.tag-blue { background: #bfdbfe; color: #1e3a8a; }
-.red { background: #fff1f2; border-color: #fecdd3; }
-.tag-red { background: #fecdd3; color: #9f1239; }
-.gray { background: #f9fafb; border-color: #e5e7eb; }
-.tag-gray { background: #e5e7eb; color: #374151; }
+.rem-hero p { font-size: 1rem; color: #4b5563; line-height: 1.7; max-width: 680px; margin: 0; }
+.rem-grid-top { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 1.5rem 0 0; }
+.rem-grid-bot { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 0 1.5rem; width: 66.6%; margin: 16px auto 0; }
+.rem-box { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; text-decoration: none; display: flex; flex-direction: column; gap: 8px; height: 140px; box-sizing: border-box; }
+.rem-box:hover { filter: brightness(0.97); }
+.rem-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 8px; border-radius: 6px; display: inline-block; width: fit-content; }
+.rem-title { font-size: 14px; font-weight: 700; color: #111827; margin: 0; line-height: 1.4; }
+.rem-sub { font-size: 12px; color: #6b7280; margin: 0; line-height: 1.5; }
+.rem-arrow { font-size: 16px; color: #9ca3af; margin-top: auto; }
+.tag-yellow { background: #fef9c3; color: #854d0e; }
+.tag-blue   { background: #dbeafe; color: #1e3a8a; }
+.tag-red    { background: #ffe4e6; color: #9f1239; }
+.tag-green  { background: #dcfce7; color: #14532d; }
+.tag-gray   { background: #f3f4f6; color: #374151; }
 </style>
 
 ## Welcome to this Relational Event Model (REM) tutorial space!
 
 This site collects teaching materials on **Relational Event Models** (REMs) and their extensions. Whether you are new to REMs or looking to deepen your understanding, you can find here theory, hands-on tutorials, software, and reading material. 
 
-These materials are a work in progress and we welcome any feedback, suggestions, or just a hello: feel free to reach out at <a href="mailto:martina.boschi@usi.ch" style="color: #1e3a8a;">martina.boschi@usi.ch</a>. 
+<div class="rem-grid-top">
 
-<div class="rem-grid">
-
-<a class="rem-box" href="#">
-<span class="rem-tag tag-purple">Workshop 1</span>
-<span class="rem-title">Theory 1</span>
-<span class="rem-sub">Introduction to Relational Event Models</span>
-<span>→</span>
-</a>
-
-<a class="rem-box" href="#">
-<span class="rem-tag tag-teal">Workshop 2</span>
-<span class="rem-title">Theory 2</span>
-<span class="rem-sub">All You Need to Know About Relational Hyper-Event Modelings</span>
-<span>→</span>
+<a class="rem-box" href="00-Notes&Slides/">
+<span style="font-size:22px">🗂️</span>
+<span class="rem-tag tag-yellow">Notes</span>
+<span class="rem-title">Formulary, Slides, and Notes</span>
+<span class="rem-sub">Supporting materials for the workshops</span>
+<span class="rem-arrow">→</span>
 </a>
 
 <a class="rem-box" href="01-Introduction-to-REM/">
-<span class="rem-tag tag-purple">Workshop 1</span>
-<span class="rem-title">Practical 1</span>
-<span class="rem-sub">Introduction to Relational Event Models</span>
-<span>→</span>
+<span style="font-size:22px">📈</span>
+<span class="rem-tag tag-blue">Workshop 1 - Practical</span>
+<span class="rem-title">Introduction to Relational Event Models</span>
+<span class="rem-sub">Simulating and fitting REMs</span>
+<span class="rem-arrow">→</span>
 </a>
 
 <a class="rem-box" href="02-All-you-need-to-know-RHEM/">
-<span class="rem-tag tag-teal">Workshop 2</span>
-<span class="rem-title">Pracical 2</span>
-<span class="rem-sub">All You Need to Know About Relational Hyper-Event Modeling</span>
-<span>→</span>
+<span style="font-size:22px">📊</span>
+<span class="rem-tag tag-red">Workshop 2 - Practical</span>
+<span class="rem-title">All You Need to Know About Relational Hyper-Event Modeling</span>
+<span class="rem-sub">Fitting and interpreting RHEMs</span>
+<span class="rem-arrow">→</span>
 </a>
+
+</div>
+
+<div class="rem-grid-bot">
 
 <a class="rem-box" href="#">
-<span class="rem-tag tag-coral">Resources</span>
-<span class="rem-title">`amorem`</span>
-<span class="rem-sub">Software & Implementation</span>
-<span>→</span>
+<span style="font-size:22px">💻</span>
+<span class="rem-tag tag-green">Software</span>
+<span class="rem-title"><code>amore</code> package</span>
+<span class="rem-sub">R package</span>
+<span class="rem-arrow">→</span>
 </a>
 
-<a class="rem-box" href="#">
-<span class="rem-tag tag-blue">Resources</span>
-<span class="rem-title">Tutorial Paper</span>
-<span class="rem-sub">Introduction to Relational Event Model</span>
-<span>→</span>
+<a class="rem-box" href="https://arxiv.org/abs/2604.07063">
+<span style="font-size:22px">📖</span>
+<span class="rem-tag tag-gray">Resource</span>
+<span class="rem-title">Introduction to Relational Event Modelling</span>
+<span class="rem-sub">Tutorial paper</span>
+<span class="rem-arrow">→</span>
 </a>
 
+</div>
+
+<div style="margin-top: 2rem; padding: 1.5rem 0; border-top: 1px solid #e5e7eb;">
+<p style="font-size: 0.95rem; color: #6b7280; margin: 0;">These materials are a work in progress and we welcome any feedback, suggestions, or just a hello -- feel free to reach out at <a href="mailto:martina.boschi@usi.ch" style="color: #1e3a8a;">martina.boschi@usi.ch</a> or <a href="mailto:melania.lembo@usi.ch" style="color: #1e3a8a;">melania.lembo@usi.ch</a>!</p>
 </div>
 
 <!-- ---
