@@ -5,28 +5,16 @@ title: "Practical 1: Les Misérables"
 
 # Practical 1: Les Misérables
 
-## Introduction
+This workshop focuses on **simulating relational events** using the `amore` package. If you would like to replicate the code locally, feel free to download the files in the box below:
 
-*Write your introduction here.*
+<div class="download-box">
+  <strong>📥 Download files</strong>
+  <ul>
+    <li><a href="Les-Miserables.R" download>Les-Miserables.R</a> — R script</li>
+    <li><a href="Les-Miserables.Rmd" download> Les-Miserables.Rmd</a> — R Markdown source</li>
+  </ul>
+</div>
 
----
-
-## 2.
-
-*Content here.*
-
----
-
-## 3.
-
-*Content here.*
-
----
-
-## 4.
-
-*Content here.*
-
----
+{% include_relative Les-Miserables.md %}
 
 ## References

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Practical 1: Les Misérables | REM Tutorials</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Practical 1: Les Misérables" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Tutorials on Relational (Hyper) Event Modeling" />
+<meta name="twitter:description" property="og:description" content="Tutorials on Relational (Hyper) Event Modeling" />
+<link rel="canonical" href="http://localhost:4000/02-All-you-need-to-know-RHEM/01-Les-Miserables/" />
+<meta property="og:url" content="http://localhost:4000/02-All-you-need-to-know-RHEM/01-Les-Miserables/" />
+<meta property="og:site_name" content="REM Tutorials" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Practical 1: Les Misérables" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Tutorials on Relational (Hyper) Event Modeling","headline":"Practical 1: Les Misérables","url":"http://localhost:4000/02-All-you-need-to-know-RHEM/01-Les-Miserables/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="REM Tutorials" /></head>
+<link rel="stylesheet" href="/assets/css/custom.css">
+  <body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">REM Tutorials</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <h1 id="practical-1-les-misérables">Practical 1: Les Misérables</h1>
+
+<p>This workshop focuses on <strong>simulating relational events</strong> using the <code class="language-plaintext highlighter-rouge">amore</code> package. If you would like to replicate the code locally, feel free to download the files in the box below:</p>
+
+<div class="download-box">
+  <strong>📥 Download files</strong>
+  <ul>
+    <li><a href="Les-Miserables.R" download="">Les-Miserables.R</a> — R script</li>
+    <li><a href="Les-Miserables.Rmd" download=""> Les-Miserables.Rmd</a> — R Markdown source</li>
+  </ul>
+</div>
+
+<h2 id="introduction-and-set-up">Introduction and Set up</h2>
+
+<p>In the two practicals of the workshop <em>Introduction to Relational Event
+Models</em>, we will show how to use <code class="language-plaintext highlighter-rouge">amore</code> to simulate relational events
+and fit relational event models with increasing levels of complexity.</p>
+
+<p>If you are running this tutorial locally, make sure to uncomment the
+<code class="language-plaintext highlighter-rouge">remotes::install_github</code> command below to install the package.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># remotes::install_github("franciscorichter/amore")</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">amore</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">survival</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This tutorial is inspired by the analysis conducted in (Lerner et al.,
+2025), where, for illustrative purposes, RHEM is applied to the network
+of actor co-appearances in <em>Les Misérables</em>, compiled by Donald Knuth
+(Knuth, 1993). The data comprises 80 actors (co-)appearing in one or
+several of 288 chapters. The
+(binary<code class="language-plaintext highlighter-rouge">\footnote{only for mathematical purposes}</code>{=tex}) gender of the
+actors is known.</p>
+
+<h2 id="1-les-misérables-data-and-covariate-computation">1. Les Misérables: Data and Covariate Computation</h2>
+
+<p>a)  <strong>Given the information above, interpret this data as a relational
+    hyper-event network. Define the components of the hyperevent
+    sequence, the vertex set, its cardinality, and the available
+    attributes.</strong></p>
+
+<ul>
+  <li><strong>80 actors</strong> $|V| = 80$ (co-)appearing in one or several of <strong>288
+chapters</strong> ($n = 288$);</li>
+  <li>$e_i = (S_i, t_i)$ is a <strong>hyperevent</strong> (a chapter) involving a set
+of co-appearing actors $S_i$. In this case, $t_i$ is simply a
+counter for the chapter;</li>
+  <li>$\text{female}(i)$ is a <strong>binary gender attribute</strong> for each actor.</li>
+</ul>
+
+<p>b)  <strong>Open the file <code class="language-plaintext highlighter-rouge">jean_events.csv</code>. How are the events reported? Does
+    it contain only event information?</strong></p>
+
+<p>The file <code class="language-plaintext highlighter-rouge">jean_events.csv</code> contains three types of entries (which can be
+distinguished using the column <code class="language-plaintext highlighter-rouge">type</code>), namely <code class="language-plaintext highlighter-rouge">add.actor</code>, <code class="language-plaintext highlighter-rouge">is.female</code>,
+and <code class="language-plaintext highlighter-rouge">chapter</code>. Each entry involves only one actor at a time. A chapter
+is therefore represented by as many rows as the number of actors
+involved.</p>
+
+<p>c)  <strong>Open the configuration file <code class="language-plaintext highlighter-rouge">jean.config.small.txt</code> in <code class="language-plaintext highlighter-rouge">eventnet</code>
+    and inspect the different windows.</strong></p>
+
+<p>See the tutorial notebook for more information on how the data is
+treated in <code class="language-plaintext highlighter-rouge">eventnet</code>.</p>
+
+<p>d)  <strong>Load the input data <code class="language-plaintext highlighter-rouge">jean_events_EVENTS.csv</code> located in <code class="language-plaintext highlighter-rouge">01-Data</code>.
+    Is this a case-1-control dataset? If not, how do you think it can be
+    constructed?</strong></p>
+
+<p>In<code class="language-plaintext highlighter-rouge">eventnet</code> we computed the necessary statistics to support the
+inference techniques that will be explored. Upon inspecting the dataset,
+you may notice the presence of missing values (NA) in some columns.</p>
+
+<p>In particular, the <code class="language-plaintext highlighter-rouge">TARGET</code> column contains only missing values, while
+the <code class="language-plaintext highlighter-rouge">SOURCE</code> column includes multiple entries. This indicates that we
+are dealing with <code class="language-plaintext highlighter-rouge">\textbf{undirected relational hyper-events}</code>{=tex},
+where the sender set is a subset of the vertices in a relational
+hypergraph $V$, and the receiver set is empty.</p>
+
+<p>Additionally, the <code class="language-plaintext highlighter-rouge">EVENT_INTERVAL_ID</code> column does not hold interpretable
+values, as in this application we just know the order of events. The
+<code class="language-plaintext highlighter-rouge">IS_OBSERVED</code> column is used to distinguish between actual observed
+events and non-events (i.e., events that could have occurred but did
+not).</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data_original</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"01-Data/jean_events_EVENTS.csv"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">head</span><span class="p">(</span><span class="n">data_original</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code>##   IS_OBSERVED     SOURCE TARGET    TYPE EVENT_INTERVAL_ID EVENT INTEGER_TIME
+## 1           1 |MY|NP|MB|     NA chapter             1.1.1   109          108
+## 2           0 |CL|GR|MT|     NA                             111          110
+## 3           0 |MA|BB|CV|     NA                             111          110
+## 4           0 |PG|GT|CM|     NA                             111          110
+## 5           0 |TH|MM|HL|     NA                             111          110
+## 6           0 |TH|LL|SS|     NA                             111          110
+##   TIME_POINT TIME_UNIT EVENT_INTERVAL num.actors individual.activity
+## 1        109       108              2          3                   0
+## 2        111       110              2          3                   0
+## 3        111       110              2          3                   0
+## 4        111       110              2          3                   0
+## 5        111       110              2          3                   0
+## 6        111       110              2          3                   0
+##   dyadic.activity closure female diff.female
+## 1               0       0      1           2
+## 2               0       0      2           2
+## 3               0       0      0           0
+## 4               0       0      0           0
+## 5               0       0      1           2
+## 6               0       0      2           2
+</code></pre>
+
+<p>In this application, the <code class="language-plaintext highlighter-rouge">num.actors</code> column is also unnecessary. This
+is because non-events have been sampled to match the cardinality of the
+observed events, meaning that the effect of event size cannot be
+meaningfully estimated.</p>
+
+<p>To simplify visualization, we proceed by removing all unnecessary
+columns from the dataset.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data_original</span><span class="p">[,</span><span class="n">setdiff</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">data_original</span><span class="p">),</span><span class="w"> 
+                               </span><span class="nf">c</span><span class="p">(</span><span class="s2">"TARGET"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TYPE"</span><span class="p">,</span><span class="w"> </span><span class="s2">"EVENT_INTERVAL_ID"</span><span class="p">,</span><span class="w"> </span><span class="s2">"EVENT"</span><span class="p">,</span><span class="w"> 
+                                 </span><span class="s2">"INTEGER_TIME"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TIME_POINT"</span><span class="p">,</span><span class="w"> 
+                                 </span><span class="s2">"TIME_UNIT"</span><span class="p">,</span><span class="w"> </span><span class="s2">"num.actors"</span><span class="p">))]</span><span class="w">
+</span><span class="n">rm</span><span class="p">(</span><span class="n">data_original</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code>##   IS_OBSERVED     SOURCE EVENT_INTERVAL individual.activity dyadic.activity
+## 1           1 |MY|NP|MB|              2                   0               0
+## 2           0 |CL|GR|MT|              2                   0               0
+## 3           0 |MA|BB|CV|              2                   0               0
+## 4           0 |PG|GT|CM|              2                   0               0
+## 5           0 |TH|MM|HL|              2                   0               0
+## 6           0 |TH|LL|SS|              2                   0               0
+##   closure female diff.female
+## 1       0      1           2
+## 2       0      2           2
+## 3       0      0           0
+## 4       0      0           0
+## 5       0      1           2
+## 6       0      2           2
+</code></pre>
+
+<p>The object <code class="language-plaintext highlighter-rouge">data</code> is not a case-1-control dataset. To construct it, we
+first create two separate objects for the datasets containing events and
+non-events, respectively. We then merge these datasets using a set of
+variables that identify which event each non-event refers to. Among the
+non-events satisfying this condition, we sample only one.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data_ev</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">filter</span><span class="p">(</span><span class="n">IS_OBSERVED</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">data_nv</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">filter</span><span class="p">(</span><span class="n">IS_OBSERVED</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Add a new column to label each row in 'data_ev' and 'data_nv' </span><span class="w">
+</span><span class="c1"># as event data and non-event data respectively</span><span class="w">
+</span><span class="n">data_ev_tagged</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data_ev</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">.row_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ev"</span><span class="p">)</span><span class="w">
+</span><span class="n">data_nv_tagged</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data_nv</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">.row_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"nv"</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">data_ev_tagged</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code>##   IS_OBSERVED              SOURCE EVENT_INTERVAL individual.activity
+## 1           1          |MY|NP|MB|              2                   0
+## 2           1          |MY|ME|MB|              3                   2
+## 3           1                |MY|              4                   2
+## 4           1 |MY|ME|CL|GE|MC|MB|              5                   6
+## 5           1          |MY|MB|ME|              6                   9
+## 6           1             |ME|MY|              7                   8
+##   dyadic.activity closure female diff.female .row_type
+## 1               0       0      1           2        ev
+## 2               1       2      2           2        ev
+## 3               0       0      0           0        ev
+## 4               4       8      3           9        ev
+## 5               7      32      2           2        ev
+## 6               3      12      1           1        ev
+</code></pre>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># head(data_nv_tagged)</span><span class="w">
+</span><span class="n">rm</span><span class="p">(</span><span class="n">data_ev</span><span class="p">)</span><span class="w">
+</span><span class="n">rm</span><span class="p">(</span><span class="n">data_nv</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">merge_id_cols</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"EVENT_INTERVAL"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># For each group defined by the merge_id_cols, take one random non-event</span><span class="w">
+</span><span class="n">data_nv_1_sampled</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data_nv_tagged</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">all_of</span><span class="p">(</span><span class="n">merge_id_cols</span><span class="p">)))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">slice_sample</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">ungroup</span><span class="p">()</span><span class="w">
+
+</span><span class="c1"># Perform a left join: </span><span class="w">
+</span><span class="c1"># for each row in data_ev, attach the corresponding non-event row (if available)</span><span class="w">
+</span><span class="c1"># based on matching values in the merge_id_cols</span><span class="w">
+</span><span class="c1"># The suffixes "_ev" and "_nv" will be added to columns from data_ev and data_nv </span><span class="w">
+</span><span class="n">dat_gam_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data_ev_tagged</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">data_nv_1_sampled</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">merge_id_cols</span><span class="p">,</span><span class="w"> </span><span class="n">suffix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"_ev"</span><span class="p">,</span><span class="w"> </span><span class="s2">"_nv"</span><span class="p">))</span><span class="w">
+</span><span class="n">rm</span><span class="p">(</span><span class="n">data_nv_1_sampled</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="2-model-fitting-conditional-and-degenerate-logistic-regression">2. Model fitting: conditional and degenerate logistic regression</h2>
+
+<p>a)  <strong>Based on the data structures you were given and those you
+    constructed, which inference techniques can you apply?</strong></p>
+
+<p><strong>OPTION 1</strong></p>
+
+<p>Since we do not have access to timing information for the events and we
+have a case-control sampling with 20 non-events, we use the <code class="language-plaintext highlighter-rouge">clogit</code>
+function in R to fit our model (conditional logistic regression). When
+applied in this context, <code class="language-plaintext highlighter-rouge">clogit</code> internally calls the <code class="language-plaintext highlighter-rouge">coxph</code> routine.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">clogit_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clogit</span><span class="p">(</span><span class="n">IS_OBSERVED</span><span class="w"> </span><span class="o">~</span><span class="w"> 
+                         </span><span class="o">+</span><span class="w"> </span><span class="n">diff.female</span><span class="w">
+                         </span><span class="o">+</span><span class="w"> </span><span class="n">female</span><span class="w">
+                         </span><span class="o">+</span><span class="w"> </span><span class="n">individual.activity</span><span class="w"> 
+                         </span><span class="o">+</span><span class="w"> </span><span class="n">dyadic.activity</span><span class="w"> 
+                         </span><span class="o">+</span><span class="w"> </span><span class="n">strata</span><span class="p">(</span><span class="n">EVENT_INTERVAL</span><span class="p">)</span><span class="w">
+                         </span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">clogit_fit</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code>## Call:
+## coxph(formula = Surv(rep(1, 6048L), IS_OBSERVED) ~ +diff.female + 
+##     female + individual.activity + dyadic.activity + strata(EVENT_INTERVAL), 
+##     data = data, method = "exact")
+## 
+##   n= 6048, number of events= 288 
+## 
+##                          coef exp(coef)  se(coef)      z Pr(&gt;|z|)    
+## diff.female         -0.290310  0.748032  0.117345 -2.474   0.0134 *  
+## female              -0.293382  0.745737  0.144822 -2.026   0.0428 *  
+## individual.activity  0.042973  1.043909  0.003918 10.967   &lt;2e-16 ***
+## dyadic.activity      0.460395  1.584701  0.049289  9.341   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                     exp(coef) exp(-coef) lower .95 upper .95
+## diff.female            0.7480     1.3368    0.5943    0.9415
+## female                 0.7457     1.3410    0.5615    0.9905
+## individual.activity    1.0439     0.9579    1.0359    1.0520
+## dyadic.activity        1.5847     0.6310    1.4388    1.7454
+## 
+## Concordance= 0.896  (se = 0.013 )
+## Likelihood ratio test= 819.9  on 4 df,   p=&lt;2e-16
+## Wald test            = 245.8  on 4 df,   p=&lt;2e-16
+## Score (logrank) test = 1418  on 4 df,   p=&lt;2e-16
+</code></pre>
+
+<p>We find a
+<code class="language-plaintext highlighter-rouge">\textcolor{myred}{positive effect of individual, dyadic}</code>{=tex}. This
+suggests that prior (co-)presence in previous chapters - whether alone
+or in pairs - increases the rate of participating in events. A negative
+effect for diff.female suggests a positive effect for gender homophily,
+favouring co-appearence with other actors of the same gender.</p>
+
+<p><strong>OPTION 2</strong></p>
+
+<p>Using the case-1-control dataset, it is also possible to fit a
+degenerate logistic regression without an intercept, where the
+covariates are defined as the differences between the covariates for the
+events and those for the non-events, and the response variable is
+constant and equal to 1.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># covariates defined as difference between </span><span class="w">
+</span><span class="c1"># covariate values for event and corresponding non-event</span><span class="w">
+</span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">female</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">female_ev</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">female_nv</span><span class="w">
+</span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">diff_female</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">diff.female_ev</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">diff.female_nv</span><span class="w">
+</span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">individual_activity</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">individual.activity_ev</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">individual.activity_nv</span><span class="w">
+</span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">dyadic_activity</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">dyadic.activity_ev</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">dyadic.activity_nv</span><span class="w">
+</span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">closure</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">closure_ev</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">closure_nv</span><span class="w">
+
+</span><span class="c1"># constant response equal to 1</span><span class="w">
+</span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gam_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">glm</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> 
+                </span><span class="o">+</span><span class="w"> </span><span class="n">diff_female</span><span class="w">
+                </span><span class="o">+</span><span class="w"> </span><span class="n">female</span><span class="w">
+                </span><span class="o">+</span><span class="w"> </span><span class="n">individual_activity</span><span class="w"> 
+                </span><span class="o">+</span><span class="w"> </span><span class="n">dyadic_activity</span><span class="w"> 
+                </span><span class="o">-</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="c1"># no intercept</span><span class="w">
+               </span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dat_gam_1</span><span class="p">,</span><span class="w"> 
+               </span><span class="n">family</span><span class="o">=</span><span class="s2">"binomial"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">summary</span><span class="p">(</span><span class="n">gam_fit</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code>## 
+## Call:
+## glm(formula = y ~ +diff_female + female + individual_activity + 
+##     dyadic_activity - 1, family = "binomial", data = dat_gam_1)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## 0.00000  0.00002  0.05696  0.69837  2.94123  
+## 
+## Coefficients:
+##                     Estimate Std. Error z value Pr(&gt;|z|)    
+## diff_female         -0.67999    0.37963  -1.791 0.073260 .  
+## female              -0.71924    0.31532  -2.281 0.022550 *  
+## individual_activity  0.07649    0.01704   4.490 7.13e-06 ***
+## dyadic_activity      1.81184    0.54181   3.344 0.000826 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 399.25  on 288  degrees of freedom
+## Residual deviance: 121.75  on 284  degrees of freedom
+## AIC: 129.75
+## 
+## Number of Fisher Scoring iterations: 11
+</code></pre>
+
+<p>As before, we find a positive effect of individual, dyadic and a
+negative main effect for female gender and a positive effect for gender
+homophily.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li>
+    <p>Knuth, D. E. (1993). The Stanford GraphBase: a platform for
+combinatorial computing (Vol. 1). New York: AcM Press.</p>
+  </li>
+  <li>
+    <p>Lerner, J., Hâncean, M. G., &amp; Perc, M. (2025). Modeling temporal
+hypergraphs. Journal of Complex Networks, 13(6).</p>
+  </li>
+  <li>
+    <p>Lerner, J., &amp; Lomi, A. (2020). Reliability of relational event model
+estimates under sampling: How to fit a relational event model to 360
+million dyadic events. Network Science, 8(1), 97-135.</p>
+  </li>
+  <li>
+    <p>Lerner, J., &amp; Lomi, A. (2023). Relational hyperevent models for
+polyadic interaction networks. Journal of the Royal Statistical
+Society Series A: Statistics in Society, 186(3), 577-600.</p>
+  </li>
+</ul>
+
+<h2 id="references-1">References</h2>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">REM Tutorials</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">REM Tutorials</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Tutorials on Relational (Hyper) Event Modeling</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script type="text/javascript" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+  </body>
+</html>
