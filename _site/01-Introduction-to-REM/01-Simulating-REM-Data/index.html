@@ -32,7 +32,7 @@
           </span>
         </label>
 
-        <div class="trigger"><a class="page-link" href="/">Home</a></div>
+        <div class="trigger"></div>
       </nav></div>
 </header>
 <main class="page-content" aria-label="Content">
@@ -42,7 +42,7 @@
 <p>This practical session focuses on <strong>simulating relational events</strong> using the <code class="language-plaintext highlighter-rouge">amore</code> package. If you would like to replicate the code locally, feel free to download the files in the box below:</p>
 
 <div class="download-box">
-  <strong>📥 Download files</strong>
+  <p><strong>📥 Download files</strong></p>
   <ul>
     <li><a href="Simulating-REM-Data.R" download="">Simulating-REM-Data.R</a> — R script</li>
     <li><a href="Simulating-REM-Data.Rmd" download=""> Simulating-REM-Data.Rmd</a> — R Markdown source</li>
@@ -52,27 +52,27 @@
 <h2 id="introduction">Introduction</h2>
 
 <p>In the two practicals of the workshop <em>Introduction to Relational Event
-Models</em>, we will show how to use <code class="language-plaintext highlighter-rouge">amore</code> to simulate relational events
+Models</em>, we will show how to use <code class="language-plaintext highlighter-rouge">amorem</code> to simulate relational events
 and fit relational event models with increasing levels of complexity.</p>
 
 <p>If you are running this tutorial locally, make sure to uncomment the
 <code class="language-plaintext highlighter-rouge">remotes::install_github</code> command below to install the package.</p>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># remotes::install_github("franciscorichter/amore")</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">amore</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># remotes::install_github("franciscorichter/amorem")</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">amorem</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
 <p>While exploring the main functions of the package, we will cover how:</p>
 
 <ul>
-  <li>to simulate relational event data in <code class="language-plaintext highlighter-rouge">amore</code> [Theoretical
+  <li>to simulate relational event data in <code class="language-plaintext highlighter-rouge">amorem</code> [Theoretical
 reference]</li>
   <li>to structure data for inference [Theoretical reference]</li>
   <li>to fit models with linear effects [Theoretical reference]</li>
-  <li>different inference techniques compare [Theoretical reference]</li>
+  <li>compare different inference techniques [Theoretical reference]</li>
 </ul>
 
-<h2 id="1-how-to-simulate-relational-event-data-in-amore">1. How to simulate relational event data in <code class="language-plaintext highlighter-rouge">amore</code></h2>
+<h2 id="1-how-to-simulate-relational-event-data-in-amorem">1. How to simulate relational event data in <code class="language-plaintext highlighter-rouge">amorem</code></h2>
 
 <p>As seen in [Theoretical reference], <em>relational event data</em> consists
 of a sequence of $n$ triplets:</p>
@@ -101,7 +101,7 @@ tutorial for circumstances in which this is not the case.</p>
   </li>
   <li>
     <p><em>Baseline hazard</em>: a time-varying function expressing the <em>global
-determinants</em> of the event rate. In its current state, <code class="language-plaintext highlighter-rouge">amore</code>
+determinants</em> of the event rate. In its current state, <code class="language-plaintext highlighter-rouge">amorem</code>
 supports a <strong>time-invariant</strong> baseline function, which can be
 specified via the <code class="language-plaintext highlighter-rouge">baseline_rate</code> argument using a positive scalar.</p>
   </li>
@@ -259,7 +259,7 @@ is associated with each event.</p>
 <h2 id="3-how-to-fit-models-with-linear-effects">3. How to fit models with linear effects</h2>
 
 <p>Once the data has been structured, we are ready to fit the model. We do
-that by using the <code class="language-plaintext highlighter-rouge">rem</code> function in <code class="language-plaintext highlighter-rouge">amore</code>. The desired inference
+that by using the <code class="language-plaintext highlighter-rouge">rem</code> function in <code class="language-plaintext highlighter-rouge">amorem</code>. The desired inference
 method can be selected via the <code class="language-plaintext highlighter-rouge">method</code> argument.</p>
 
 <h3 id="31-sampled-partial-likelihood-via-conditional-logistic-regression">3.1. Sampled partial likelihood via Conditional logistic regression</h3>
