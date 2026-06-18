@@ -17,9 +17,9 @@ If you are running this tutorial locally, make sure to uncomment the
 
     # install.packages("remotes")
     # install.packages("pbapply")
-    # remotes::install_github("franciscorichter/amore")
+    # remotes::install_github("franciscorichter/amorem")
 
-    library(amore)
+    library(amorem)
     library(pbapply)
 
 ------------------------------------------------------------------------
@@ -80,6 +80,7 @@ contains such information.
 
     native[sample(1:nrow(native), 10), c("species", "region")]
 
+<<<<<<< HEAD:01-Introduction-to-REM/02-Alien-Species-Invasions/Alien-Species.md
 <pre><code>##                        species         region
 ## 996152     Aonidomytilus albus     Guadeloupe
 ## 1006086        Diprion similis        Germany
@@ -91,6 +92,19 @@ contains such information.
 ## 1037209  Xylosandrus compactus       Cambodia
 ## 1008735      Harmonia axyridis Ryukyu Islands
 ## 1022702 Phyllonorycter issikii    South Korea
+=======
+<pre><code>##                        species              region
+## 1030552    Solenopsis richteri           Argentina
+## 1033105 Wasmannia auropunctata Trinidad and Tobago
+## 1016667       Opogona sacchari          Seychelles
+## 1009156  Bostrichus ligniperda             Denmark
+## 1033810  Xyleborinus saxesenii             Denmark
+## 1033020       Vespula vulgaris              Mexico
+## 1009170  Bostrichus ligniperda         Netherlands
+## 1021690   Pheidole megacephala               Kenya
+## 1038082     Xyleborus germanus             Vietnam
+## 1001334     Chilo suppressalis               China
+>>>>>>> 3fe6b209309d43f13ba31ca6a24e7932b0fec215:01-Introduction-to-REM/02-Alien-Species-Invasions/alien_species_amore.md
 </code></pre>
 
 This information is crucial for the definition of the *risk set*. If a
@@ -121,7 +135,7 @@ interest.
 </code></pre>
 
 We know format the data in a convenient manner for analysis using
-`amore` package. We need to make sure that both the data structures for
+`amorem` package. We need to make sure that both the data structures for
 the sequence of relational events and the set of dyads not at risk at
 the beginning of the time-window contain a `sender` and `receiver`
 column.

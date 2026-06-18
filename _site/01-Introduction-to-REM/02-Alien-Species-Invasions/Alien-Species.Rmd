@@ -18,9 +18,9 @@ If you are running this tutorial locally, make sure to uncomment the `remotes::i
 ```{r warning = FALSE}
 # install.packages("remotes")
 # install.packages("pbapply")
-# remotes::install_github("franciscorichter/amore")
+# remotes::install_github("franciscorichter/amorem")
 
-library(amore)
+library(amorem)
 library(pbapply)
 ```
 
@@ -62,7 +62,7 @@ head(first_records[,c("year","lf",
            "region")])
 ```
 
-We know format the data in a convenient manner for analysis using `amore` package. We need to make sure that both the data structures for the sequence of relational events and the set of dyads not at risk at the beginning of the time-window contain a `sender` and `receiver` column. 
+We know format the data in a convenient manner for analysis using `amorem` package. We need to make sure that both the data structures for the sequence of relational events and the set of dyads not at risk at the beginning of the time-window contain a `sender` and `receiver` column. 
 
 ```{r}
 event_log <- standardize_event_log(first_records[,c(1,3:4)],
