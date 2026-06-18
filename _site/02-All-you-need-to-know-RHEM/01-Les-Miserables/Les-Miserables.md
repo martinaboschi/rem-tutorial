@@ -1,28 +1,50 @@
 ## Introduction and Set up
 
-In the two practicals of the workshop *Introduction to Relational Event
-Models*, we will show how to use `amore` to simulate relational events
-and fit relational event models with increasing levels of complexity.
+In the two practicals of the workshop *All You Need to Know About
+Relational Hyper-Event Modeling*, we show how to use `amorem` to fit
+relational hyper-event models with increasing levels of complexity.
 
 If you are running this tutorial locally, make sure to uncomment the
-`remotes::install_github` command below to install the package.
+`remotes::install_github` command below before installing the package.
 
 ``` r
-# remotes::install_github("franciscorichter/amore")
-library(amore)
-library(dplyr)
-library(survival)
+# remotes::install_github("franciscorichter/amorem")
+library(amorem)
 ```
 
-This tutorial is inspired by the analysis conducted in (Lerner et al.,
+This practical also requires the `dplyr` library. If you do not have it
+installed, uncomment the `install.packages("dplyr")` line below.
+
+``` r
+# install.packages("dplyr")
+library(dplyr)
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+This practical is inspired by the analysis conducted in (Lerner et al.,
 2025), where, for illustrative purposes, RHEM is applied to the network
 of actor co-appearances in *Les Misérables*, compiled by Donald Knuth
-(Knuth, 1993). The data comprises 80 actors (co-)appearing in one or
-several of 288 chapters. The
-(binary`\footnote{only for mathematical purposes}`{=tex}) gender of the
-actors is known.
+(Knuth, 1993).
 
-## 1. Les Misérables: Data and Covariate Computation
+The data comprises 80 actors (co-)appearing in one or several of 288
+chapters. The (binary`\footnote{only for mathematical purposes}`{=tex})
+gender of the actors is known.
+
+## 1. Covariate Computation in `eventnet`
+
+\[Include tutorial about eventnet here\]
+
+## 2. Importing Data After Pre-Processing in `eventnet`
 
 a)  **Given the information above, interpret this data as a relational
     hyper-event network. Define the components of the hyperevent
@@ -211,42 +233,15 @@ function in R to fit our model (conditional logistic regression). When
 applied in this context, `clogit` internally calls the `coxph` routine.
 
 ``` r
-clogit_fit <- clogit(IS_OBSERVED ~ 
-                         + diff.female
-                         + female
-                         + individual.activity 
-                         + dyadic.activity 
-                         + strata(EVENT_INTERVAL)
-                         , data = data)
-summary(clogit_fit)
+# clogit_fit <- clogit(IS_OBSERVED ~ 
+#                          + diff.female
+#                          + female
+#                          + individual.activity 
+#                          + dyadic.activity 
+#                          + strata(EVENT_INTERVAL)
+#                          , data = data)
+# summary(clogit_fit)
 ```
-
-<pre><code>## Call:
-## coxph(formula = Surv(rep(1, 6048L), IS_OBSERVED) ~ +diff.female + 
-##     female + individual.activity + dyadic.activity + strata(EVENT_INTERVAL), 
-##     data = data, method = "exact")
-## 
-##   n= 6048, number of events= 288 
-## 
-##                          coef exp(coef)  se(coef)      z Pr(>|z|)    
-## diff.female         -0.290310  0.748032  0.117345 -2.474   0.0134 *  
-## female              -0.293382  0.745737  0.144822 -2.026   0.0428 *  
-## individual.activity  0.042973  1.043909  0.003918 10.967   <2e-16 ***
-## dyadic.activity      0.460395  1.584701  0.049289  9.341   <2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-##                     exp(coef) exp(-coef) lower .95 upper .95
-## diff.female            0.7480     1.3368    0.5943    0.9415
-## female                 0.7457     1.3410    0.5615    0.9905
-## individual.activity    1.0439     0.9579    1.0359    1.0520
-## dyadic.activity        1.5847     0.6310    1.4388    1.7454
-## 
-## Concordance= 0.896  (se = 0.013 )
-## Likelihood ratio test= 819.9  on 4 df,   p=<2e-16
-## Wald test            = 245.8  on 4 df,   p=<2e-16
-## Score (logrank) test = 1418  on 4 df,   p=<2e-16
-</code></pre>
 
 We find a
 `\textcolor{myred}{positive effect of individual, dyadic}`{=tex}. This
@@ -282,48 +277,16 @@ dat_gam_1$y <- 1
 ```
 
 ``` r
-gam_fit <- glm(y ~ 
-                + diff_female
-                + female
-                + individual_activity 
-                + dyadic_activity 
-                - 1 # no intercept
-               , data = dat_gam_1, 
-               family="binomial")
+# gam_fit <- glm(y ~ 
+#                 + diff_female
+#                 + female
+#                 + individual_activity 
+#                 + dyadic_activity 
+#                 - 1 # no intercept
+#                , data = dat_gam_1, 
+#                family="binomial")
+# summary(gam_fit)
 ```
-
-    ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-``` r
-summary(gam_fit)
-```
-
-<pre><code>## 
-## Call:
-## glm(formula = y ~ +diff_female + female + individual_activity + 
-##     dyadic_activity - 1, family = "binomial", data = dat_gam_1)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## 0.00000  0.00002  0.05696  0.69837  2.94123  
-## 
-## Coefficients:
-##                     Estimate Std. Error z value Pr(>|z|)    
-## diff_female         -0.67999    0.37963  -1.791 0.073260 .  
-## female              -0.71924    0.31532  -2.281 0.022550 *  
-## individual_activity  0.07649    0.01704   4.490 7.13e-06 ***
-## dyadic_activity      1.81184    0.54181   3.344 0.000826 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 399.25  on 288  degrees of freedom
-## Residual deviance: 121.75  on 284  degrees of freedom
-## AIC: 129.75
-## 
-## Number of Fisher Scoring iterations: 11
-</code></pre>
 
 As before, we find a positive effect of individual, dyadic and a
 negative main effect for female gender and a positive effect for gender

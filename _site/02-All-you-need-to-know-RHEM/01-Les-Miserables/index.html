@@ -39,7 +39,7 @@
       <div class="wrapper">
         <h1 id="practical-1-les-misérables">Practical 1: Les Misérables</h1>
 
-<p>This workshop focuses on <strong>simulating relational events</strong> using the <code class="language-plaintext highlighter-rouge">amore</code> package. If you would like to replicate the code locally, feel free to download the files in the box below:</p>
+<p>The practical sessions of this workshop focus on <strong>fitting relational hyper event models</strong> using the <code class="language-plaintext highlighter-rouge">amorem</code> package. If you would like to replicate the code locally, feel free to download the files in the box below:</p>
 
 <div class="download-box">
   <strong>📥 Download files</strong>
@@ -51,28 +51,50 @@
 
 <h2 id="introduction-and-set-up">Introduction and Set up</h2>
 
-<p>In the two practicals of the workshop <em>Introduction to Relational Event
-Models</em>, we will show how to use <code class="language-plaintext highlighter-rouge">amore</code> to simulate relational events
-and fit relational event models with increasing levels of complexity.</p>
+<p>In the two practicals of the workshop <em>All You Need to Know About
+Relational Hyper-Event Modeling</em>, we show how to use <code class="language-plaintext highlighter-rouge">amorem</code> to fit
+relational hyper-event models with increasing levels of complexity.</p>
 
 <p>If you are running this tutorial locally, make sure to uncomment the
-<code class="language-plaintext highlighter-rouge">remotes::install_github</code> command below to install the package.</p>
+<code class="language-plaintext highlighter-rouge">remotes::install_github</code> command below before installing the package.</p>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># remotes::install_github("franciscorichter/amore")</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">amore</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">survival</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># remotes::install_github("franciscorichter/amorem")</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">amorem</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>This tutorial is inspired by the analysis conducted in (Lerner et al.,
+<p>This practical also requires the <code class="language-plaintext highlighter-rouge">dplyr</code> library. If you do not have it
+installed, uncomment the <code class="language-plaintext highlighter-rouge">install.packages("dplyr")</code> line below.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># install.packages("dplyr")</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+## Attaching package: 'dplyr'
+
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+</code></pre></div></div>
+
+<p>This practical is inspired by the analysis conducted in (Lerner et al.,
 2025), where, for illustrative purposes, RHEM is applied to the network
 of actor co-appearances in <em>Les Misérables</em>, compiled by Donald Knuth
-(Knuth, 1993). The data comprises 80 actors (co-)appearing in one or
-several of 288 chapters. The
-(binary<code class="language-plaintext highlighter-rouge">\footnote{only for mathematical purposes}</code>{=tex}) gender of the
-actors is known.</p>
+(Knuth, 1993).</p>
 
-<h2 id="1-les-misérables-data-and-covariate-computation">1. Les Misérables: Data and Covariate Computation</h2>
+<p>The data comprises 80 actors (co-)appearing in one or several of 288
+chapters. The (binary<code class="language-plaintext highlighter-rouge">\footnote{only for mathematical purposes}</code>{=tex})
+gender of the actors is known.</p>
+
+<h2 id="1-covariate-computation-in-eventnet">1. Covariate Computation in <code class="language-plaintext highlighter-rouge">eventnet</code></h2>
+
+<p>[Include tutorial about eventnet here]</p>
+
+<h2 id="2-importing-data-after-pre-processing-in-eventnet">2. Importing Data After Pre-Processing in <code class="language-plaintext highlighter-rouge">eventnet</code></h2>
 
 <p>a)  <strong>Given the information above, interpret this data as a relational
     hyper-event network. Define the components of the hyperevent
@@ -255,42 +277,15 @@ have a case-control sampling with 20 non-events, we use the <code class="languag
 function in R to fit our model (conditional logistic regression). When
 applied in this context, <code class="language-plaintext highlighter-rouge">clogit</code> internally calls the <code class="language-plaintext highlighter-rouge">coxph</code> routine.</p>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">clogit_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clogit</span><span class="p">(</span><span class="n">IS_OBSERVED</span><span class="w"> </span><span class="o">~</span><span class="w"> 
-                         </span><span class="o">+</span><span class="w"> </span><span class="n">diff.female</span><span class="w">
-                         </span><span class="o">+</span><span class="w"> </span><span class="n">female</span><span class="w">
-                         </span><span class="o">+</span><span class="w"> </span><span class="n">individual.activity</span><span class="w"> 
-                         </span><span class="o">+</span><span class="w"> </span><span class="n">dyadic.activity</span><span class="w"> 
-                         </span><span class="o">+</span><span class="w"> </span><span class="n">strata</span><span class="p">(</span><span class="n">EVENT_INTERVAL</span><span class="p">)</span><span class="w">
-                         </span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w">
-</span><span class="n">summary</span><span class="p">(</span><span class="n">clogit_fit</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># clogit_fit &lt;- clogit(IS_OBSERVED ~ </span><span class="w">
+</span><span class="c1">#                          + diff.female</span><span class="w">
+</span><span class="c1">#                          + female</span><span class="w">
+</span><span class="c1">#                          + individual.activity </span><span class="w">
+</span><span class="c1">#                          + dyadic.activity </span><span class="w">
+</span><span class="c1">#                          + strata(EVENT_INTERVAL)</span><span class="w">
+</span><span class="c1">#                          , data = data)</span><span class="w">
+</span><span class="c1"># summary(clogit_fit)</span><span class="w">
 </span></code></pre></div></div>
-
-<pre><code>## Call:
-## coxph(formula = Surv(rep(1, 6048L), IS_OBSERVED) ~ +diff.female + 
-##     female + individual.activity + dyadic.activity + strata(EVENT_INTERVAL), 
-##     data = data, method = "exact")
-## 
-##   n= 6048, number of events= 288 
-## 
-##                          coef exp(coef)  se(coef)      z Pr(&gt;|z|)    
-## diff.female         -0.290310  0.748032  0.117345 -2.474   0.0134 *  
-## female              -0.293382  0.745737  0.144822 -2.026   0.0428 *  
-## individual.activity  0.042973  1.043909  0.003918 10.967   &lt;2e-16 ***
-## dyadic.activity      0.460395  1.584701  0.049289  9.341   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-##                     exp(coef) exp(-coef) lower .95 upper .95
-## diff.female            0.7480     1.3368    0.5943    0.9415
-## female                 0.7457     1.3410    0.5615    0.9905
-## individual.activity    1.0439     0.9579    1.0359    1.0520
-## dyadic.activity        1.5847     0.6310    1.4388    1.7454
-## 
-## Concordance= 0.896  (se = 0.013 )
-## Likelihood ratio test= 819.9  on 4 df,   p=&lt;2e-16
-## Wald test            = 245.8  on 4 df,   p=&lt;2e-16
-## Score (logrank) test = 1418  on 4 df,   p=&lt;2e-16
-</code></pre>
 
 <p>We find a
 <code class="language-plaintext highlighter-rouge">\textcolor{myred}{positive effect of individual, dyadic}</code>{=tex}. This
@@ -324,48 +319,16 @@ constant and equal to 1.</p>
 </span><span class="n">dat_gam_1</span><span class="o">$</span><span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gam_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">glm</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> 
-                </span><span class="o">+</span><span class="w"> </span><span class="n">diff_female</span><span class="w">
-                </span><span class="o">+</span><span class="w"> </span><span class="n">female</span><span class="w">
-                </span><span class="o">+</span><span class="w"> </span><span class="n">individual_activity</span><span class="w"> 
-                </span><span class="o">+</span><span class="w"> </span><span class="n">dyadic_activity</span><span class="w"> 
-                </span><span class="o">-</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="c1"># no intercept</span><span class="w">
-               </span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dat_gam_1</span><span class="p">,</span><span class="w"> 
-               </span><span class="n">family</span><span class="o">=</span><span class="s2">"binomial"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># gam_fit &lt;- glm(y ~ </span><span class="w">
+</span><span class="c1">#                 + diff_female</span><span class="w">
+</span><span class="c1">#                 + female</span><span class="w">
+</span><span class="c1">#                 + individual_activity </span><span class="w">
+</span><span class="c1">#                 + dyadic_activity </span><span class="w">
+</span><span class="c1">#                 - 1 # no intercept</span><span class="w">
+</span><span class="c1">#                , data = dat_gam_1, </span><span class="w">
+</span><span class="c1">#                family="binomial")</span><span class="w">
+</span><span class="c1"># summary(gam_fit)</span><span class="w">
 </span></code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-</code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">summary</span><span class="p">(</span><span class="n">gam_fit</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<pre><code>## 
-## Call:
-## glm(formula = y ~ +diff_female + female + individual_activity + 
-##     dyadic_activity - 1, family = "binomial", data = dat_gam_1)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## 0.00000  0.00002  0.05696  0.69837  2.94123  
-## 
-## Coefficients:
-##                     Estimate Std. Error z value Pr(&gt;|z|)    
-## diff_female         -0.67999    0.37963  -1.791 0.073260 .  
-## female              -0.71924    0.31532  -2.281 0.022550 *  
-## individual_activity  0.07649    0.01704   4.490 7.13e-06 ***
-## dyadic_activity      1.81184    0.54181   3.344 0.000826 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 399.25  on 288  degrees of freedom
-## Residual deviance: 121.75  on 284  degrees of freedom
-## AIC: 129.75
-## 
-## Number of Fisher Scoring iterations: 11
-</code></pre>
 
 <p>As before, we find a positive effect of individual, dyadic and a
 negative main effect for female gender and a positive effect for gender

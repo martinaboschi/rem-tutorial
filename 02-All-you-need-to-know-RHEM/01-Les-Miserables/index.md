@@ -5,7 +5,7 @@ title: "Practical 1: Les Misérables"
 
 # Practical 1: Les Misérables
 
-This workshop focuses on **simulating relational events** using the `amore` package. If you would like to replicate the code locally, feel free to download the files in the box below:
+The practical sessions of this workshop focus on **fitting relational hyper event models** using the `amorem` package. If you would like to replicate the code locally, feel free to download the files in the box below:
 
 <div class="download-box">
   <strong>📥 Download files</strong>
