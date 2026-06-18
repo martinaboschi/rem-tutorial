@@ -1,26 +1,26 @@
 ## Introduction
 
 In the two practicals of the workshop *Introduction to Relational Event
-Models*, we will show how to use `amore` to simulate relational events
+Models*, we will show how to use `amorem` to simulate relational events
 and fit relational event models with increasing levels of complexity.
 
 If you are running this tutorial locally, make sure to uncomment the
 `remotes::install_github` command below to install the package.
 
 ``` r
-# remotes::install_github("franciscorichter/amore")
-library(amore)
+# remotes::install_github("franciscorichter/amorem")
+library(amorem)
 ```
 
 While exploring the main functions of the package, we will cover how:
 
--   to simulate relational event data in `amore` \[Theoretical
+-   to simulate relational event data in `amorem` \[Theoretical
     reference\]
 -   to structure data for inference \[Theoretical reference\]
 -   to fit models with linear effects \[Theoretical reference\]
--   different inference techniques compare \[Theoretical reference\]
+-   compare different inference techniques \[Theoretical reference\]
 
-## 1. How to simulate relational event data in `amore`
+## 1. How to simulate relational event data in `amorem`
 
 As seen in \[Theoretical reference\], *relational event data* consists
 of a sequence of $n$ triplets:
@@ -46,7 +46,7 @@ be decomposed into three main blocks:
     tutorial for circumstances in which this is not the case.
 
 2.  *Baseline hazard*: a time-varying function expressing the *global
-    determinants* of the event rate. In its current state, `amore`
+    determinants* of the event rate. In its current state, `amorem`
     supports a **time-invariant** baseline function, which can be
     specified via the `baseline_rate` argument using a positive scalar.
 
@@ -201,7 +201,7 @@ head(wide_data_m1)
 ## 3. How to fit models with linear effects
 
 Once the data has been structured, we are ready to fit the model. We do
-that by using the `rem` function in `amore`. The desired inference
+that by using the `rem` function in `amorem`. The desired inference
 method can be selected via the `method` argument.
 
 ### 3.1. Sampled partial likelihood via Conditional logistic regression

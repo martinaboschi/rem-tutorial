@@ -17,27 +17,27 @@ knitr::knit_hooks$set(output = function(x, options) {
 
 ## Introduction
 
-In the two practicals of the workshop *Introduction to Relational Event Models*, we will show how to use `amore` to simulate relational events and fit relational event models with increasing levels of complexity.
+In the two practicals of the workshop *Introduction to Relational Event Models*, we will show how to use `amorem` to simulate relational events and fit relational event models with increasing levels of complexity.
 
 If you are running this tutorial locally, make sure to uncomment the `remotes::install_github` command below to install the package.
 
 ```{r message=FALSE, warning=FALSE}
-# remotes::install_github("franciscorichter/amore")
-library(amore)
+# remotes::install_github("franciscorichter/amorem")
+library(amorem)
 ```
 
 While exploring the main functions of the package, we will cover how:
 
-- to simulate relational event data in `amore`
+- to simulate relational event data in `amorem`
   [Theoretical reference]
 - to structure data for inference
   [Theoretical reference]
 - to fit models with linear effects
   [Theoretical reference]
-- different inference techniques compare
+- compare different inference techniques 
   [Theoretical reference]
 
-## 1. How to simulate relational event data in `amore`
+## 1. How to simulate relational event data in `amorem`
 
 As seen in [Theoretical reference], *relational event data* consists of a sequence of $n$ triplets: 
 
@@ -51,7 +51,7 @@ We saw in [Theoretical reference] that relational events can be both described a
 
 1. *Risk indicator*: equal to 1 if the dyad $(s,r)$ is at risk at time $t$. In this first practical, we assume that all potential dyads - except *self-loops* (by default, `allow_loops = FALSE`) - can be involved in an event. Please refer to the second practical of this tutorial for circumstances in which this is not the case. 
 
-2. *Baseline hazard*: a time-varying function expressing the *global determinants* of the event rate. In its current state, `amore` supports a **time-invariant** baseline function, which can be specified via the `baseline_rate` argument using a positive scalar.
+2. *Baseline hazard*: a time-varying function expressing the *global determinants* of the event rate. In its current state, `amorem` supports a **time-invariant** baseline function, which can be specified via the `baseline_rate` argument using a positive scalar.
 
 3. *Event log-rate contribution*: expresses how *dyadic covariates* impact the event log-rate. In this first practical we focus on a *linear contribution*. To simulate events following a linear REM, the covariates of interest must be specified in the `endogenous_stats` argument (chosen among the endogenous mechanisms listed in the corresponding documentation). Each statistic is then associated with an *effect* in the `endogenous_effects` argument.
 
@@ -120,7 +120,7 @@ head(wide_data_m1)
 
 ## 3. How to fit models with linear effects
 
-Once the data has been structured, we are ready to fit the model. We do that by using the `rem` function in `amore`. The desired inference method can be selected via the `method` argument.
+Once the data has been structured, we are ready to fit the model. We do that by using the `rem` function in `amorem`. The desired inference method can be selected via the `method` argument.
 
 ### 3.1. Sampled partial likelihood via Conditional logistic regression
 
