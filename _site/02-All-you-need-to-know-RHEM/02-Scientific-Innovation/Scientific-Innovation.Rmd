@@ -22,6 +22,13 @@ This practical also requires the `dplyr` library. If you do not have it installe
 library(dplyr)
 ```
 
+To show more complex types of effects you also might need `mgcViz`. Make sure to install it if you did not yet. 
+
+```{r message=FALSE, warning=FALSE}
+# install.packages("mgcViz")
+library(mgcViz)
+```
+
 ### Aminer Citation Network
 
 ```{r}
@@ -302,35 +309,43 @@ plot(gam_nle)
 #### Time-varying non-linear effect
 
 ```{r}
-# time_matrix <-
-#   cbind(dat_gam$transformed_time,
-#         dat_gam$transformed_time)
-# gam_tvnle <- gam(y ~ -1 + te(time_matrix, diff.author.publication.activity_matrix, by=W) +
-#                           paper.outdegree.popularity +
-#                           author.sub.rep.1 +
-#                           reference.sub.rep.1,
-#                           family="binomial",
-#                           data = dat_gam)
-# viz <- getViz(gam_tvnle)
+gam_tvnle <- rem(~ tvnl(diff.author.publication.activity) 
+                   # automatically uses the transformed one when computing nl
+                 
+                   + paper.outdegree.popularity +
+                   + author.sub.rep.1 +
+                   + reference.sub.rep.1,
+                   method="gam", time = "transformed_time",
+                   data = dat_gam)
+viz <- getViz(gam_tvnle$fit)
 ```
 
 ```{r}
-# summary(gam_tvnle)
+summary(gam_tvnle)
 ```
 
 ```{r}
-# plot_obj <- plot(viz)
-# plot_data <- plot_obj$plots[[1]]$ggObj$data
-# plot_data <- plot_data[!is.na(plot_data$z),]
-#   plot_data <- plot_data %>%
-#     group_by(x) %>%
-#     mutate(z_centered = z - mean(z)) %>%
-#     ungroup()
-# ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +
-#     geom_tile() +
-#     geom_contour(mapping = aes(x = x, y = y, z = z_centered, group = 1),
-#                  color = "black", inherit.aes = FALSE) +
-#     scale_fill_viridis_c()
+plot_obj <- plot(viz)
+plot_data <- plot_obj$plots[[1]]$ggObj$data
+plot_data <- plot_data[!is.na(plot_data$z),]
+plot_data <- plot_data %>%
+  group_by(x) %>%
+  mutate(z_centered = z - mean(z)) %>%
+  ungroup()
+ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +
+  geom_tile() +
+  geom_contour(mapping = aes(x = x, y = y, z = z_centered, group = 1), 
+               color = "black", inherit.aes = FALSE) +
+  scale_fill_viridis_c()
 ```
 
-By allowing both effects simultaneously, we can see that the non-linear effect remains clearly present, while the decrease/increase over time is visible only at the very beginning of the time window. By comparing the AIC values of the models, we find that jointly combining the effects is not worthwhile, whereas a model with only a non-linear effect is preferred. Of course, this conclusion is based on a limited dataset and on a reduced set of covariates.
+**Interpretation:** By allowing both effects simultaneously, we can see that the non-linear effect remains clearly present, while the decrease/increase over time is visible only at the very beginning of the time window. 
+
+By comparing the AIC values of the models, we find that jointly combining the effects is not worthwhile, whereas a model with only a non-linear effect is preferred. Of course, this conclusion is based on a limited dataset and on a reduced set of covariates.
+
+```{r}
+AIC(gam_tve)
+AIC(gam_tve_transformed)
+AIC(gam_nle)
+AIC(gam_tvnle)
+```

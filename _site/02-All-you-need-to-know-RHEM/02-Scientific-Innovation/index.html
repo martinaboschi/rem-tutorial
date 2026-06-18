@@ -69,6 +69,13 @@ installed, uncomment the <code class="language-plaintext highlighter-rouge">inst
 </span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
+<p>To show more complex types of effects you also might need <code class="language-plaintext highlighter-rouge">mgcViz</code>. Make
+sure to install it if you did not yet.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># install.packages("mgcViz")</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">mgcViz</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
 <h3 id="aminer-citation-network">Aminer Citation Network</h3>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="s2">"01-Data/dat_gam.RData"</span><span class="p">)</span><span class="w">
@@ -574,7 +581,7 @@ the second approach.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">gam_tve</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-19-1.png" alt="" /></p>
+<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-20-1.png" alt="" /></p>
 
 <p><strong>Interpretation:</strong> The plot of the time-varying effect shows an
 increase; the confidence bands are very large at the beginning, probably
@@ -594,7 +601,7 @@ window, where, instead, confidence intervals are quite narrow.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">gam_tve_transformed</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-21-1.png" alt="" /></p>
+<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-22-1.png" alt="" /></p>
 
 <p><strong>Interpretation:</strong> As previously mentioned, fitting a model with smooth
 terms improves when the covariates do not exhibit major outliers. When
@@ -649,7 +656,7 @@ untransformed time, is captured here as well.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">gam_nle</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-24-1.png" alt="" /></p>
+<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-25-1.png" alt="" /></p>
 
 <p><strong>Interpretation:</strong> The plot of the non-linear effect clearly shows a
 non-monotonic pattern. Apparently, authors tend to publish together when
@@ -664,42 +671,96 @@ new paper.</p>
 
 <h4 id="time-varying-non-linear-effect">Time-varying non-linear effect</h4>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># time_matrix &lt;-</span><span class="w">
-</span><span class="c1">#   cbind(dat_gam$transformed_time,</span><span class="w">
-</span><span class="c1">#         dat_gam$transformed_time)</span><span class="w">
-</span><span class="c1"># gam_tvnle &lt;- gam(y ~ -1 + te(time_matrix, diff.author.publication.activity_matrix, by=W) +</span><span class="w">
-</span><span class="c1">#                           paper.outdegree.popularity +</span><span class="w">
-</span><span class="c1">#                           author.sub.rep.1 +</span><span class="w">
-</span><span class="c1">#                           reference.sub.rep.1,</span><span class="w">
-</span><span class="c1">#                           family="binomial",</span><span class="w">
-</span><span class="c1">#                           data = dat_gam)</span><span class="w">
-</span><span class="c1"># viz &lt;- getViz(gam_tvnle)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gam_tvnle</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">tvnl</span><span class="p">(</span><span class="n">diff.author.publication.activity</span><span class="p">)</span><span class="w"> 
+                   </span><span class="c1"># automatically uses the transformed one when computing nl</span><span class="w">
+                 
+                   </span><span class="o">+</span><span class="w"> </span><span class="n">paper.outdegree.popularity</span><span class="w"> </span><span class="o">+</span><span class="w">
+                   </span><span class="o">+</span><span class="w"> </span><span class="n">author.sub.rep.1</span><span class="w"> </span><span class="o">+</span><span class="w">
+                   </span><span class="o">+</span><span class="w"> </span><span class="n">reference.sub.rep.1</span><span class="p">,</span><span class="w">
+                   </span><span class="n">method</span><span class="o">=</span><span class="s2">"gam"</span><span class="p">,</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"transformed_time"</span><span class="p">,</span><span class="w">
+                   </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dat_gam</span><span class="p">)</span><span class="w">
+</span><span class="n">viz</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getViz</span><span class="p">(</span><span class="n">gam_tvnle</span><span class="o">$</span><span class="n">fit</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># summary(gam_tvnle)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">summary</span><span class="p">(</span><span class="n">gam_tvnle</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># plot_obj &lt;- plot(viz)</span><span class="w">
-</span><span class="c1"># plot_data &lt;- plot_obj$plots[[1]]$ggObj$data</span><span class="w">
-</span><span class="c1"># plot_data &lt;- plot_data[!is.na(plot_data$z),]</span><span class="w">
-</span><span class="c1">#   plot_data &lt;- plot_data %&gt;%</span><span class="w">
-</span><span class="c1">#     group_by(x) %&gt;%</span><span class="w">
-</span><span class="c1">#     mutate(z_centered = z - mean(z)) %&gt;%</span><span class="w">
-</span><span class="c1">#     ungroup()</span><span class="w">
-</span><span class="c1"># ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +</span><span class="w">
-</span><span class="c1">#     geom_tile() +</span><span class="w">
-</span><span class="c1">#     geom_contour(mapping = aes(x = x, y = y, z = z_centered, group = 1),</span><span class="w">
-</span><span class="c1">#                  color = "black", inherit.aes = FALSE) +</span><span class="w">
-</span><span class="c1">#     scale_fill_viridis_c()</span><span class="w">
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## one ~ -1 + te(.T, .X_diff.author.publication.activity, by = .I) + 
+##     paper.outdegree.popularity + author.sub.rep.1 + reference.sub.rep.1
+## 
+## Parametric coefficients:
+##                            Estimate Std. Error z value Pr(&gt;|z|)    
+## paper.outdegree.popularity 0.101303   0.008701   11.64   &lt;2e-16 ***
+## author.sub.rep.1           0.472787   0.018836   25.10   &lt;2e-16 ***
+## reference.sub.rep.1        0.338693   0.006603   51.30   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##                                                 edf Ref.df Chi.sq p-value    
+## te(.T,.X_diff.author.publication.activity):.I 14.12  14.99  746.2  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Rank: 26/27
+## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
+## UBRE = -0.57892  Scale est. = 1         n = 30136
+</code></pre>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plot_obj</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plot</span><span class="p">(</span><span class="n">viz</span><span class="p">)</span><span class="w">
+</span><span class="n">plot_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plot_obj</span><span class="o">$</span><span class="n">plots</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="o">$</span><span class="n">ggObj</span><span class="o">$</span><span class="n">data</span><span class="w">
+</span><span class="n">plot_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plot_data</span><span class="p">[</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">plot_data</span><span class="o">$</span><span class="n">z</span><span class="p">),]</span><span class="w">
+</span><span class="n">plot_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plot_data</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">z_centered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">z</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">ungroup</span><span class="p">()</span><span class="w">
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z_centered</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_tile</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_contour</span><span class="p">(</span><span class="n">mapping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z_centered</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> 
+               </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">inherit.aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">scale_fill_viridis_c</span><span class="p">()</span><span class="w">
 </span></code></pre></div></div>
 
-<p>By allowing both effects simultaneously, we can see that the non-linear
-effect remains clearly present, while the decrease/increase over time is
-visible only at the very beginning of the time window. By comparing the
-AIC values of the models, we find that jointly combining the effects is
-not worthwhile, whereas a model with only a non-linear effect is
-preferred. Of course, this conclusion is based on a limited dataset and
-on a reduced set of covariates.</p>
+<p><img src="Scientific-Innovation_files/figure-markdown/unnamed-chunk-28-1.png" alt="" /></p>
+
+<p><strong>Interpretation:</strong> By allowing both effects simultaneously, we can see
+that the non-linear effect remains clearly present, while the
+decrease/increase over time is visible only at the very beginning of the
+time window.</p>
+
+<p>By comparing the AIC values of the models, we find that jointly
+combining the effects is not worthwhile, whereas a model with only a
+non-linear effect is preferred. Of course, this conclusion is based on a
+limited dataset and on a reduced set of covariates.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">AIC</span><span class="p">(</span><span class="n">gam_tve</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code>## [1] 13486.2
+</code></pre>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">AIC</span><span class="p">(</span><span class="n">gam_tve_transformed</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code>## [1] 13474.22
+</code></pre>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">AIC</span><span class="p">(</span><span class="n">gam_nle</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code>## [1] 12175.82
+</code></pre>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">AIC</span><span class="p">(</span><span class="n">gam_tvnle</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code>## [1] 12689.64
+</code></pre>
 
 <h2 id="references">References</h2>
 
