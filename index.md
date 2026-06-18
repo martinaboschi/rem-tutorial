@@ -24,7 +24,7 @@ nav_order: 1
 
 ## Welcome to this Relational (Hyper) Event Model tutorial space!
 
-This site collects teaching materials on **Relational (Hyper) Event Models** (RHEMs) and their extensions. Whether you are new to R(H)EMs (with or without H) or looking to deepen your understanding, you can find here **theory, hands-on tutorials, software, and reading material**. 
+This site collects teaching materials on **Relational (Hyper) Event Models** (RHEMs) and their extensions. Whether you are new to R(H)EMs -- with or without H -- or looking to deepen your understanding, you can find here **theory, hands-on tutorials, software, and reading material**. 
 
 <div class="rem-grid-top">
 
