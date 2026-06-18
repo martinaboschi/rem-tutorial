@@ -20,6 +20,14 @@ installed, uncomment the `install.packages("dplyr")` line below.
 library(dplyr)
 ```
 
+To show more complex types of effects you also might need `mgcViz`. Make
+sure to install it if you did not yet.
+
+``` r
+# install.packages("mgcViz")
+library(mgcViz)
+```
+
 ### Aminer Citation Network
 
 ``` r
@@ -545,7 +553,7 @@ summary(gam_tve)
 plot(gam_tve)
 ```
 
-![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-19-1.png)
+![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-20-1.png)
 
 **Interpretation:** The plot of the time-varying effect shows an
 increase; the confidence bands are very large at the beginning, probably
@@ -567,7 +575,7 @@ gam_tve_transformed <- rem(~ tv(diff.author.publication.activity) +
 plot(gam_tve_transformed)
 ```
 
-![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-21-1.png)
+![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-22-1.png)
 
 **Interpretation:** As previously mentioned, fitting a model with smooth
 terms improves when the covariates do not exhibit major outliers. When
@@ -625,7 +633,7 @@ summary(gam_nle)
 plot(gam_nle)
 ```
 
-![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-24-1.png)
+![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-25-1.png)
 
 **Interpretation:** The plot of the non-linear effect clearly shows a
 non-monotonic pattern. Apparently, authors tend to publish together when
@@ -641,41 +649,99 @@ new paper.
 #### Time-varying non-linear effect
 
 ``` r
-# time_matrix <-
-#   cbind(dat_gam$transformed_time,
-#         dat_gam$transformed_time)
-# gam_tvnle <- gam(y ~ -1 + te(time_matrix, diff.author.publication.activity_matrix, by=W) +
-#                           paper.outdegree.popularity +
-#                           author.sub.rep.1 +
-#                           reference.sub.rep.1,
-#                           family="binomial",
-#                           data = dat_gam)
-# viz <- getViz(gam_tvnle)
+gam_tvnle <- rem(~ tvnl(diff.author.publication.activity) 
+                   # automatically uses the transformed one when computing nl
+                 
+                   + paper.outdegree.popularity +
+                   + author.sub.rep.1 +
+                   + reference.sub.rep.1,
+                   method="gam", time = "transformed_time",
+                   data = dat_gam)
+viz <- getViz(gam_tvnle$fit)
 ```
 
 ``` r
-# summary(gam_tvnle)
+summary(gam_tvnle)
 ```
+
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## one ~ -1 + te(.T, .X_diff.author.publication.activity, by = .I) + 
+##     paper.outdegree.popularity + author.sub.rep.1 + reference.sub.rep.1
+## 
+## Parametric coefficients:
+##                            Estimate Std. Error z value Pr(>|z|)    
+## paper.outdegree.popularity 0.101303   0.008701   11.64   <2e-16 ***
+## author.sub.rep.1           0.472787   0.018836   25.10   <2e-16 ***
+## reference.sub.rep.1        0.338693   0.006603   51.30   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##                                                 edf Ref.df Chi.sq p-value    
+## te(.T,.X_diff.author.publication.activity):.I 14.12  14.99  746.2  <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Rank: 26/27
+## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
+## UBRE = -0.57892  Scale est. = 1         n = 30136
+</code></pre>
 
 ``` r
-# plot_obj <- plot(viz)
-# plot_data <- plot_obj$plots[[1]]$ggObj$data
-# plot_data <- plot_data[!is.na(plot_data$z),]
-#   plot_data <- plot_data %>%
-#     group_by(x) %>%
-#     mutate(z_centered = z - mean(z)) %>%
-#     ungroup()
-# ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +
-#     geom_tile() +
-#     geom_contour(mapping = aes(x = x, y = y, z = z_centered, group = 1),
-#                  color = "black", inherit.aes = FALSE) +
-#     scale_fill_viridis_c()
+plot_obj <- plot(viz)
+plot_data <- plot_obj$plots[[1]]$ggObj$data
+plot_data <- plot_data[!is.na(plot_data$z),]
+plot_data <- plot_data %>%
+  group_by(x) %>%
+  mutate(z_centered = z - mean(z)) %>%
+  ungroup()
+ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +
+  geom_tile() +
+  geom_contour(mapping = aes(x = x, y = y, z = z_centered, group = 1), 
+               color = "black", inherit.aes = FALSE) +
+  scale_fill_viridis_c()
 ```
 
-By allowing both effects simultaneously, we can see that the non-linear
-effect remains clearly present, while the decrease/increase over time is
-visible only at the very beginning of the time window. By comparing the
-AIC values of the models, we find that jointly combining the effects is
-not worthwhile, whereas a model with only a non-linear effect is
-preferred. Of course, this conclusion is based on a limited dataset and
-on a reduced set of covariates.
+![](Scientific-Innovation_files/figure-markdown/unnamed-chunk-28-1.png)
+
+**Interpretation:** By allowing both effects simultaneously, we can see
+that the non-linear effect remains clearly present, while the
+decrease/increase over time is visible only at the very beginning of the
+time window.
+
+By comparing the AIC values of the models, we find that jointly
+combining the effects is not worthwhile, whereas a model with only a
+non-linear effect is preferred. Of course, this conclusion is based on a
+limited dataset and on a reduced set of covariates.
+
+``` r
+AIC(gam_tve)
+```
+
+<pre><code>## [1] 13486.2
+</code></pre>
+
+``` r
+AIC(gam_tve_transformed)
+```
+
+<pre><code>## [1] 13474.22
+</code></pre>
+
+``` r
+AIC(gam_nle)
+```
+
+<pre><code>## [1] 12175.82
+</code></pre>
+
+``` r
+AIC(gam_tvnle)
+```
+
+<pre><code>## [1] 12689.64
+</code></pre>
