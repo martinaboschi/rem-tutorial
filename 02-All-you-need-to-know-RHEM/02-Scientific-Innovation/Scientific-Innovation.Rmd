@@ -1,0 +1,17 @@
+---
+title: "All you need to know about relational hyper-event modeling"
+author: "Martina Boschi, Melania Lembo, Juergen Lerner"
+date: "2026-07-17"
+output:
+  md_document:
+    variant: markdown
+    preserve_yaml: false
+subtitle: "Beyond Linear RHEMs - Scientific Innovation"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::knit_hooks$set(output = function(x, options) {  
+  paste0('<pre><code>', x, '</code></pre>')})
+```
+
