@@ -6,20 +6,31 @@ knitr::knit_hooks$set(output = function(x, options) {
 
 ## Introduction and Set up
 
-In the two practicals of the workshop *Introduction to Relational Event Models*, we will show how to use `amore` to simulate relational events and fit relational event models with increasing levels of complexity.
+In the two practicals of the workshop *All You Need to Know About Relational Hyper-Event Modeling*, we show how to use `amore` to fit relational hyper-event models with increasing levels of complexity.
 
-If you are running this tutorial locally, make sure to uncomment the `remotes::install_github` command below to install the package.
+If you are running this tutorial locally, make sure to uncomment the `remotes::install_github` command below before installing the package.
 
 ```{r message=FALSE, warning=FALSE}
 # remotes::install_github("franciscorichter/amore")
 library(amore)
-library(dplyr)
-library(survival)
 ```
 
-This tutorial is inspired by the analysis conducted in (Lerner et al., 2025), where, for illustrative purposes, RHEM is applied to the network of actor co-appearances in *Les Misérables*, compiled by Donald Knuth (Knuth, 1993). The data comprises 80 actors (co-)appearing in one or several of 288 chapters. The (binary\footnote{only for mathematical purposes}) gender of the actors is known. 
+This practical also requires the `dplyr` library. If you do not have it installed, uncomment the `install.packages("dplyr")` line below.
 
-## 1. Les Misérables: Data and Covariate Computation
+```{r}
+# install.packages("dplyr")
+library(dplyr)
+```
+
+This practical is inspired by the analysis conducted in (Lerner et al., 2025), where, for illustrative purposes, RHEM is applied to the network of actor co-appearances in *Les Misérables*, compiled by Donald Knuth (Knuth, 1993). 
+
+The data comprises 80 actors (co-)appearing in one or several of 288 chapters. The (binary\footnote{only for mathematical purposes}) gender of the actors is known. 
+
+## 1. Covariate Computation in `eventnet`
+
+[Include tutorial about eventnet here]
+
+## 2. Importing Data After Pre-Processing in `eventnet`
 
 a)  **Given the information above, interpret this data as a relational hyper-event network. Define the components of the hyperevent sequence, the vertex set, its cardinality, and the available attributes.**
 
