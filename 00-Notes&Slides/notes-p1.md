@@ -33,6 +33,13 @@ code {
 
 # Introduction to Relational Event Models
 
+<div class="download-box">
+  <strong>📥 Download files</strong>
+  <ul>
+    <li><a href="Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
+  </ul>
+</div>
+
 ## 1. Core REMs
 
 **Relational event sequence:** realization of a **marked point process**.

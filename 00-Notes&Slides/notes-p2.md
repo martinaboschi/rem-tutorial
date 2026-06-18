@@ -31,6 +31,13 @@ code {
 }
 </style>
 
+<div class="download-box">
+  <strong>📥 Download files</strong>
+  <ul>
+    <li><a href="Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
+  </ul>
+</div>
+
 # All You Need to Know About Relational Hyper-Event Modeling
 
 ## 1. Core RHEMs
