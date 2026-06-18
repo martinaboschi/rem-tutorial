@@ -80,31 +80,17 @@ contains such information.
 
     native[sample(1:nrow(native), 10), c("species", "region")]
 
-<<<<<<< HEAD:01-Introduction-to-REM/02-Alien-Species-Invasions/Alien-Species.md
-<pre><code>##                        species         region
-## 996152     Aonidomytilus albus     Guadeloupe
-## 1006086        Diprion similis        Germany
-## 1009166  Bostrichus ligniperda         Azores
-## 1033793  Xyleborinus saxesenii          India
-## 995530  Anastrepha fraterculus      Venezuela
-## 1006034      Dinoderus minutus          China
-## 998499       Bombus terrestris        Georgia
-## 1037209  Xylosandrus compactus       Cambodia
-## 1008735      Harmonia axyridis Ryukyu Islands
-## 1022702 Phyllonorycter issikii    South Korea
-=======
-<pre><code>##                        species              region
-## 1030552    Solenopsis richteri           Argentina
-## 1033105 Wasmannia auropunctata Trinidad and Tobago
-## 1016667       Opogona sacchari          Seychelles
-## 1009156  Bostrichus ligniperda             Denmark
-## 1033810  Xyleborinus saxesenii             Denmark
-## 1033020       Vespula vulgaris              Mexico
-## 1009170  Bostrichus ligniperda         Netherlands
-## 1021690   Pheidole megacephala               Kenya
-## 1038082     Xyleborus germanus             Vietnam
-## 1001334     Chilo suppressalis               China
->>>>>>> 3fe6b209309d43f13ba31ca6a24e7932b0fec215:01-Introduction-to-REM/02-Alien-Species-Invasions/alien_species_amore.md
+<pre><code>##                        species                           region
+## 1032140         Vespa velutina                        Indonesia
+## 996159     Aonidomytilus albus Saint Vincent and the Grenadines
+## 1005925   Diabrotica virgifera                       Costa Rica
+## 1029179    Schistocerca nitens                        Guatemala
+## 1020877  Paracoccus marginatus                           Mexico
+## 1025370 Prostephanus truncatus                           Panama
+## 1032211      Vespula germanica                         Bulgaria
+## 1031953     Tremex fuscicornis                           Latvia
+## 1032224      Vespula germanica                          Algeria
+## 1009056          Hylastes ater                           Norway
 </code></pre>
 
 This information is crucial for the definition of the *risk set*. If a
@@ -512,7 +498,7 @@ for such an effect, when using `rem()` function.
 ## 
 ## Approximate significance of smooth terms:
 ##                  edf Ref.df Chi.sq p-value    
-## s(.time):trade 2.565  2.936  117.3  <2e-16 ***
+## s(.time):trade 2.565  2.936  121.3  <2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 

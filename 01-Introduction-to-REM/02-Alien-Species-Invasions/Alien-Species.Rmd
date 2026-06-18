@@ -60,11 +60,13 @@ A species' **native range** (NR) is the collection of areas where it is indigeno
 native[sample(1:nrow(native), 10), c("species", "region")]
 ```
 
+
 This information is crucial for the definition of the *risk set*. If a species is native in a region, then such dyad is never at risk of occurring ever during our analyzed time window. Additionally, the relational event is **non-recurrent**, namely, the event first record, for its definition, occurs only once.
 This also means that the risk set is reducing over time: once the event is observed, it cannot be sampled anymore as a non-event. 
 Also, if interested in computing *endogenous covariates* (that depend on prior interactions), such information is necessary for the events occurring at the beginning (1880).
 
 In this tutorial, in order to make the analysis easy to reproduce, we focus on **insects** only. `first_records` contains the insect FRs of interest.
+
 
 ```{r}
 head(first_records[,c("year","lf",
@@ -72,7 +74,9 @@ head(first_records[,c("year","lf",
            "region")])
 ```
 
+
 We know format the data in a convenient manner for analysis using `amorem` package. We need to make sure that both the data structures for the sequence of relational events and the set of dyads not at risk at the beginning of the time-window contain a `sender` and `receiver` column. 
+
 
 ```{r}
 event_log <- standardize_event_log(first_records[,c(1,3:4)],
@@ -89,25 +93,32 @@ colnames(native_df)<-c("sender", "receiver")
 head(native_df)
 ```
 
+
 In addition we have information on 2 dyadic attribute, **distance** and **trade** between regions, and on a species-level attribute, **temperature**.
 
 Regarding climate, `data_temperature` contains the names of the countries in the first column and the average values of near-surface air temperature in the second column (Watanabe et al., 2011).
+
 
 ```{r}
 head(data_temperature)
 ```
 
+
 For trade, the source information, derived from Barbieri et al. (2009), `data_trade` reports trade flows among countries.
+
 
 ```{r}
 head(data_trade)
 ```
 
+
 Distance between regions is computed referring to the closest borders and consequently is equal to zero for neighbours. Source data for this driver consists of the `R` package `geosphere` (Hijmans et al., 2017).`data_distance` is a matrix with dimension names referring to the regions. The corresponding element in the matrix reports the distance between the two.
+
 
 ```{r}
 data_distance[1:3,1:3]
 ```
+
 
 We will leverage this information to investigate the effect of temperature, trade and distance in the dynamics of species invasion.
 

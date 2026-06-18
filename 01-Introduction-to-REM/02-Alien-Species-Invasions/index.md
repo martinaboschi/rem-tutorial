@@ -5,9 +5,7 @@ title: "Practical 2: Alien Species Invasions"
 
 # Practical 2: Alien Species Invasions
 
-**Instructions.**
-
-This practical session focuses on **fitting relational event models with non-linear and time-varying effects** using the `amorem` package. If you would like to replicate the code locally, feel free to download the files in the box below:
+This practical session focuses on **fitting relational event models with non-linear, time-varying and random effects** using the `amorem` package. If you would like to replicate the code locally, feel free to download the files in the box below:
 
 <div class="download-box">
   <strong>📥 Download files</strong>
