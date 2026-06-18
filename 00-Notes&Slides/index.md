@@ -6,7 +6,7 @@ has_children: true
 
 <style>
 .notes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 1.5rem 0; }
-.notes-box { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem 1.25rem; text-decoration: none; display: flex; flex-direction: column; gap: 8px; }
+.rem-box { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; text-decoration: none; display: flex; flex-direction: column; gap: 6px; box-sizing: border-box; }
 .notes-box:hover { filter: brightness(0.97); }
 .notes-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 8px; border-radius: 6px; display: inline-block; width: fit-content; }
 .notes-title { font-size: 15px; font-weight: 700; color: #111827; margin: 0; line-height: 1.4; }

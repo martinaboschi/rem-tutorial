@@ -34,7 +34,7 @@ code {
 <div class="download-box">
   <strong>📥 Download files</strong>
   <ul>
-    <li><a href="Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
+    <li><a href="./Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
   </ul>
 </div>
 
@@ -75,7 +75,7 @@ In both cases, $n$ is the **number of hyperevents** and $i$ the **index of a gen
 
 ---
 
-**Longitudinal network / multivariate counting process** (Perry & Zhu, 2013):
+**Longitudinal network / multivariate counting process** (Perry & Wolfe, 2013):
 
 $$\{N_{SR}(t)\}_{S \subseteq V^S,\ R \subseteq V^R,\ t \geq 0}$$
 

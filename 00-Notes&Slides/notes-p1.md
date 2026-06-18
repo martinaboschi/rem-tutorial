@@ -36,7 +36,7 @@ code {
 <div class="download-box">
   <strong>📥 Download files</strong>
   <ul>
-    <li><a href="Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
+    <li><a href="./Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
   </ul>
 </div>
 
