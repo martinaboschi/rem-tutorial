@@ -90,7 +90,7 @@ code {
 <p>where:</p>
 <ul>
   <li><strong>Risk indicator</strong> $W_{sr}(t)$ - equal to 1 if $(s,r)$ is at risk at time $t$;</li>
-  <li><strong>Baseline hazard</strong> $\lambda_0(t) (including global risk determinants);</li>
+  <li><strong>Baseline hazard</strong> $\lambda_0(t)$ (including global risk determinants);</li>
   <li><strong>Event log-rate contribution</strong> $f(\boldsymbol{x_{sr}}(t),t)$. 
 E.g. <strong>linear contribution</strong>: $f(\boldsymbol{x_{sr}}(t),t) = \beta \cdot x_{sr}(t)$.
     <ul>
@@ -164,7 +164,7 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
         <p><em>How recent is the reciprocal event in the past?</em>
 \(z_{sr}(t) = \begin{cases} t - \tau_{sr}, &amp; \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, &amp; \text{otherwise,} \end{cases}\)</p>
 
-        <p>where $x_{sr}(t) = \exp!\big(-z_{sr}(t)\big)$.</p>
+        <p>where $x_{sr}(t) = \exp\left(-z_{sr}(t)\right)$.</p>
       </li>
     </ul>
 
@@ -183,10 +183,10 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 
 <blockquote>
   <p><strong>Assumption</strong> (this section only): <strong>linear contribution function</strong>, i.e., 
-\((\boldsymbol{x}_{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsysmbol{x}_{sr}(t)\)</p>
+\(f(\boldsymbol{x_{sr}}(t),t) = \mathbf{\beta} \cdot \boldsymbol{x_{sr}}(t)\)</p>
 </blockquote>
 
-<p>The counting process is adapted to the <strong>filtration</strong> $\mathbb{W} = {\mathcal{W}<em>t}</em>{t \in \mathbb{R}^+}$. At time $t$, $\mathcal{W}_{t^-}$ incorporates both exogenous information and information from events occurred at $t^\ast &lt; t$.</p>
+<p>The counting process is adapted to the <strong>filtration</strong> $\mathbb{W} = \lbrace \mathcal{W}<em>t \rbrace</em>{t \in \mathbb{R}^+}$. At time $t$, $\mathcal{W}_{t^-}$ incorporates both exogenous information and information from events occurred at $t^\ast &lt; t$.</p>
 
 <p><strong>Likelihood:</strong> constructed as joint probability of observing data under the model.</p>
 

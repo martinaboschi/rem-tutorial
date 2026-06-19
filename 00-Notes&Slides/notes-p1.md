@@ -161,7 +161,7 @@ where:
 ## 2. REM Inference
 
 > **Assumption** (this section only): **linear contribution function**, i.e., 
-$$(\boldsymbol{x}_{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsysmbol{x}_{sr}(t)$$
+$$f(\boldsymbol{x_{sr}}(t),t) = \mathbf{\beta} \cdot \boldsymbol{x_{sr}}(t)$$
 
 The counting process is adapted to the **filtration** $\mathbb{W} = \lbrace \mathcal{W}_t \rbrace_{t \in \mathbb{R}^+}$. At time $t$, $\mathcal{W}_{t^-}$ incorporates both exogenous information and information from events occurred at $t^\ast < t$.
 
