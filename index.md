@@ -28,7 +28,7 @@ This site collects teaching materials on **Relational (Hyper) Event Models** (RH
 
 <div class="rem-grid-top">
 
-<a class="rem-box" href="00-Notes&Slides/">
+<a class="rem-box" href="00-Notes-and-Slides/">
 <span style="font-size:22px">🗂️</span>
 <span class="rem-tag tag-yellow">Notes</span>
 <span class="rem-title">Formulary, Slides, and Notes</span>

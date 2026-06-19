@@ -14,8 +14,9 @@ library(amorem)
 
 While exploring the main functions of the package, we will cover how:
 
--   to simulate relational event data in `amorem` \[Theoretical
-    reference\]
+-   [to simulate relational event
+    data](../../00-Notes-and-Slides/notes-p1#simulating-relational-event-data)
+    \[Theoretical reference\]
 -   to structure data for inference \[Theoretical reference\]
 -   to fit models with linear effects \[Theoretical reference\]
 -   compare different inference techniques \[Theoretical reference\]
