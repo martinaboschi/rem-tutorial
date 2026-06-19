@@ -45,6 +45,8 @@ code {
 
 ## 1. Core REMs
 
+### Notation
+
 **Relational event sequence:** realization of a **marked point process**.
 
 $$E = \{e_i = (s_i, r_i, t_i),\ i=1,\dots,n\}$$
@@ -58,7 +60,8 @@ where:
 
 ---
 
-**Longitudinal network / multivariate counting process** (Perry & Wolfe, 2013):
+### Longitudinal network / multivariate counting process
+(Perry & Wolfe, 2013)
 
 $$\{N_{sr}(t)\}_{s \in V^S,\ r \in V^R,\ t \geq 0}$$
 
@@ -80,7 +83,8 @@ where:
 
 ---
 
-**Relational event model (REM)** (Bianchi et al., 2024):
+### Relational Event Model (REM)
+(Bianchi et al., 2024)
 
 $$\lambda_{sr}(t) = W_{sr}(t) \times \lambda_0(t) \times \exp\{f(\boldsymbol{x}_{sr}(t),t)\}$$
 
@@ -96,6 +100,8 @@ where:
 The dyads $(s,r)$ satisfying $W_{sr}(t)=1$ compose the **risk set** $\mathcal{R}_t$.
 
 ---
+
+### Simulating Relational Event Data
 
 **Gillespie algorithm for simulating REMs:**
 
@@ -114,6 +120,8 @@ where:
 > **Assumption:** $\lambda_{sr}(t)$ does not change between $t$ and $t + T$.
 
 ---
+
+### Explanatory variables in REMs
 
 **Exogenous & endogenous drivers:** measured by means of **covariates** $x_{sr}(t)$. Covariates can be seen as aggregations/summaries of information derived from **attributes** $z_{sr}(t)$ of nodes and edges.
 
