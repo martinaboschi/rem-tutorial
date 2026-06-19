@@ -29,3 +29,5 @@ If you plan to run the R Markdown file, make sure to place it in the same folder
 - Lerner, J., & Lomi, A. (2020). Reliability of relational event model estimates under sampling: How to fit a relational event model to 360 million dyadic events. Network Science, 8(1), 97-135.
 
 - Lerner, J., & Lomi, A. (2023). Relational hyperevent models for polyadic interaction networks. Journal of the Royal Statistical Society Series A: Statistics in Society, 186(3), 577-600.
+
+- Richter F, Boschi M, Wit E, Lembo M (2026). amorem: simulation and inference for Relational Event Models with time-varying non-linear effects. R package version 1.0.0, https://franciscorichter.github.io/amorem/

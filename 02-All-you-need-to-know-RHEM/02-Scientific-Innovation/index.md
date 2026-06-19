@@ -26,4 +26,6 @@ If you plan to run the R Markdown file, make sure to place it in the same folder
 
 - Lerner, J., Hâncean, M. G., & Lomi, A. (2025). Relational hyperevent models for the coevolution of coauthoring and citation networks. Journal of the Royal Statistical Society Series A: Statistics in Society, 188(2), 583-607.
 
+- Richter F, Boschi M, Wit E, Lembo M (2026). amorem: simulation and inference for Relational Event Models with time-varying non-linear effects. R package version 1.0.0, https://franciscorichter.github.io/amorem/
+
 - Tang, J., Zhang, J., Yao, L., Li, J., Zhang, L., & Su, Z. (2008). ArnetMiner: Extraction and mining of academic social networks. In Proceedings of the 14th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (pp. 990–998). Association for Computing Machinery.

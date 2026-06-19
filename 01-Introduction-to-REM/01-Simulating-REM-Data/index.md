@@ -19,10 +19,10 @@ This practical session focuses on **simulating relational events** using the `am
 
 ## References
 
-- Richter F, Boschi M, Wit E, Lembo M (2026). amorem: Augmented Modelling of Relational Events. R package version 1.0.0, https://franciscorichter.github.io/amorem/.
-
 - Borgan, Ø., Goldstein, L., & Langholz, B. (1995). Methods for the analysis of sampled cohort data in the Cox proportional hazards model. *The Annals of Statistics, 23*, 1749–1778.
+
+- Boschi, M., Juozaitienė, R., & Wit, E. C. (2025). Mixed additive modelling of global alien species co-invasions of plants and insects. *Journal of the Royal Statistical Society: Series C (Applied Statistics)*. Advance online publication. https://doi.org/10.1093/jrsssc/qlaf034
 
 - Lerner, J., & Lomi, A. (2020). Reliability of relational event model estimates under sampling: How to fit a relational event model to 360 million dyadic events. *Network Science, 8*(1), 97–135. https://doi.org/10.1017/nws.2019.28
 
-- Boschi, M., Juozaitienė, R., & Wit, E. C. (2025). Mixed additive modelling of global alien species co-invasions of plants and insects. *Journal of the Royal Statistical Society: Series C (Applied Statistics)*. Advance online publication. https://doi.org/10.1093/jrsssc/qlaf034
+- Richter F, Boschi M, Wit E, Lembo M (2026). amorem: simulation and inference for Relational Event Models with time-varying non-linear effects. R package version 1.0.0, https://franciscorichter.github.io/amorem/
