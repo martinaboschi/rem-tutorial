@@ -7,6 +7,7 @@
 $$E = \{e_i = (S_i, t_i),\ i=1,\dots,n\}$$
 
 where:
+
 - $S_i$ is a subset of the **vertex set** $V$, composed of the entities involved simultaneously in the $i$-th relational hyperevent, i.e. the **participants**;
 - $t_i$: **time** of the $i$-th relational hyperevent.
 
@@ -19,6 +20,7 @@ $$E = \{(\{\text{MY, NP, MB}\}, t_1),\ (\{\text{MY, ME, MB}\}, t_2),\ (\{\text{M
 $$E = \{e_i = (S_i, R_i, t_i),\ i=1,\dots,n\}$$
 
 where:
+
 - $S_i$ is a subset of the **sender set** $V^S$, representing the group of senders of the $i$-th relational hyperevent;
 - $R_i$ is a subset of the **receiver set** $V^R$, representing the group of receivers;
 - $t_i$: **time** of the $i$-th relational hyperevent.
@@ -38,6 +40,7 @@ In both cases, $n$ is the **number of hyperevents** and $i$ the **index of a gen
 $$\{N_{SR}(t)\}_{S \subseteq V^S,\ R \subseteq V^R,\ t \geq 0}$$
 
 where:
+
 - $N_{SR}(t)$: number of interactions from $S$ to $R$ until time $t$;
 - $V^S$: **set of senders**; $V^R$: **set of receivers**.
 
@@ -48,6 +51,7 @@ If senders/receivers belong to the same group, $V^S = V^R = V$ (**vertex set**),
 $$N_{SR}(t) = \Lambda_{SR}(t) + M_{SR}(t) = \int_0^t \lambda_{SR}(u)\,\mathrm{d}u + M_{SR}(t)$$
 
 where:
+
 - $\Lambda_{SR}(t)$: **cumulative intensity process** (structural part);
 - $M_{SR}(t)$: **Martingale residual process** (noisy part);
 - $\lambda_{SR}(t)$: **hazard** (also: **rate**, **intensity**): instantaneous rate at which $(S,R)$ occurs at $t$.
@@ -59,9 +63,11 @@ where:
 $$\lambda_{SR}(t) = W_{SR}(t) \times \lambda_0(t) \times \exp\!\Big\{f\!\left(\boldsymbol{x}_{SR}(t), t\right)\Big\}$$
 
 where:
+
 - $W_{SR}(t)$: **risk indicator** — equal to 1 if $(S,R)$ is at risk at time $t$;
 - $\lambda_0(t)$: **baseline hazard**;
 - $f(\boldsymbol{x}_{SR}(t),t)$: **event log-rate contribution**. E.g. **linear contribution** $f(x_{SR}(t),t) = \beta \cdot x_{SR}(t)$:
+
   - $f(\cdot,t)$: **contribution function** (also: **effect**);
   - $\boldsymbol{x}_{SR}(t)$: edge-specific **covariates**;
   - $t$: **calendar time**.
@@ -115,6 +121,7 @@ Subset repetition is a very general concept and can be extended well beyond the 
 ### 2.3 Beyond Linearity
 
 **What can break Linearity and Time-Homogeneity?**
+
 - **Saturation:** individuals face cognitive overload and become unable to effectively process additional information.
 - **Forgetfulness:** propensity to lose track of past details over time.
 - **External changes:** shifts in the environment, technology, or social norms that alter how factors influence the system.
@@ -137,6 +144,7 @@ $$f^{\text{TVNLE}}\!\left(x_{SR}(t), t\right) = \sum_{q=1}^Q \Bigg(\sum_{l=1}^L 
 To improve **model fitting stability** when using these types of effects:
 
 1. Apply a **monotonic transformation** to each covariate $x$:
+
 $$\dot{x} = 1 - \exp\!\left(-\frac{x}{\epsilon}\right)$$
    - Choose $\epsilon$ so that the transformed covariate (evaluated for events) is as close as possible to a uniform distribution.
    - Apply the same transformation to both events and non-events.

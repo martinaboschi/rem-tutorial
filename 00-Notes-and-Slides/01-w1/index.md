@@ -29,11 +29,13 @@ code {
 }
 </style>
 
+# Notes: Introduction to Relational Event Models
+
 <div class="download-box">
   <strong>📥 Download files</strong>
   <ul>
-    <li><a href="././Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
-    <li><a href="././Sunbelt-Daytona/" download> Sunbelt26_SlidesW1.pdf</a> — Workshop Slides</li>
+    <li><a href="../Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
+    <li><a href="../Sunbelt-Daytona/" download> Sunbelt26_SlidesW1.pdf</a> — Workshop Slides</li>
   </ul>
 </div>
 

@@ -29,10 +29,16 @@ code {
 }
 </style>
 
+# Notes: All You Need to Know About Relational Hyper-Event Modeling
+
 <div class="download-box">
   <strong>📥 Download files</strong>
   <ul>
-    <li><a href="././Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
-    <li><a href="././Sunbelt-Daytona/" download> Sunbelt26_SlidesW2.pdf</a> — Workshop Slides</li>
+    <li><a href="../Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
+    <li><a href="../Sunbelt-Daytona/" download> Sunbelt26_SlidesW2.pdf</a> — Workshop Slides</li>
   </ul>
 </div>
+
+{% include_relative notes-p2.md %}
+
+## References

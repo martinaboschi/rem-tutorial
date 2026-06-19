@@ -63,13 +63,250 @@ code {
 }
 </style>
 
+<h1 id="notes-all-you-need-to-know-about-relational-hyper-event-modeling">Notes: All You Need to Know About Relational Hyper-Event Modeling</h1>
+
 <div class="download-box">
   <p><strong>📥 Download files</strong></p>
   <ul>
-    <li><a href="././Sunbelt-Daytona/Sunbelt26_Notes.pdf" download="">Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
-    <li><a href="././Sunbelt-Daytona/" download=""> Sunbelt26_SlidesW2.pdf</a> — Workshop Slides</li>
+    <li><a href="../Sunbelt-Daytona/Sunbelt26_Notes.pdf" download="">Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
+    <li><a href="../Sunbelt-Daytona/" download=""> Sunbelt26_SlidesW2.pdf</a> — Workshop Slides</li>
   </ul>
 </div>
+
+<h2 id="1-core-rhems">1. Core RHEMs</h2>
+
+<p><strong>Relational hyper event sequence:</strong> realization of a <strong>marked point
+process</strong>.</p>
+
+<p><strong>Sequence of undirected hyperevents</strong> (Lerner, 2025):</p>
+
+\[E = \{e_i = (S_i, t_i),\ i=1,\dots,n\}\]
+
+<p>where:</p>
+
+<ul>
+  <li>$S_i$ is a subset of the <strong>vertex set</strong> $V$, composed of the
+entities involved simultaneously in the $i$-th relational
+hyperevent, i.e. the <strong>participants</strong>;</li>
+  <li>$t_i$: <strong>time</strong> of the $i$-th relational hyperevent.</li>
+</ul>
+
+<p><em>E.g. Les Misérables, whose chapters can be considered as hyperevents
+where actors co-appear:</em></p>
+
+\[E = \{(\{\text{MY, NP, MB}\}, t_1),\ (\{\text{MY, ME, MB}\}, t_2),\ (\{\text{MY}\}, t_3),\ (\{\text{MY, ME, CL, GE, MC, MB}\}, t_4),\ \ldots\}\]
+
+<p><strong>Sequence of directed hyperevents</strong> (Lerner, 2025; Boschi et al.,
+2025):</p>
+
+\[E = \{e_i = (S_i, R_i, t_i),\ i=1,\dots,n\}\]
+
+<p>where:</p>
+
+<ul>
+  <li>$S_i$ is a subset of the <strong>sender set</strong> $V^S$, representing the
+group of senders of the $i$-th relational hyperevent;</li>
+  <li>$R_i$ is a subset of the <strong>receiver set</strong> $V^R$, representing the
+group of receivers;</li>
+  <li>$t_i$: <strong>time</strong> of the $i$-th relational hyperevent.</li>
+</ul>
+
+<p><em>E.g. Scientific innovation, where each paper publication is a
+hyperevent (a group of authors publishes a paper citing a set of
+papers):</em></p>
+
+\[E = \{(\{2,3\}, \{A,B\}, t_1{=}1950),\ (\{1,2,4\}, \{A,C\}, t_2{=}1951),\ (\{4\}, \{A,C\}, t_3{=}1953)\}\]
+
+<blockquote>
+  <p><strong>Remark:</strong> An undirected hyperevent can be represented as a directed
+hyperevent with an empty receiver set,
+i.e. $(S_i, t_i) = (S_i, R_i = \emptyset, t_i)$, also referred to as a
+<strong>meeting</strong>.</p>
+</blockquote>
+
+<p>In both cases, $n$ is the <strong>number of hyperevents</strong> and $i$ the <strong>index
+of a generic hyperevent</strong>.</p>
+
+<hr />
+
+<p><strong>Longitudinal network / multivariate counting process</strong> (Perry &amp; Wolfe,
+2013):</p>
+
+\[\{N_{SR}(t)\}_{S \subseteq V^S,\ R \subseteq V^R,\ t \geq 0}\]
+
+<p>where:</p>
+
+<ul>
+  <li>$N_{SR}(t)$: number of interactions from $S$ to $R$ until time $t$;</li>
+  <li>$V^S$: <strong>set of senders</strong>; $V^R$: <strong>set of receivers</strong>.</li>
+</ul>
+
+<p>If senders/receivers belong to the same group, $V^S = V^R = V$ (<strong>vertex
+set</strong>), with $p = |V|$.</p>
+
+<p><strong>Doob-Meyer decomposition theorem:</strong></p>
+
+\[N_{SR}(t) = \Lambda_{SR}(t) + M_{SR}(t) = \int_0^t \lambda_{SR}(u)\,\mathrm{d}u + M_{SR}(t)\]
+
+<p>where:</p>
+
+<ul>
+  <li>$\Lambda_{SR}(t)$: <strong>cumulative intensity process</strong> (structural
+part);</li>
+  <li>$M_{SR}(t)$: <strong>Martingale residual process</strong> (noisy part);</li>
+  <li>$\lambda_{SR}(t)$: <strong>hazard</strong> (also: <strong>rate</strong>, <strong>intensity</strong>):
+instantaneous rate at which $(S,R)$ occurs at $t$.</li>
+</ul>
+
+<hr />
+
+<p><strong>Relational hyper event model (RHEM)</strong> (Lerner &amp; Lomi, 2021, 2023):</p>
+
+\[\lambda_{SR}(t) = W_{SR}(t) \times \lambda_0(t) \times \exp\!\Big\{f\!\left(\boldsymbol{x}_{SR}(t), t\right)\Big\}\]
+
+<p>where:</p>
+
+<ul>
+  <li>
+    <p>$W_{SR}(t)$: <strong>risk indicator</strong> — equal to 1 if $(S,R)$ is at risk
+at time $t$;</p>
+  </li>
+  <li>
+    <p>$\lambda_0(t)$: <strong>baseline hazard</strong>;</p>
+  </li>
+  <li>
+    <p>$f(\boldsymbol{x}<em>{SR}(t),t)$: <strong>event log-rate contribution</strong>. E.g.
+<strong>linear contribution</strong> $f(x</em>{SR}(t),t) = \beta \cdot x_{SR}(t)$:</p>
+
+    <ul>
+      <li>$f(\cdot,t)$: <strong>contribution function</strong> (also: <strong>effect</strong>);</li>
+      <li>$\boldsymbol{x}_{SR}(t)$: edge-specific <strong>covariates</strong>;</li>
+      <li>$t$: <strong>calendar time</strong>.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>$(S,R)$ satisfying $W_{SR}(t)=1$ compose the <strong>risk set</strong>
+$\mathcal{R}_t$.</p>
+
+<hr />
+
+<h3 id="11-exogenous--endogenous-drivers-for-undirected-hyperevents">1.1 Exogenous &amp; endogenous drivers for undirected hyperevents</h3>
+
+<p><strong>Exogenous and endogenous drivers</strong> are measured by means of
+<strong>covariates</strong> $x_S(t)$, which can be seen as aggregations or summaries
+of <strong>attributes</strong> $z_s(t)$ of nodes in subsets $S’ \subseteq S$.</p>
+
+<ul>
+  <li>
+    <p><strong>Exogenous covariates:</strong> do not depend on the network of (previous)
+events. One can consider both the <strong>main effect</strong> of an exogenous
+feature and the effect of related <strong>homophily</strong>.</p>
+
+    <p><em>E.g. Gender. The covariate capturing the main effect can be
+computed as the average of the feature over nodes in $S$:</em>
+\(\text{avg.z}(S,t) = \sum_{s \in S} z_s(t) / |S|\)</p>
+
+    <p><em>Gender <strong>dissimilarity</strong> (a negative effect indicates
+<strong>homophily</strong>):</em>
+\(\text{diff.z}(S,t) = \sum_{\{s,s'\} \in \binom{S}{2}} \frac{|z_s(t) - z_{s'}(t)|}{\binom{|S|}{2}}\)</p>
+  </li>
+  <li>
+    <p><strong>Endogenous covariates:</strong> depend on the network of (previous)
+events and allow us to measure <strong>relational mechanisms</strong>.</p>
+
+    <p><em>E.g. <strong>Subset repetition</strong>: the average number of prior joint
+events over all subsets $S’ \subseteq S$ of size $\rho$:</em></p>
+
+\[\begin{aligned}
+\text{hy.deg}(S', t) &amp;= \sum_{e_i:\, t_i &lt; t} \mathbf{1}(S' \subseteq S_i) \\
+\text{sub.rep}^{(\rho)}(S,t) &amp;= \sum_{S' \in \binom{S}{\rho}} \frac{\text{hy.deg}(S', t)}{\binom{|S|}{\rho}}
+\end{aligned}\]
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="2-non-linear-rhems">2. Non-linear RHEMs</h2>
+
+<h3 id="21-directed-hyperevents">2.1 Directed hyperevents</h3>
+
+<p>This section reviews examples of <strong>directed hyperevents</strong>, specifically
+referring to the paper publication hyperevent defined above. Data
+concerning directed hyperevents manifest in the form of
+$E = {e_i = (S_i, R_i, t_i),\ i=1,\dots,n}$.</p>
+
+<h3 id="22-exogenous--endogenous-drivers-for-directed-hyperevents">2.2 Exogenous &amp; endogenous drivers for directed hyperevents</h3>
+
+<p><strong>Endogenous covariates:</strong> depend on the network of (previous) events
+and allow us to measure <strong>relational mechanisms</strong>.</p>
+
+<p><em>E.g. <strong>Subset repetition</strong> for directed hyperevents: the average number
+of prior joint events involving a subset of senders and a subset of
+receivers of a given size in the past event history.</em></p>
+
+\[\begin{aligned}
+\text{cite}^{\text{aut}-\text{pap}}(S, R, t) &amp;= \sum_{t_i &lt; t} \omega(t - t_i) \cdot \mathbf{1}_{\{S \subseteq S_i \cap R \subseteq R_i\}} \\
+\text{subrep}^{(\rho,\ell)}(S, R, t) &amp;= \sum_{(S', R') \in \binom{S}{\rho} \times \binom{R}{\ell}} \dfrac{\text{cite}^{\text{aut}-\text{pap}}(S', R', t)}{\binom{|S|}{\rho} \times \binom{|R|}{\ell}}
+\end{aligned}\]
+
+<p>Subset repetition is a very general concept and can be extended well
+beyond the notion of citation.</p>
+
+<h3 id="23-beyond-linearity">2.3 Beyond Linearity</h3>
+
+<p><strong>What can break Linearity and Time-Homogeneity?</strong></p>
+
+<ul>
+  <li><strong>Saturation:</strong> individuals face cognitive overload and become
+unable to effectively process additional information.</li>
+  <li><strong>Forgetfulness:</strong> propensity to lose track of past details over
+time.</li>
+  <li><strong>External changes:</strong> shifts in the environment, technology, or
+social norms that alter how factors influence the system.</li>
+</ul>
+
+<p>We adapt the notation from Part 1 to distinguish basis function indices
+when combining the two types of effects:</p>
+
+<ol>
+  <li>
+    <p><strong>Fixed linear effect (FLE):</strong>
+\(f^{\text{FLE}}\!\big(x_{SR}(t), t\big) = \beta \cdot x_{SR}(t)\)</p>
+  </li>
+  <li>
+    <p><strong>Time-varying effect (TVE):</strong>
+\(f^{\text{TVE}}\!\big(x_{SR}(t), t\big) = \alpha(t) \cdot x_{SR}(t), \qquad \alpha(t) = \sum_{l=1}^{L} \alpha_l\, a_l(t)\)</p>
+  </li>
+  <li>
+    <p><strong>Non-linear effect (NLE):</strong>
+\(f^{\text{NLE}}\!\big(x_{SR}(t)\big) = \sum_{q=1}^{Q} \beta_q\, b_q\!\big(x_{SR}(t)\big)\)</p>
+  </li>
+</ol>
+
+<p><strong>Joint time-varying non-linear effect (TVNLE):</strong> coefficients of basis
+evaluations of covariates are not fixed but vary over time.</p>
+
+\[f^{\text{TVNLE}}\!\left(x_{SR}(t), t\right) = \sum_{q=1}^Q \Bigg(\sum_{l=1}^L \alpha_{ql}\, a_l(t)\Bigg) b_q\!\left(x_{SR}(t)\right)\]
+
+<p>To improve <strong>model fitting stability</strong> when using these types of
+effects:</p>
+
+<ol>
+  <li>Apply a <strong>monotonic transformation</strong> to each covariate $x$:</li>
+</ol>
+
+<p>\(\dot{x} = 1 - \exp\!\left(-\frac{x}{\epsilon}\right)\) - Choose
+$\epsilon$ so that the transformed covariate (evaluated for events) is
+as close as possible to a uniform distribution. - Apply the same
+transformation to both events and non-events.</p>
+
+<ol>
+  <li>Transform event times $t$ using the <strong>empirical cumulative
+distribution function</strong>: \(\dot{t} = \mathrm{ecdf}_t(t)\)</li>
+</ol>
+
+<h2 id="references">References</h2>
 
       </div>
     </main><footer class="site-footer h-card">
