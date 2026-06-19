@@ -16,15 +16,15 @@ While exploring the main functions of the package, we will cover how:
 
 -   [to simulate relational event
     data](../../00-Notes-and-Slides/notes-p1#simulating-relational-event-data)
-    \[Theoretical reference\]
--   to structure data for inference \[Theoretical reference\]
--   to fit models with linear effects \[Theoretical reference\]
--   compare different inference techniques \[Theoretical reference\]
+-   [to structure data for
+    inference](../../00-Notes-and-Slides/notes-p1#2-rem-inference)
+-   to fit models with linear effects
+-   compare different inference techniques
 
 ## 1. How to simulate relational event data in `amorem`
 
-As seen in \[Theoretical reference\], *relational event data* consists
-of a sequence of $n$ triplets:
+[*Relational event data*](../../00-Notes-and-Slides/notes-p1#notation)
+consists of a sequence of $n$ triplets:
 
 $$E = \{e_i = (s_i, r_i, t_i), i=1,\dots,n\}$$
 
@@ -36,9 +36,9 @@ the *receiver set* (`receivers`) are the first three arguments that we
 provide to simulate our relational event sequence by means of the
 function `simulate_relational_events`.
 
-We saw in \[Theoretical reference\] that relational events can be both
-described and simulated using a *rate function*. This rate function can
-be decomposed into three main blocks:
+Relational events can be both described and simulated using a [*rate
+function*](../../00-Notes-and-Slides/notes-p1#relational-event-model-rem).
+This rate function can be decomposed into three main blocks:
 
 1.  *Risk indicator*: equal to 1 if the dyad $(s,r)$ is at risk at time
     $t$. In this first practical, we assume that all potential dyads -
@@ -106,12 +106,13 @@ head(raw_data_m1,16)
 
 ## 2. How to structure data for inference
 
-In \[Theoretical reference\], we covered a wide range of inference
-methods. Since most of the REM literature you are likely to encounter
-relies on *(sampled) partial likelihood estimation*, we start with a
-practical example of this approach. We then provide an example using the
-*case-1-control partial likelihood*, which opens the door to subsequent
-practicals where we move beyond linearity.
+In the [theoretical
+section](../../00-Notes-and-Slides/notes-p1#2-rem-inference), covered a
+wide range of inference methods. Since most of the REM literature you
+are likely to encounter relies on *(sampled) partial likelihood
+estimation*, we start with a practical example of this approach. We then
+provide an example using the *case-1-control partial likelihood*, which
+opens the door to subsequent practicals where we move beyond linearity.
 
 Each approach requires a particular data structure. This tutorial
 distinguishes between two main data formats:
@@ -162,13 +163,14 @@ head(raw_data_m7,10)
 
 ### 2.2. Data for Case-1-control partial likelihood
 
-As discussed in \[Theoretical reference\], when there is only one
-non-event per event, a *logistic regression* can be fitted. In this
-case, the statistical unit is the event/non-event pair. The logistic
-regression is fitted with a fixed response equal to 1 (which must
-therefore be included in the data) and covariates equal to the
-differences between the covariates of the event and those of the
-non-event. These differences must also be recorded in the data.
+When there is only [one non-event per
+event](../../00-Notes-and-Slides/notes-p1#24-case-1-control-partial-likelihood-approaches),
+a *logistic regression* can be fitted. In this case, the statistical
+unit is the event/non-event pair. The logistic regression is fitted with
+a fixed response equal to 1 (which must therefore be included in the
+data) and covariates equal to the differences between the covariates of
+the event and those of the non-event. These differences must also be
+recorded in the data.
 
 The function `widen_case_control` transforms data from long format to
 wide format. To do so, we need to specify the `event` argument - the
@@ -207,10 +209,9 @@ method can be selected via the `method` argument.
 
 ### 3.1. Sampled partial likelihood via Conditional logistic regression
 
-As discussed in \[Theoretical reference\], when considering more than
-one non-event per event, it can be shown that the partial likelihood
-coincides with that of a *conditional logistic regression* - hence we
-set the method to `clogit`.
+When considering more than one non-event per event, it can be shown that
+the partial likelihood coincides with that of a *conditional logistic
+regression* - hence we set the method to `clogit`.
 
 ``` r
 fit_clogit <- rem(event ~ reciprocity_count, 
@@ -248,9 +249,10 @@ employed in simulation was 0.6.
 
 ### 3.2. Case-1-control partial likelihood via Degenerate logistic regression
 
-When considering only one non-event per event (\[Theoretical
-reference\]), it can be shown that the partial likelihood coincides with
-that of a *degenerate logistic regression*:
+When considering only [one non-event per
+event](../../00-Notes-and-Slides/notes-p1#24-case-1-control-partial-likelihood-approaches),
+it can be shown that the partial likelihood coincides with that of a
+*degenerate logistic regression*:
 
 -   without an intercept term,
 -   with a constant response equal to 1,
