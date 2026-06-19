@@ -32,7 +32,7 @@ If you plan to run the R Markdown file, make sure to place it in the same folder
 
 - Pyšek, P., Hulme, P. E., Simberloff, D., Bacher, S., Blackburn, T. M., Carlton, J. T., Dawson, W., Essl, F., Foxcroft, L. C., & Genovesi, P. (2020). Scientists' warning on invasive alien species. Biological Reviews, 95(6), 1511–1534. https://doi.org/10.1111/brv.12627
 
-- Richter F, Boschi M, Wit E, Lembo M (2026). amorem: Augmented Modelling of Relational Events. R package version 1.0.0, https://franciscorichter.github.io/amorem/.
+- Richter F, Boschi M, Wit E, Lembo M (2026). amorem: simulation and inference for Relational Event Models with time-varying non-linear effects. R package version 1.0.0, https://franciscorichter.github.io/amorem/.
 
 - Seebens, H., Blackburn, T. M., Dyer, E. E., Genovesi, P., Hulme, P. E., Jeschke, J. M., Pagad, S., Pyšek, P., van Kleunen, M., Winter, M., Ansong, M., Arianoutsou, M., Bacher, S., Blasius, B., Brockerhoff, E. G., Brundu, G., Capinha, C., Causton, C. E., Celesti-Grapow, L., … Essl, F. (2018). Global rise in emerging alien species results from increased accessibility of new source pools. Proceedings of the National Academy of Sciences, 115(10), E2264–E2273. https://doi.org/10.1073/pnas.1719429115
 
