@@ -35,7 +35,7 @@ code {
   <strong>📥 Download files</strong>
   <ul>
     <li><a href="../Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
-    <li><a href="../Sunbelt-Daytona/" download> Sunbelt26_SlidesW2.pdf</a> — Workshop Slides</li>
+    <li><a href="../Sunbelt-Daytona/Slides/02-All-you-need-to-know-RHEM/Sunbelt26_SlidesW2.pdf" download> Sunbelt26_SlidesW2.pdf</a> — Workshop Slides</li>
   </ul>
 </div>
 
