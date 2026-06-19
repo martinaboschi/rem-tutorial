@@ -1,5 +1,5 @@
 ---
-title: Part 1 - Introduction to Relational Event Models
+title: Introduction to Relational Event Models
 nav_order: 1
 parent: Notes and Slides
 math: mathjax
