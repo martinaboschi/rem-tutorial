@@ -275,7 +275,8 @@ This coincides with the likelihood of a **degenerate logistic regression**: with
 > $$\ell^S(\boldsymbol{\beta}) \stackrel{m=1}{=} \sum_{i=1}^n \Bigg[\boldsymbol{\beta}\cdot\boldsymbol{x}_{s_ir_i}(t_i) - \log\!\Bigg(\sum_{(s,r) \in \{(s_i,r_i),(s_i^\ast r_i^\ast)\}} \exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{sr}(t_i)\}\Bigg)\Bigg]$$
 >
 > **Inference technique:** Degenerate logistic regression:
-> $$Y_i|\Delta\boldsymbol{x}_i \stackrel{\text{iid}}{\sim} \text{Bernoulli}(\pi_i),\quad \text{logit}(\pi_i) = \boldsymbol{\beta}\cdot\Delta\boldsymbol{x}_i,\quad y_i = 1,\ i=1,\ldots,n;\quad \text{no intercept}$$
+> $$Y_i|\Delta\boldsymbol{x}_i \stackrel{\text{iid}}{\sim} \text{Bernoulli}(\pi_i),\quad \text{logit}(\pi_i) = \boldsymbol{\beta}\cdot\Delta\boldsymbol{x}_i$$
+> $$y_i = 1,\ i=1,\ldots,n;\quad \text{no intercept}$$
 >
 > **R code:**
 > ```r
