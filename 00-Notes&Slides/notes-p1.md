@@ -246,7 +246,10 @@ which coincides with the likelihood of a **conditional logistic regression** of 
 > $$\ell^S(\boldsymbol{\beta}) = \sum_{i=1}^n \Bigg[\boldsymbol{\beta}\cdot\boldsymbol{x}_{s_ir_i}(t_i) - \log\!\Bigg(\sum_{(s,r) \in \mathcal{SR}_{t_i}} \exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{sr}(t_i)\}\Bigg)\Bigg]$$
 >
 > **Inference technique:** Conditional logistic regression:
-> $$\Delta N_{sr}(t_i)\,\Big|\sum_{s'r' \in \mathcal{SR}_i} \Delta N_{s'r'}(t_i) = 1 \sim \text{Categorical}\!\left(\pi_{sr}(t_i)\right), \quad \pi_{sr}(t_i) = \dfrac{\exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{sr}(t_i)\}}{\sum_{(s',r') \in \mathcal{SR}_{t_i}} \exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{s'r'}(t_i)\}}$$
+> $$\Delta N_{sr}(t_i)\,\Big|\sum_{s'r' \in \mathcal{SR}_i} \Delta N_{s'r'}(t_i) = 1 \sim \text{Categorical}\!\left(\pi_{sr}(t_i)\right)$$ 
+>
+>where:
+>$$\pi_{sr}(t_i) = \dfrac{\exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{sr}(t_i)\}}{\sum_{(s',r') \in \mathcal{SR}_{t_i}} \exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{s'r'}(t_i)\}}$$
 >
 > **R code:**
 > ```r
