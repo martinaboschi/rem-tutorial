@@ -228,7 +228,7 @@ $$\mathcal{L}^P(\boldsymbol{\beta}) = \prod_{i=1}^n\dfrac{\lambda_{s_ir_i}(t_i;\
 $$D_m = \{(e_i, \mathcal{SR}_{t_i}),\ \mathcal{SR}_{t_i} \subset \mathcal{R}_{t_i},\ |\mathcal{SR}_{t_i}|=m+1,\ i=1,\dots,n\}$$
 
 where:
-- $\mathcal{SR}_{t_i}$: **sampled risk set** at $t_i$, including $(s_i, r_i)$ and $m$ randomly sampled dyads in $\mathcal{R}_{t_i}$;
+- ${\mathcal{SR}}_{t_i}$: **sampled risk set** at $t_i$, including $(s_i, r_i)$ and $m$ randomly sampled dyads in ${\mathcal{R}}_{t_i}$;
 - $m$: **number of sampled non-events**.
 
 **Relational event model with sampling:**
