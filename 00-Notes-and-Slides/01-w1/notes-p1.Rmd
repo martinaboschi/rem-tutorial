@@ -284,6 +284,7 @@ In its simplest form, a **smooth function of time** can be represented as a line
 $$\beta(t) \approx \sum_{j=1}^q \theta_j b_j(t)$$
 
 where:
+
 - $q$: **basis dimension**;
 - $\{b_j\}_j$: set of **basis functions**;
 - $\theta_j$: **basis coefficients**.

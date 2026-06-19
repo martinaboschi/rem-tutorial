@@ -236,7 +236,7 @@ $\mathcal{R}_{t_i}$;
 
 **Relational event model with sampling:**
 
-$$\lambda_{sr,\mathcal{SR}}(t) = \lambda_{sr}(t) \cdot \pi_t(\mathcal{SR}|(s,r)), \qquad \pi_t(\mathcal{SR}|(s,r)) = \frac{m}{|\mathcal{R}_t|-1} \cdot \mathbf{1}_{\{(s,r) \in \mathcal{SR},\, \mathcal{SR} \subset \mathcal{R}_t\}}$$
+$$\lambda_{sr,\mathcal{SR}}(t) = \lambda_{sr}(t) \cdot \pi_t(\mathcal{SR}|(s,r)), \quad \pi_t(\mathcal{SR}|(s,r)) = \frac{m}{|\mathcal{R}_t|-1} \cdot \mathbf{1}_{\{(s,r) \in \mathcal{SR},\, \mathcal{SR} \subset \mathcal{R}_t\}}$$
 
 **Sampled partial likelihood:**
 
@@ -321,8 +321,11 @@ as a linear combination of basis functions of **calendar time**:
 
 $$\beta(t) \approx \sum_{j=1}^q \theta_j b_j(t)$$
 
-where: - $q$: **basis dimension**; - $\{b_j\}_j$: set of **basis
-functions**; - $\theta_j$: **basis coefficients**.
+where:
+
+-   $q$: **basis dimension**;
+-   $\{b_j\}_j$: set of **basis functions**;
+-   $\theta_j$: **basis coefficients**.
 
 > **TVE in practice** (Boschi et al., 2025)
 >

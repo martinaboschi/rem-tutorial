@@ -120,13 +120,16 @@ several sources: the source of each FR is reported in the column
 
 <p>A <strong>first record</strong> (FR) is the year <em>t</em> when a (non-native) species <em>s</em>
 first invades region <em>r</em>. The following dataset, <code class="language-plaintext highlighter-rouge">FR</code>, already contains
-information we need to interpret first records as <em>relational events</em>
-(<em>s</em>, <em>r</em>, <em>t</em>).</p>
+information we need to interpret first records as <a href="../../00-Notes-and-Slides/01-w1/#notation"><em>relational
+events</em></a> (<em>s</em>, <em>r</em>, <em>t</em>).</p>
 
-<p>Particularly, the <em>sender set</em> <em>V</em><sup><em>S</em></sup> is composed of the
-unique recorded species, while regions of the world (countries and
-islands) form the <em>receiver set</em> <em>V</em><sup><em>R</em></sup>. The <em>time window</em>
-spans from <em>t</em><sub>0</sub> = 1880 to <em>T</em> = 2005.</p>
+<p>Particularly, the <a href="../../00-Notes-and-Slides/01-w1/#longitudinal-network--multivariate-counting-process"><em>sender
+set</em></a>
+<em>V</em><sup><em>S</em></sup> is composed of the unique recorded species, while
+regions of the world (countries and islands) form the <a href="../../00-Notes-and-Slides/01-w1/#longitudinal-network--multivariate-counting-process"><em>receiver
+set</em></a>
+<em>V</em><sup><em>R</em></sup>. The <em>time window</em> spans from <em>t</em><sub>0</sub> = 1880
+to <em>T</em> = 2005.</p>
 
 <p>A species’ <strong>native range</strong> (NR) is the collection of areas where it is
 indigenous. Slightly more liberally, we refer to native range as the set
@@ -137,28 +140,30 @@ contains such information.</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>native[sample(1:nrow(native), 10), c("species", "region")]
 </code></pre></div></div>
 
-<pre><code>##                        species                           region
-## 1032140         Vespa velutina                        Indonesia
-## 996159     Aonidomytilus albus Saint Vincent and the Grenadines
-## 1005925   Diabrotica virgifera                       Costa Rica
-## 1029179    Schistocerca nitens                        Guatemala
-## 1020877  Paracoccus marginatus                           Mexico
-## 1025370 Prostephanus truncatus                           Panama
-## 1032211      Vespula germanica                         Bulgaria
-## 1031953     Tremex fuscicornis                           Latvia
-## 1032224      Vespula germanica                          Algeria
-## 1009056          Hylastes ater                           Norway
+<pre><code>##                       species         region
+## 1006080       Diprion similis         Russia
+## 1021691  Pheidole megacephala        Nigeria
+## 995581     Anastrepha obliqua        Jamaica
+## 996857       Aphis spiraecola    South Korea
+## 1032219     Vespula germanica          Corse
+## 1008087    Gilpinia hercyniae Czech Republic
+## 1009153 Bostrichus ligniperda        Ukraine
+## 1030550   Solenopsis richteri        Uruguay
+## 1005924  Diabrotica virgifera      Guatemala
+## 995574     Anastrepha obliqua         Panama
 </code></pre>
 
-<p>This information is crucial for the definition of the <em>risk set</em>. If a
+<p>This information is crucial for the definition of the <a href="../../00-Notes-and-Slides/01-w1/#relational-event-model-rem"><em>risk
+set</em></a>. If a
 species is native in a region, then such dyad is never at risk of
 occurring ever during our analyzed time window. Additionally, the
 relational event is <strong>non-recurrent</strong>, namely, the event first record,
 for its definition, occurs only once. This also means that the risk set
 is reducing over time: once the event is observed, it cannot be sampled
-anymore as a non-event. Also, if interested in computing <em>endogenous
-covariates</em> (that depend on prior interactions), such information is
-necessary for the events occurring at the beginning (1880).</p>
+anymore as a non-event. Also, if interested in computing<a href="../../00-Notes-and-Slides/01-w1/#explanatory-variables-in-rems"><em>endogenous
+covariates</em></a>
+(that depend on prior interactions), such information is necessary for
+the events occurring at the beginning (1880).</p>
 
 <p>In this tutorial, in order to make the analysis easy to reproduce, we
 focus on <strong>insects</strong> only. <code class="language-plaintext highlighter-rouge">first_records</code> contains the insect FRs of
@@ -275,9 +280,10 @@ temperature, trade and distance in the dynamics of species invasion.</p>
 
 <p>To perform inference by maximizing the <em>sampled partial likelihood</em>
 through the fitting of a <em>degenerate logistic</em> model we need to perform
-<em>case-1-control sampling</em>. In particular, for each observed event, we
-sample uniformly at random from the risk set at the time of the event, a
-<em>non-event</em> dyad.</p>
+<a href="../../00-Notes-and-Slides/01-w1/#24-case-1-control-partial-likelihood-approaches"><em>case-1-control
+sampling</em></a>.
+In particular, for each observed event, we sample uniformly at random
+from the risk set at the time of the event, a <em>non-event</em> dyad.</p>
 
 <p>Given the time granularity, we have that multiple invasions occur the
 same year. In order to address these <em>ties</em>, for each event, we exclude
@@ -324,9 +330,10 @@ minimum temperature difference between the region involved and the
 previously invaded regions by the considered species. It depends on both
 the sender and the receiver of the event and can therefore be considered
 a <em>dyad-level covariate</em>. It is <em>time-dependent</em> but does not
-incorporate information about internal time. It is <em>endogenous</em>, as it
-relies on the regions previously invaded by the species, but it also
-incorporates exogenous information.</p>
+incorporate information about internal time. It is
+<a href="../../00-Notes-and-Slides/01-w1/#explanatory-variables-in-rems"><em>endogenous</em></a>,
+as it relies on the regions previously invaded by the species, but it
+also incorporates exogenous information.</p>
 
 <p><strong>Trade.</strong> In the existing literature, <strong>international trade</strong> has been
 recognized as a key factor in explaining the spread of alien species.
@@ -557,7 +564,8 @@ time, is negative. This indicates that the rate of invasions tends to
 increase if the species has already invaded countries with similar
 temperatures.</p>
 
-<p>Now consider a model with a <strong>time-varying effect for trade</strong>. Note the
+<p>Now consider a model with a <a href="../../00-Notes-and-Slides/01-w1/#time-varying-effect"><strong>time-varying effect for
+trade</strong></a>. Note the
 effect changes over time, potentially non-linearly, but it is linear in
 the covariate. <code class="language-plaintext highlighter-rouge">tv()</code> and the specification of <code class="language-plaintext highlighter-rouge">time=...</code> are required
 for such an effect, when using <code class="language-plaintext highlighter-rouge">rem()</code> function.</p>
@@ -576,7 +584,7 @@ summary(m2_only_trade_tv)
 ## 
 ## Approximate significance of smooth terms:
 ##                  edf Ref.df Chi.sq p-value    
-## s(.time):trade 2.565  2.936  121.3  &lt;2e-16 ***
+## s(.time):trade 2.565  2.936  117.3  &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -595,8 +603,9 @@ the chance of an invasion but such trend used to be strongeri in the
 past. It could be the result of introduction of international norms and
 laws that regulate non-indigenous species importation.</p>
 
-<p>We now fit a model with a <strong>non-linear effect of distance</strong>. Notice the
-<code class="language-plaintext highlighter-rouge">nl()</code> to specify it.</p>
+<p>We now fit a model with a <a href="../../00-Notes-and-Slides/01-w1/#non-linear-effect"><strong>non-linear effect of
+distance</strong></a>. Notice
+the <code class="language-plaintext highlighter-rouge">nl()</code> to specify it.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Non-linear effect of distance ####
 m3_only_dist_nl&lt;- rem(~ nl(dist), data = cc_wide, method = "gam")
@@ -629,7 +638,8 @@ summary(m3_only_dist_nl)
 descreasing trend, we have that the greater the distance between 2
 countries the less likely it is for species to invade from one to other.</p>
 
-<p>We now consider a model with a <strong>sender-level random intercept</strong>. The
+<p>We now consider a model with a <a href="../../00-Notes-and-Slides/01-w1/#random-effect"><strong>sender-level random
+intercept</strong></a>. The
 purpose of random effects is to account for node/dyad-level
 heterogeneity. In this case, the assumption is that not all species are
 the same, in the sense that some might have a tendency to invade more
