@@ -30,13 +30,15 @@ code {
   <p><strong>📥 Download files</strong></p>
   <ul>
     <li><a href="./Sunbelt-Daytona/Sunbelt26_Notes.pdf" download="">Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
-    <li><a href="" download="">Sunbelt26_SlidesW1.pdf</a> — slides</li>
+    <li><a href="" download="">Sunbelt26_SlidesW1.pdf</a> — Slides</li>
   </ul>
 </div>
 
 <!-- "./Sunbelt-Daytona/Slides/01-Introduction-to-REMs/" -->
 
 <h2 id="1-core-rems">1. Core REMs</h2>
+
+<h3 id="notation">Notation</h3>
 
 <p><strong>Relational event sequence:</strong> realization of a <strong>marked point process</strong>.</p>
 
@@ -53,7 +55,8 @@ code {
 
 <hr />
 
-<p><strong>Longitudinal network / multivariate counting process</strong> (Perry &amp; Wolfe, 2013):</p>
+<h3 id="longitudinal-network--multivariate-counting-process">Longitudinal network / multivariate counting process</h3>
+<p>(Perry &amp; Wolfe, 2013)</p>
 
 \[\{N_{sr}(t)\}_{s \in V^S,\ r \in V^R,\ t \geq 0}\]
 
@@ -79,15 +82,17 @@ code {
 
 <hr />
 
-<p><strong>Relational event model (REM)</strong> (Bianchi et al., 2024):</p>
+<h3 id="relational-event-model-rem">Relational Event Model (REM)</h3>
+<p>(Bianchi et al., 2024)</p>
 
 \[\lambda_{sr}(t) = W_{sr}(t) \times \lambda_0(t) \times \exp\{f(\boldsymbol{x}_{sr}(t),t)\}\]
 
 <p>where:</p>
 <ul>
-  <li>$W_{sr}(t)$: <strong>risk indicator</strong> — equal to 1 if $(s,r)$ is at risk at time $t$;</li>
-  <li>$\lambda_0(t)$: <strong>baseline hazard</strong> (including global risk determinants);</li>
-  <li>$f(\boldsymbol{x}<em>{sr}(t),t)$: <strong>event log-rate contribution</strong>. E.g. <strong>linear contribution</strong> $f(x</em>{sr}(t),t) = \beta \cdot x_{sr}(t)$:
+  <li><strong>Risk indicator</strong> $W_{sr}(t)$ - equal to 1 if $(s,r)$ is at risk at time $t$;</li>
+  <li><strong>Baseline hazard</strong> $\lambda_0(t) (including global risk determinants);</li>
+  <li><strong>Event log-rate contribution</strong> $f\left( \boldsymbol{x}<em>{sr}(t),t \right)$. 
+E.g. <strong>linear contribution</strong>: $f\left( \boldsymbol{x}</em>{sr}(t),t \right) = \beta \cdot x_{sr}(t)$.
     <ul>
       <li>$f(\cdot,t)$: <strong>contribution function</strong> (also: <strong>effect</strong>);</li>
       <li>$\boldsymbol{x}_{sr}(t)$: edge-specific <strong>covariates</strong>;</li>
@@ -99,6 +104,8 @@ code {
 <p>The dyads $(s,r)$ satisfying $W_{sr}(t)=1$ compose the <strong>risk set</strong> $\mathcal{R}_t$.</p>
 
 <hr />
+
+<h3 id="simulating-relational-event-data">Simulating Relational Event Data</h3>
 
 <p><strong>Gillespie algorithm for simulating REMs:</strong></p>
 
@@ -121,6 +128,8 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 </blockquote>
 
 <hr />
+
+<h3 id="explanatory-variables-in-rems">Explanatory variables in REMs</h3>
 
 <p><strong>Exogenous &amp; endogenous drivers:</strong> measured by means of <strong>covariates</strong> $x_{sr}(t)$. Covariates can be seen as aggregations/summaries of information derived from <strong>attributes</strong> $z_{sr}(t)$ of nodes and edges.</p>
 
@@ -153,7 +162,8 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
         <p><strong>Time-aware covariates:</strong> defined as a function of the <strong>internal time</strong> of the mechanism of interest (i.e., the difference between the current time and the time of the event satisfying the condition of interest).</p>
 
         <p><em>How recent is the reciprocal event in the past?</em>
-\(z_{sr}(t) = \begin{cases} t - \tau_{sr}, &amp; \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, &amp; \text{otherwise,} \end{cases} \qquad x_{sr}(t) = \exp\!\big(-z_{sr}(t)\big)\)</p>
+\(z_{sr}(t) = \begin{cases} t - \tau_{sr}, &amp; \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, &amp; \text{otherwise,} \end{cases}\)
+where $x_{sr}(t) = \exp!\big(-z_{sr}(t)\big)$.</p>
       </li>
     </ul>
 
@@ -171,7 +181,7 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 <h2 id="2-rem-inference">2. REM Inference</h2>
 
 <blockquote>
-  <p><strong>Assumption</strong> (this section only): <strong>linear contribution function</strong>, i.e., $f(\boldsymbol{x}<em>{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsymbol{x}</em>{sr}(t)$.</p>
+  <p><strong>Assumption</strong> (this section only): <strong>linear contribution function</strong>, i.e., $f(\boldsymbol{x}<em>{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsysmbol{x}</em>{sr}(t)$.</p>
 </blockquote>
 
 <p>The counting process is adapted to the <strong>filtration</strong> $\mathbb{W} = {\mathcal{W}<em>t}</em>{t \in \mathbb{R}^+}$. At time $t$, $\mathcal{W}_{t^-}$ incorporates both exogenous information and information from events occurred at $t^\ast &lt; t$.</p>
