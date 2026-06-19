@@ -161,7 +161,7 @@ where:
 ## 2. REM Inference
 
 > **Assumption** (this section only): **linear contribution function**, i.e., 
-$$f(\boldsymbol{x_{sr}}(t),t) = \mathboldsymbol{{\beta}} \cdot \boldsymbol{x_{sr}}(t)$$
+$$f(\boldsymbol{x_{sr}}(t),t) = \boldsymbol{{\beta}} \cdot \boldsymbol{x_{sr}}(t)$$
 
 The counting process is adapted to the **filtration**:
 
