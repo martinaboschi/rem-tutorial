@@ -85,9 +85,10 @@ where:
 $$\lambda_{sr}(t) = W_{sr}(t) \times \lambda_0(t) \times \exp\{f(\boldsymbol{x}_{sr}(t),t)\}$$
 
 where:
-- $W_{sr}(t)$: **risk indicator** — equal to 1 if $(s,r)$ is at risk at time $t$;
-- $\lambda_0(t)$: **baseline hazard** (including global risk determinants);
-- $f(\boldsymbol{x}_{sr}(t),t)$: **event log-rate contribution**. E.g. **linear contribution** $f(\boldsymbol{x}_{sr}(t),t) = \beta \cdot x_{sr}(t)$:
+- **Risk indicator** $W_{sr}(t)$ - equal to 1 if $(s,r)$ is at risk at time $t$;
+- **Baseline hazard** $\lambda_0(t) (including global risk determinants);
+- **Event log-rate contribution** $f(\boldsymbol{x}_{sr}(t),t)$. 
+  E.g. **linear contribution**: $f(\boldsymbol{x}_{sr}(t),t) = \beta \cdot x_{sr}(t)$.
   - $f(\cdot,t)$: **contribution function** (also: **effect**);
   - $\boldsymbol{x}_{sr}(t)$: edge-specific **covariates**;
   - $t$: **calendar time**.
@@ -139,7 +140,7 @@ where:
 
     *How recent is the reciprocal event in the past?*
     $$z_{sr}(t) = \begin{cases} t - \tau_{sr}, & \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, & \text{otherwise,} \end{cases}$$
-    
+
     $$x_{sr}(t) = \exp\!\big(-z_{sr}(t)\big)$$
 
   Relational mechanisms can be **dyadic** or **triadic**, depending on the number of nodes involved. Some examples:
@@ -151,7 +152,7 @@ where:
 
 ## 2. REM Inference
 
-> **Assumption** (this section only): **linear contribution function**, i.e., $f(\boldsymbol{x}_{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsymbol{x}_{sr}(t)$.
+> **Assumption** (this section only): **linear contribution function**, i.e., $f(\boldsymbol{x}_{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsysmbol{x}_{sr}(t)$.
 
 The counting process is adapted to the **filtration** $\mathbb{W} = \{\mathcal{W}_t\}_{t \in \mathbb{R}^+}$. At time $t$, $\mathcal{W}_{t^-}$ incorporates both exogenous information and information from events occurred at $t^\ast < t$.
 
