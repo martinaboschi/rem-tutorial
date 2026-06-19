@@ -37,7 +37,7 @@ code {
   <strong>📥 Download files</strong>
   <ul>
     <li><a href="./Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
-    <li><a href="" download>Sunbelt26_SlidesW1.pdf</a> — slides</li>
+    <li><a href="" download>Sunbelt26_SlidesW1.pdf</a> — Slides</li>
   </ul>
 </div>
 
@@ -139,6 +139,7 @@ where:
 
     *How recent is the reciprocal event in the past?*
     $$z_{sr}(t) = \begin{cases} t - \tau_{sr}, & \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, & \text{otherwise,} \end{cases}$$
+    
     $$x_{sr}(t) = \exp\!\big(-z_{sr}(t)\big)$$
 
   Relational mechanisms can be **dyadic** or **triadic**, depending on the number of nodes involved. Some examples:
