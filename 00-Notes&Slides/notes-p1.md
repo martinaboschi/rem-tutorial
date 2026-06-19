@@ -138,7 +138,8 @@ where:
   - **Time-aware covariates:** defined as a function of the **internal time** of the mechanism of interest (i.e., the difference between the current time and the time of the event satisfying the condition of interest).
 
     *How recent is the reciprocal event in the past?*
-    $$z_{sr}(t) = \begin{cases} t - \tau_{sr}, & \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, & \text{otherwise,} \end{cases} \qquad x_{sr}(t) = \exp\!\big(-z_{sr}(t)\big)$$
+    $$z_{sr}(t) = \begin{cases} t - \tau_{sr}, & \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, & \text{otherwise,} \end{cases}$$
+    $$x_{sr}(t) = \exp\!\big(-z_{sr}(t)\big)$$
 
   Relational mechanisms can be **dyadic** or **triadic**, depending on the number of nodes involved. Some examples:
   - **Repetition** (dyadic)
