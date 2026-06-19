@@ -90,7 +90,7 @@ $$\lambda_{sr}(t) = W_{sr}(t) \times \lambda_0(t) \times \exp\{f(\boldsymbol{x}_
 
 where:
 - **Risk indicator** $W_{sr}(t)$ - equal to 1 if $(s,r)$ is at risk at time $t$;
-- **Baseline hazard** $\lambda_0(t) (including global risk determinants);
+- **Baseline hazard** $\lambda_0(t)$ (including global risk determinants);
 - **Event log-rate contribution** $f(\boldsymbol{x_{sr}}(t),t)$. 
   E.g. **linear contribution**: $f(\boldsymbol{x_{sr}}(t),t) = \beta \cdot x_{sr}(t)$.
   - $f(\cdot,t)$: **contribution function** (also: **effect**);
