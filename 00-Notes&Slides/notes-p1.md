@@ -148,6 +148,7 @@ where:
 
     *How recent is the reciprocal event in the past?*
     $$z_{sr}(t) = \begin{cases} t - \tau_{sr}, & \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, & \text{otherwise,} \end{cases}$$
+
     where $x_{sr}(t) = \exp\!\big(-z_{sr}(t)\big)$.
 
   Relational mechanisms can be **dyadic** or **triadic**, depending on the number of nodes involved. Some examples:
@@ -159,7 +160,8 @@ where:
 
 ## 2. REM Inference
 
-> **Assumption** (this section only): **linear contribution function**, i.e., $f(\boldsymbol{x}_{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsysmbol{x}_{sr}(t)$.
+> **Assumption** (this section only): **linear contribution function**, i.e., 
+$$(\boldsymbol{x}_{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsysmbol{x}_{sr}(t)$$
 
 The counting process is adapted to the **filtration** $\mathbb{W} = \{\mathcal{W}_t\}_{t \in \mathbb{R}^+}$. At time $t$, $\mathcal{W}_{t^-}$ incorporates both exogenous information and information from events occurred at $t^\ast < t$.
 
