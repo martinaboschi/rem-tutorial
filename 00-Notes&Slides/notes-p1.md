@@ -193,7 +193,8 @@ Letting $\Delta N_{s_ir_i} = N_{s_ir_i}(t_i) - N_{s_ir_i}(t_{i-1})$, this is pro
 > $$\ell(\boldsymbol{\beta}) = \sum_{i=1}^n \sum_{(s,r) \in \mathcal{R}_{t_i}} \Delta N_{sr}(t_i) \log\!\left(\lambda_{sr}(t_i;\boldsymbol{\beta})\right) - \lambda_{sr}(t_i;\boldsymbol{\beta})(t_i - t_{i-1})$$
 >
 > **Inference technique:** Poisson regression:
-> $$\Delta N_{sr}(t_i)\mid \boldsymbol{x}_{sr}(t_i) \stackrel{\text{iid}}{\sim} \text{Poisson}\!\left(\mu_{sr}(t_i)\right), \quad \log(\mu_{sr}(t_i)) = \boldsymbol{\beta} \cdot \boldsymbol{x}_{sr}(t_i) + \log(t_i - t_{i-1})$$
+> $$\Delta N_{sr}(t_i)\mid \boldsymbol{x}_{sr}(t_i) \stackrel{\text{iid}}{\sim} \text{Poisson}\!\left(\mu_{sr}(t_i)\right)$$ 
+> $$\log(\mu_{sr}(t_i)) = \boldsymbol{\beta} \cdot \boldsymbol{x}_{sr}(t_i) + \log(t_i - t_{i-1})$$
 >
 > **R code:**
 > ```r
