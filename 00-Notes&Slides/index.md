@@ -27,7 +27,7 @@ The notes are authored by **Martina Boschi, Melania Lembo, Jürgen Lerner, and E
 
 <a class="notes-box" href="./notes-p1">
 <span class="rem-icon">📖</span>
-<span class="notes-tag tag-yellow">Workshop 1 - Notes</span>
+<span class="notes-tag tag-yellow">Workshop 1</span>
 <span class="notes-title">Introduction to relational event models</span>
 <span class="notes-sub">Core REMs, inference methods, and non-linear extensions</span>
 <span class="notes-arrow">→</span>

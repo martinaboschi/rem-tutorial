@@ -37,8 +37,11 @@ code {
   <strong>📥 Download files</strong>
   <ul>
     <li><a href="./Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
+    <li><a href="" download>Sunbelt26_SlidesW1.pdf</a> — slides</li>
   </ul>
 </div>
+
+<!-- "./Sunbelt-Daytona/Slides/01-Introduction-to-REMs/" -->
 
 ## 1. Core REMs
 
