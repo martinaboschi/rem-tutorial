@@ -263,9 +263,11 @@ Consider the sampled partial likelihood in the particular case of $m=1$ (Boschi 
 
 $$\mathcal{L}^{S}(\boldsymbol{\beta}) \stackrel{m=1}{=} \prod_{i=1}^n \operatorname{logistic}\!\big(\boldsymbol{\beta} \cdot \Delta\boldsymbol{x}_i\big)$$
 
-where:
-- $(s_i^\ast, r_i^\ast)$: the **sampled dyad** at time $t_i$, drawn from the risk set $\mathcal{R}_{t_i}$;
-- $\Delta {\boldsymbol{x}}_i = {\boldsymbol{x}}_{s_ir_i}(t_i) - \boldsymbol{x}_{s_i^\ast r_i^\ast}(t_i)$: the difference between covariates for the event and the sampled non-event.
+where $(s_i^\ast, r_i^\ast)$ is the **sampled dyad** at time $t_i$, drawn from the risk set $\mathcal{R}_{t_i}$ and
+
+$$\Delta\boldsymbol{x}_i = \boldsymbol{x}_{s_ir_i}(t_i) - \boldsymbol{x}_{s_i^\ast r_i^\ast}(t_i)$$
+
+is the difference between covariates for the event and the sampled non-event.
 
 This coincides with the likelihood of a **degenerate logistic regression**: without intercept term, with constant response equal to 1, and with covariates equal to the difference $\Delta\boldsymbol{x}_i$.
 
