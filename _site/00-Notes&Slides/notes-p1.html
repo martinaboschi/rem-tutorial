@@ -91,8 +91,8 @@ code {
 <ul>
   <li><strong>Risk indicator</strong> $W_{sr}(t)$ - equal to 1 if $(s,r)$ is at risk at time $t$;</li>
   <li><strong>Baseline hazard</strong> $\lambda_0(t) (including global risk determinants);</li>
-  <li><strong>Event log-rate contribution</strong> $f\left( \boldsymbol{x}<em>{sr}(t),t \right)$. 
-E.g. <strong>linear contribution</strong>: $f\left( \boldsymbol{x}</em>{sr}(t),t \right) = \beta \cdot x_{sr}(t)$.
+  <li><strong>Event log-rate contribution</strong> $f(\boldsymbol{x_{sr}}(t),t)$. 
+E.g. <strong>linear contribution</strong>: $f(\boldsymbol{x_{sr}}(t),t) = \beta \cdot x_{sr}(t)$.
     <ul>
       <li>$f(\cdot,t)$: <strong>contribution function</strong> (also: <strong>effect</strong>);</li>
       <li>$\boldsymbol{x}_{sr}(t)$: edge-specific <strong>covariates</strong>;</li>
@@ -162,8 +162,9 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
         <p><strong>Time-aware covariates:</strong> defined as a function of the <strong>internal time</strong> of the mechanism of interest (i.e., the difference between the current time and the time of the event satisfying the condition of interest).</p>
 
         <p><em>How recent is the reciprocal event in the past?</em>
-\(z_{sr}(t) = \begin{cases} t - \tau_{sr}, &amp; \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, &amp; \text{otherwise,} \end{cases}\)
-where $x_{sr}(t) = \exp!\big(-z_{sr}(t)\big)$.</p>
+\(z_{sr}(t) = \begin{cases} t - \tau_{sr}, &amp; \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, &amp; \text{otherwise,} \end{cases}\)</p>
+
+        <p>where $x_{sr}(t) = \exp!\big(-z_{sr}(t)\big)$.</p>
       </li>
     </ul>
 
@@ -181,7 +182,8 @@ where $x_{sr}(t) = \exp!\big(-z_{sr}(t)\big)$.</p>
 <h2 id="2-rem-inference">2. REM Inference</h2>
 
 <blockquote>
-  <p><strong>Assumption</strong> (this section only): <strong>linear contribution function</strong>, i.e., $f(\boldsymbol{x}<em>{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsysmbol{x}</em>{sr}(t)$.</p>
+  <p><strong>Assumption</strong> (this section only): <strong>linear contribution function</strong>, i.e., 
+\((\boldsymbol{x}_{sr}(t), t) = \boldsymbol{\beta} \cdot \boldsysmbol{x}_{sr}(t)\)</p>
 </blockquote>
 
 <p>The counting process is adapted to the <strong>filtration</strong> $\mathbb{W} = {\mathcal{W}<em>t}</em>{t \in \mathbb{R}^+}$. At time $t$, $\mathcal{W}_{t^-}$ incorporates both exogenous information and information from events occurred at $t^\ast &lt; t$.</p>
