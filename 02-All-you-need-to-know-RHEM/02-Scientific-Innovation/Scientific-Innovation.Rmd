@@ -1,6 +1,6 @@
 ---
 title: "All you need to know about relational hyper-event modeling"
-author: "Martina Boschi, Melania Lembo, Juergen Lerner"
+author: "Martina Boschi, Melania Lembo, Juergen Lerner, Ernst C. Wit"
 date: "2026-07-17"
 output:
   md_document:

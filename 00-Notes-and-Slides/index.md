@@ -25,7 +25,7 @@ The notes are authored by **Martina Boschi, Melania Lembo, Jürgen Lerner, and E
 
 <div class="notes-grid">
 
-<a class="notes-box" href="./notes-p1">
+<a class="notes-box" href="01-w1/">
 <span class="rem-icon">📖</span>
 <span class="notes-tag tag-yellow">Workshop 1</span>
 <span class="notes-title">Introduction to relational event models</span>
@@ -33,7 +33,7 @@ The notes are authored by **Martina Boschi, Melania Lembo, Jürgen Lerner, and E
 <span class="notes-arrow">→</span>
 </a>
 
-<a class="notes-box" href="./notes-p2">
+<a class="notes-box" href="02-w2/">
 <span class="rem-icon">📖</span>
 <span class="notes-tag tag-red">Workshop 2</span>
 <span class="notes-title">Relational Hyper-Event Modeling</span>

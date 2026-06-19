@@ -1,4 +1,43 @@
-<style>
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Notes: Introduction to Relational Event Models | REM Tutorials</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Notes: Introduction to Relational Event Models" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Tutorials on Relational (Hyper) Event Modeling" />
+<meta name="twitter:description" property="og:description" content="Tutorials on Relational (Hyper) Event Modeling" />
+<link rel="canonical" href="http://localhost:4000/00-Notes-and-Slides/01-w1/" />
+<meta property="og:url" content="http://localhost:4000/00-Notes-and-Slides/01-w1/" />
+<meta property="og:site_name" content="REM Tutorials" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Notes: Introduction to Relational Event Models" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Tutorials on Relational (Hyper) Event Modeling","headline":"Notes: Introduction to Relational Event Models","url":"http://localhost:4000/00-Notes-and-Slides/01-w1/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="REM Tutorials" /></head>
+<link rel="stylesheet" href="/assets/css/custom.css">
+  <body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">REM Tutorials</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <style>
 blockquote {
   background: #f0f7ff;
   border-left: 3px solid #93c5fd;
@@ -24,27 +63,25 @@ code {
 }
 </style>
 
-<h1 id="introduction-to-relational-event-models">Introduction to Relational Event Models</h1>
-
 <div class="download-box">
   <p><strong>📥 Download files</strong></p>
   <ul>
-    <li><a href="./Sunbelt-Daytona/Sunbelt26_Notes.pdf" download="">Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
-    <li><a href="" download="">Sunbelt26_SlidesW1.pdf</a> — Slides</li>
+    <li><a href="././Sunbelt-Daytona/Sunbelt26_Notes.pdf" download="">Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
+    <li><a href="././Sunbelt-Daytona/" download=""> Sunbelt26_SlidesW1.pdf</a> — Workshop Slides</li>
   </ul>
 </div>
-
-<!-- "./Sunbelt-Daytona/Slides/01-Introduction-to-REMs/" -->
 
 <h2 id="1-core-rems">1. Core REMs</h2>
 
 <h3 id="notation">Notation</h3>
 
-<p><strong>Relational event sequence:</strong> realization of a <strong>marked point process</strong>.</p>
+<p><strong>Relational event sequence:</strong> realization of a <strong>marked point
+process</strong>.</p>
 
 \[E = \{e_i = (s_i, r_i, t_i),\ i=1,\dots,n\}\]
 
 <p>where:</p>
+
 <ul>
   <li>$s_i$: <strong>sender</strong> of the $i$-th relational event;</li>
   <li>$r_i$: <strong>receiver</strong> of the $i$-th relational event;</li>
@@ -56,43 +93,54 @@ code {
 <hr />
 
 <h3 id="longitudinal-network--multivariate-counting-process">Longitudinal network / multivariate counting process</h3>
+
 <p>(Perry &amp; Wolfe, 2013)</p>
 
 \[\{N_{sr}(t)\}_{s \in V^S,\ r \in V^R,\ t \geq 0}\]
 
 <p>where:</p>
+
 <ul>
   <li>$N_{sr}(t)$: number of interactions from $s$ to $r$ until time $t$;</li>
   <li>$V^S$: <strong>set of senders</strong> in the system;</li>
   <li>$V^R$: <strong>set of receivers</strong> in the system.</li>
 </ul>
 
-<p>If senders/receivers belong to the same group, then $V^S = V^R = V$ (<strong>vertex set</strong>), with $p=\lvert V \rvert$.</p>
+<p>If senders/receivers belong to the same group, then $V^S = V^R = V$
+(<strong>vertex set</strong>), with $p=\lvert V \rvert$.</p>
 
 <p><strong>Doob-Meyer decomposition theorem:</strong></p>
 
 \[N_{sr}(t) = \Lambda_{sr}(t) + M_{sr}(t) = \int_{0}^t \lambda_{sr}(u)\,\mathrm{d}u + M_{sr}(t)\]
 
 <p>where:</p>
+
 <ul>
-  <li>$\Lambda_{sr}(t)$: <strong>cumulative intensity process</strong> (structural part);</li>
+  <li>$\Lambda_{sr}(t)$: <strong>cumulative intensity process</strong> (structural
+part);</li>
   <li>$M_{sr}(t)$: <strong>Martingale residual process</strong> (noisy part);</li>
-  <li>$\lambda_{sr}(t)$: <strong>hazard</strong> (also: <strong>rate</strong>, <strong>intensity</strong>): instantaneous rate at which $(s,r)$ occurs at $t$.</li>
+  <li>$\lambda_{sr}(t)$: <strong>hazard</strong> (also: <strong>rate</strong>, <strong>intensity</strong>):
+instantaneous rate at which $(s,r)$ occurs at $t$.</li>
 </ul>
 
 <hr />
 
 <h3 id="relational-event-model-rem">Relational Event Model (REM)</h3>
+
 <p>(Bianchi et al., 2024)</p>
 
 \[\lambda_{sr}(t) = W_{sr}(t) \times \lambda_0(t) \times \exp\{f(\boldsymbol{x}_{sr}(t),t)\}\]
 
 <p>where:</p>
+
 <ul>
-  <li><strong>Risk indicator</strong> $W_{sr}(t)$ - equal to 1 if $(s,r)$ is at risk at time $t$;</li>
-  <li><strong>Baseline hazard</strong> $\lambda_0(t)$ (including global risk determinants);</li>
-  <li><strong>Event log-rate contribution</strong> $f(\boldsymbol{x_{sr}}(t),t)$. 
-E.g. <strong>linear contribution</strong>: $f(\boldsymbol{x_{sr}}(t),t) = \beta \cdot x_{sr}(t)$.
+  <li><strong>Risk indicator</strong> $W_{sr}(t)$ - equal to 1 if $(s,r)$ is at risk at
+time $t$;</li>
+  <li><strong>Baseline hazard</strong> $\lambda_0(t)$ (including global risk
+determinants);</li>
+  <li><strong>Event log-rate contribution</strong> $f(\boldsymbol{x_{sr}}(t),t)$. E.g.
+<strong>linear contribution</strong>:
+$f(\boldsymbol{x_{sr}}(t),t) = \beta \cdot x_{sr}(t)$.
     <ul>
       <li>$f(\cdot,t)$: <strong>contribution function</strong> (also: <strong>effect</strong>);</li>
       <li>$\boldsymbol{x}_{sr}(t)$: edge-specific <strong>covariates</strong>;</li>
@@ -101,7 +149,8 @@ E.g. <strong>linear contribution</strong>: $f(\boldsymbol{x_{sr}}(t),t) = \beta 
   </li>
 </ul>
 
-<p>The dyads $(s,r)$ satisfying $W_{sr}(t)=1$ compose the <strong>risk set</strong> $\mathcal{R}_t$.</p>
+<p>The dyads $(s,r)$ satisfying $W_{sr}(t)=1$ compose the <strong>risk set</strong>
+$\mathcal{R}_t$.</p>
 
 <hr />
 
@@ -117,49 +166,64 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 \end{aligned}\]
 
 <p>where:</p>
+
 <ul>
-  <li>$\Delta T_{sr}(t)$: <strong>waiting time</strong> until an event involving sender $s$ and receiver $r$ occurs, evaluated at time $t$;</li>
+  <li>$\Delta T_{sr}(t)$: <strong>waiting time</strong> until an event involving sender
+$s$ and receiver $r$ occurs, evaluated at time $t$;</li>
   <li>$T$: waiting time until the next event, evaluated at time $t$;</li>
-  <li>$D$: identifies the dyad $(s,r)$ involved in the event occurring at time $t + T$.</li>
+  <li>$D$: identifies the dyad $(s,r)$ involved in the event occurring at
+time $t + T$.</li>
 </ul>
 
 <blockquote>
-  <p><strong>Assumption:</strong> $\lambda_{sr}(t)$ does not change between $t$ and $t + T$.</p>
+  <p><strong>Assumption:</strong> $\lambda_{sr}(t)$ does not change between $t$ and
+$t + T$.</p>
 </blockquote>
 
 <hr />
 
 <h3 id="explanatory-variables-in-rems">Explanatory variables in REMs</h3>
 
-<p><strong>Exogenous &amp; endogenous drivers:</strong> measured by means of <strong>covariates</strong> $x_{sr}(t)$. Covariates can be seen as aggregations/summaries of information derived from <strong>attributes</strong> $z_{sr}(t)$ of nodes and edges.</p>
+<p><strong>Exogenous &amp; endogenous drivers:</strong> measured by means of <strong>covariates</strong>
+$x_{sr}(t)$. Covariates can be seen as aggregations/summaries of
+information derived from <strong>attributes</strong> $z_{sr}(t)$ of nodes and edges.</p>
 
 <ul>
   <li>
-    <p><strong>Exogenous covariates:</strong> do not depend on the network of (previous) events.</p>
+    <p><strong>Exogenous covariates:</strong> do not depend on the network of (previous)
+events.</p>
 
-    <p><em>E.g. Work experience dissimilarity, obtained as the absolute value of the difference in work experience between the two nodes:</em>
+    <p><em>E.g. Work experience dissimilarity, obtained as the absolute value
+of the difference in work experience between the two nodes:</em>
 \(x_{sr}(t) = |WE_s - WE_r|\)</p>
   </li>
   <li>
-    <p><strong>Endogenous covariates:</strong> depend on the network of (previous) events and allow us to measure <strong>relational mechanisms</strong>.</p>
+    <p><strong>Endogenous covariates:</strong> depend on the network of (previous)
+events and allow us to measure <strong>relational mechanisms</strong>.</p>
 
     <p><em>E.g. Reciprocity.</em></p>
 
     <ul>
       <li>
-        <p><strong>Binary covariates:</strong> check for the presence (in the previous event history) of <strong>at least one event satisfying a condition</strong> of interest.</p>
+        <p><strong>Binary covariates:</strong> check for the presence (in the previous
+event history) of <strong>at least one event satisfying a condition</strong>
+of interest.</p>
 
         <p><em>Is there at least one reciprocal event in the past?</em>
 \(x_{sr}(t) = \mathbf{1}\!\big(\{(r,s,t^*) \mid t^* &lt; t\} \neq \varnothing\big)\)</p>
       </li>
       <li>
-        <p><strong>Count covariates:</strong> count the <strong>number of events satisfying a condition</strong> of interest.</p>
+        <p><strong>Count covariates:</strong> count the <strong>number of events satisfying a
+condition</strong> of interest.</p>
 
         <p><em>How many reciprocal events occurred in the past?</em>
 \(x_{sr}(t) = \big|\{(r,s,t^*) \mid t^* &lt; t\}\big|\)</p>
       </li>
       <li>
-        <p><strong>Time-aware covariates:</strong> defined as a function of the <strong>internal time</strong> of the mechanism of interest (i.e., the difference between the current time and the time of the event satisfying the condition of interest).</p>
+        <p><strong>Time-aware covariates:</strong> defined as a function of the
+<strong>internal time</strong> of the mechanism of interest (i.e., the
+difference between the current time and the time of the event
+satisfying the condition of interest).</p>
 
         <p><em>How recent is the reciprocal event in the past?</em>
 \(z_{sr}(t) = \begin{cases} t - \tau_{sr}, &amp; \tau_{sr} = \text{time of the last event } (r,s), \\ \infty, &amp; \text{otherwise,} \end{cases}\)</p>
@@ -168,7 +232,9 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
       </li>
     </ul>
 
-    <p>Relational mechanisms can be <strong>dyadic</strong> or <strong>triadic</strong>, depending on the number of nodes involved. Some examples:</p>
+    <p>Relational mechanisms can be <strong>dyadic</strong> or <strong>triadic</strong>, depending on
+the number of nodes involved. Some examples:</p>
+
     <ul>
       <li><strong>Repetition</strong> (dyadic)</li>
       <li><strong>Transitive closure</strong> (triadic)</li>
@@ -182,19 +248,24 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 <h2 id="2-rem-inference">2. REM Inference</h2>
 
 <blockquote>
-  <p><strong>Assumption</strong> (this section only): <strong>linear contribution function</strong>, i.e., 
-\(f(\boldsymbol{x_{sr}}(t),t) = \boldsymbol \cdot \boldsymbol{x_{sr}}(t)\)</p>
+  <p><strong>Assumption</strong> (this section only): <strong>linear contribution function</strong>,
+i.e.,
+\(f(\boldsymbol{x_{sr}}(t),t) = \boldsymbol{\beta} \cdot \boldsymbol{x_{sr}}(t)\)</p>
 </blockquote>
 
 <p>The counting process is adapted to the <strong>filtration</strong>:</p>
 
 \[\mathbb{W} = \{\mathcal{W}_t\}_{t \in \mathbb{R}^+}\]
 
-<p>At time $t$, $\mathcal{W}_{t^-}$ incorporates both exogenous information and information from events occurred at $t^\ast &lt; t$.</p>
+<p>At time $t$, $\mathcal{W}_{t^-}$ incorporates both exogenous information
+and information from events occurred at $t^\ast &lt; t$.</p>
 
-<p><strong>Likelihood:</strong> constructed as joint probability of observing data under the model.</p>
+<p><strong>Likelihood:</strong> constructed as joint probability of observing data under
+the model.</p>
 
-<p>Given a set of event times $t_1, t_2, \ldots, t_n$, which are realizations of a point process, the joint probability density of observing exactly $n$ event times in the interval $(0, t_n)$ is:</p>
+<p>Given a set of event times $t_1, t_2, \ldots, t_n$, which are
+realizations of a point process, the joint probability density of
+observing exactly $n$ event times in the interval $(0, t_n)$ is:</p>
 
 \[f(t_1, t_2, \ldots, t_n) = \prod_{i=1}^n \lambda(t_i \mid \mathcal{W}_{t_i^-}) \exp\left\{-\int_{t_{i-1}}^{t_i} \lambda(u \mid \mathcal{W}_{u^-})\,\mathrm{d}u\right\}\]
 
@@ -204,11 +275,14 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 
 \[\mathcal{L}(\boldsymbol{\beta}) = \prod_{i=1}^n \underbrace{\sum_{(s,r) \in \mathcal{R}_{t_i}} \lambda_{sr}(t_i)\exp\!\left[-\sum_{(s,r) \in \mathcal{R}_{t_i}} \int_{t_{i-1}}^{t_i} \lambda_{sr}(u)\,\mathrm{d}u\right]}_{\text{Minimum Generalized Exponential Inter-arrival Time}} \underbrace{\dfrac{\lambda_{s_ir_i}(t_i)}{\sum_{(s,r) \in \mathcal{R}_{t_i}} \lambda_{sr}(t_i)}}_{\text{Multinomial Probability}}\]
 
-<p><strong>Piecewise Constant Rates (PCR) assumption</strong> (Stadtfeld &amp; Block, 2017): event rate is assumed to be constant within inter-arrival times, giving Exponential <strong>waiting time</strong> $\Delta T_i = T_i - T_{i-1}$.</p>
+<p><strong>Piecewise Constant Rates (PCR) assumption</strong> (Stadtfeld &amp; Block, 2017):
+event rate is assumed to be constant within inter-arrival times, giving
+Exponential <strong>waiting time</strong> $\Delta T_i = T_i - T_{i-1}$.</p>
 
 \[\mathcal{L}(\boldsymbol{\beta}) \overset{\text{PCR}}{=} \prod_{i=1}^n \lambda_{s_ir_i}(t_i)\prod_{(s,r) \in \mathcal{R}_{t_i}} \exp\!\Bigg(-\lambda_{sr}(t_i)\left(t_i - t_{i-1}\right)\Bigg)\]
 
-<p>Letting $\Delta N_{s_ir_i} = N_{s_ir_i}(t_i) - N_{s_ir_i}(t_{i-1})$, this is proportional to a <strong>Poisson Regression</strong> likelihood.</p>
+<p>Letting $\Delta N_{s_ir_i} = N_{s_ir_i}(t_i) - N_{s_ir_i}(t_{i-1})$,
+this is proportional to a <strong>Poisson Regression</strong> likelihood.</p>
 
 <blockquote>
   <p><strong>Full log-likelihood in practice (PCR)</strong></p>
@@ -217,10 +291,11 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 \(\ell(\boldsymbol{\beta}) = \sum_{i=1}^n \sum_{(s,r) \in \mathcal{R}_{t_i}} \Delta N_{sr}(t_i) \log\!\left(\lambda_{sr}(t_i;\boldsymbol{\beta})\right) - \lambda_{sr}(t_i;\boldsymbol{\beta})(t_i - t_{i-1})\)</p>
 
   <p><strong>Inference technique:</strong> Poisson regression:
-\(\Delta N_{sr}(t_i)\mid \boldsymbol{x}_{sr}(t_i) \stackrel{\text{iid}}{\sim} \text{Poisson}\!\left(\mu_{sr}(t_i)\right)\) 
+\(\Delta N_{sr}(t_i)\mid \boldsymbol{x}_{sr}(t_i) \stackrel{\text{iid}}{\sim} \text{Poisson}\!\left(\mu_{sr}(t_i)\right)\)
 \(\log(\mu_{sr}(t_i)) = \boldsymbol{\beta} \cdot \boldsymbol{x}_{sr}(t_i) + \log(t_i - t_{i-1})\)</p>
 
   <p><strong>R code:</strong></p>
+
   <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">glm</span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">log_dist</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">offset</span><span class="p">(</span><span class="n">logtm</span><span class="p">),</span><span class="w">
     </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poisson</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"log"</span><span class="p">),</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poisson_dat</span><span class="p">)</span><span class="w">
 </span></code></pre></div>  </div>
@@ -228,7 +303,8 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 
 <h3 id="22-partial-likelihood-approaches">2.2 Partial likelihood approaches</h3>
 
-<p>The <strong>partial likelihood</strong> (Cox, 1975) is the joint product of the multinomial terms:</p>
+<p>The <strong>partial likelihood</strong> (Cox, 1975) is the joint product of the
+multinomial terms:</p>
 
 \[\mathcal{L}^P(\boldsymbol{\beta}) = \prod_{i=1}^n\dfrac{\lambda_{s_ir_i}(t_i;\boldsymbol{\beta})}{\sum_{(s,r) \in \mathcal{R}_{t_i}} \lambda_{sr}(t_i;\boldsymbol{\beta})} = \prod_{i=1}^n \dfrac{\exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{s_ir_i}(t_i)\}}{\sum_{(s,r) \in \mathcal{R}_{t_i}} \exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{sr}(t_i)\}}\]
 
@@ -242,20 +318,27 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 \(\hat{\boldsymbol{\beta}} = \arg\max_{\boldsymbol{\beta}}\ell^P(\boldsymbol{\beta})\)</p>
 
   <p><strong>R code:</strong></p>
+
   <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rem</span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">dist</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cox_dat</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"clogit"</span><span class="p">,</span><span class="w"> </span><span class="n">stratum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stratum"</span><span class="p">)</span><span class="w">
 </span></code></pre></div>  </div>
 </blockquote>
 
 <h3 id="23-sampled-partial-likelihood-approaches">2.3 Sampled partial likelihood approaches</h3>
 
-<p><strong>Nested case-control dataset</strong> (Borgan et al., 1995; Vu et al., 2015; Lerner &amp; Lomi, 2020):</p>
+<p><strong>Nested case-control dataset</strong> (Borgan et al., 1995; Vu et al., 2015;
+Lerner &amp; Lomi, 2020):</p>
 
 \[D_m = \{(e_i, \mathcal{SR}_{t_i}),\ \mathcal{SR}_{t_i} \subset \mathcal{R}_{t_i},\ |\mathcal{SR}_{t_i}|=m+1,\ i=1,\dots,n\}\]
 
-<p>where:</p>
+<p>where: - <strong>sampled risk set</strong> at $t_i$:</p>
+
+\[{\mathcal{SR}}_{t_i}\]
+
+<p>including $(s_i, r_i)$ and $m$ randomly sampled dyads in
+$\mathcal{R}_{t_i}$;</p>
+
 <ul>
-  <li>${\mathcal{SR}}<em>{t_i}$: <strong>sampled risk set</strong> at $t_i$, including $(s_i, r_i)$ and $m$ randomly sampled dyads in ${\mathcal{R}}</em>{t_i}$;</li>
-  <li>$m$: <strong>number of sampled non-events</strong>.</li>
+  <li><strong>number of sampled non-events</strong> $m$.</li>
 </ul>
 
 <p><strong>Relational event model with sampling:</strong></p>
@@ -266,7 +349,8 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 
 \[\mathcal{L}^{S}(\boldsymbol{\beta}) = \prod_{i=1}^n \dfrac{\exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{s_ir_i}(t_i)\}}{\sum_{(s,r) \in \mathcal{SR}_{t_i}} \exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{sr}(t_i)\}}\]
 
-<p>which coincides with the likelihood of a <strong>conditional logistic regression</strong> of a stratum of size $m+1$.</p>
+<p>which coincides with the likelihood of a <strong>conditional logistic
+regression</strong> of a stratum of size $m+1$.</p>
 
 <blockquote>
   <p><strong>Sampled partial log-likelihood in practice</strong></p>
@@ -281,23 +365,29 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 \(\pi_{sr}(t_i) = \dfrac{\exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{sr}(t_i)\}}{\sum_{(s',r') \in \mathcal{SR}_{t_i}} \exp\{\boldsymbol{\beta}\cdot\boldsymbol{x}_{s'r'}(t_i)\}}\)</p>
 
   <p><strong>R code:</strong></p>
+
   <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rem</span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">dist</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sampled_dat</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"clogit"</span><span class="p">,</span><span class="w"> </span><span class="n">stratum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stratum"</span><span class="p">)</span><span class="w">
 </span></code></pre></div>  </div>
 </blockquote>
 
 <h3 id="24-case-1-control-partial-likelihood-approaches">2.4 Case-1-control partial likelihood approaches</h3>
 
-<p>Consider the sampled partial likelihood in the particular case of $m=1$ (Boschi et al., 2025; Filippi et al., 2024):</p>
+<p>Consider the sampled partial likelihood in the particular case of $m=1$
+(Boschi et al., 2025; Filippi et al., 2024):</p>
 
 \[\mathcal{L}^{S}(\boldsymbol{\beta}) \stackrel{m=1}{=} \prod_{i=1}^n \operatorname{logistic}\!\big(\boldsymbol{\beta} \cdot \Delta\boldsymbol{x}_i\big)\]
 
-<p>where:</p>
-<ul>
-  <li>$(s_i^\ast, r_i^\ast)$: the <strong>sampled dyad</strong> at time $t_i$, drawn from the risk set $\mathcal{R}_{t_i}$;</li>
-  <li>$\Delta {\boldsymbol{x}}<em>i = {\boldsymbol{x}}</em>{s_ir_i}(t_i) - \boldsymbol{x}_{s_i^\ast r_i^\ast}(t_i)$: the difference between covariates for the event and the sampled non-event.</li>
-</ul>
+<p>where $(s_i^\ast, r_i^\ast)$ is the <strong>sampled dyad</strong> at time $t_i$,
+drawn from the risk set $\mathcal{R}_{t_i}$ and</p>
 
-<p>This coincides with the likelihood of a <strong>degenerate logistic regression</strong>: without intercept term, with constant response equal to 1, and with covariates equal to the difference $\Delta\boldsymbol{x}_i$.</p>
+\[\Delta\boldsymbol{x}_i = \boldsymbol{x}_{s_ir_i}(t_i) - \boldsymbol{x}_{s_i^\ast r_i^\ast}(t_i)\]
+
+<p>is the difference between covariates for the event and the sampled
+non-event.</p>
+
+<p>This coincides with the likelihood of a <strong>degenerate logistic
+regression</strong>: without intercept term, with constant response equal to 1,
+and with covariates equal to the difference $\Delta\boldsymbol{x}_i$.</p>
 
 <blockquote>
   <p><strong>Case-1-control likelihood in practice</strong></p>
@@ -310,6 +400,7 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 \(y_i = 1,\ i=1,\ldots,n;\quad \text{no intercept}\)</p>
 
   <p><strong>R code:</strong></p>
+
   <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rem</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">dist</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dat_gam</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gam"</span><span class="p">)</span><span class="w">
 </span></code></pre></div>  </div>
 </blockquote>
@@ -322,28 +413,27 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 
 \[f\!\left(\boldsymbol{x}_{sr}(t), \boldsymbol{v}_{sr}(t), t\right) = \underbrace{\beta \cdot x_{sr}^{(1)}(t)}_{\text{fixed linear}} + \underbrace{\beta(t) \cdot x_{sr}^{(2)}(t)}_{\text{time-varying}} + \underbrace{f^{(3)}(x_{sr}^{(3)}(t))}_{\text{non-linear}} + \underbrace{\boldsymbol{\gamma} \cdot \boldsymbol{v}_{sr}(t)}_{\text{random}}\]
 
-<p>including four types of effects:</p>
+<p>including four types of effects: 1. <strong>Fixed linear effect (FLE):</strong>
+$\beta$ is time-homogeneous and is not a function of $x_{sr}^{(1)}(t)$;</p>
 <ol>
-  <li><strong>Fixed linear effect (FLE):</strong> $\beta$ is time-homogeneous and is not a function of $x_{sr}^{(1)}(t)$;</li>
-  <li><strong>Time-varying effect (TVE):</strong> $\beta(t)$ is a non-linear function of time;</li>
-  <li><strong>Non-linear effect (NLE):</strong> $f^{(3)}(x_{sr}^{(3)}(t))$ is a non-linear function of $x_{sr}^{(3)}(t)$;</li>
-  <li><strong>Random effect (RE):</strong> $\boldsymbol{\gamma} = (\gamma_s)_{s \in V}$, $\gamma_s$ is a Gaussian random variable.</li>
+  <li><strong>Time-varying effect (TVE):</strong> $\beta(t)$ is a non-linear function of
+time; 3. <strong>Non-linear effect (NLE):</strong> $f^{(3)}(x_{sr}^{(3)}(t))$ is a
+non-linear function of $x_{sr}^{(3)}(t)$; 4. <strong>Random effect (RE):</strong>
+$\boldsymbol{\gamma} = (\gamma_s)_{s \in V}$, $\gamma_s$ is a Gaussian
+random variable.</li>
 </ol>
 
 <p>This model can be fitted using a degenerate logistic regression.</p>
 
 <h3 id="time-varying-effect">Time-varying effect</h3>
 
-<p>In its simplest form, a <strong>smooth function of time</strong> can be represented as a linear combination of basis functions of <strong>calendar time</strong>:</p>
+<p>In its simplest form, a <strong>smooth function of time</strong> can be represented
+as a linear combination of basis functions of <strong>calendar time</strong>:</p>
 
 \[\beta(t) \approx \sum_{j=1}^q \theta_j b_j(t)\]
 
-<p>where:</p>
-<ul>
-  <li>$q$: <strong>basis dimension</strong>;</li>
-  <li>${b_j}_j$: set of <strong>basis functions</strong>;</li>
-  <li>$\theta_j$: <strong>basis coefficients</strong>.</li>
-</ul>
+<p>where: - $q$: <strong>basis dimension</strong>; - ${b_j}_j$: set of <strong>basis
+functions</strong>; - $\theta_j$: <strong>basis coefficients</strong>.</p>
 
 <blockquote>
   <p><strong>TVE in practice</strong> (Boschi et al., 2025)</p>
@@ -352,13 +442,15 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 \(f\!\left(\boldsymbol{x}_{sr}(t),\boldsymbol{v}_{sr}(t),t\right) = \cdots + \underbrace{\sum_{j=1}^q \theta_j b_j(t)}_{\text{TVE}} \times x_{sr}^{(2)}(t) + \cdots\)</p>
 
   <p><strong>R code:</strong></p>
+
   <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rem</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">tv</span><span class="p">(</span><span class="n">distPT</span><span class="p">),</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"time"</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dat_gam_tv</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gam"</span><span class="p">)</span><span class="w">
 </span></code></pre></div>  </div>
 </blockquote>
 
 <h3 id="non-linear-effect">Non-linear effect</h3>
 
-<p>A <strong>smooth function of a covariate</strong> can be represented as a linear combination of basis functions of the covariate itself:</p>
+<p>A <strong>smooth function of a covariate</strong> can be represented as a linear
+combination of basis functions of the covariate itself:</p>
 
 \[f(x_{sr}(t)) \approx \sum_{j=1}^q \theta_j b_j(x_{sr}(t))\]
 
@@ -369,13 +461,16 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 \(f\!\left(\boldsymbol{x}_{sr}(t),\boldsymbol{v}_{sr}(t),t\right) = \cdots + \underbrace{\sum_{j=1}^q \theta_j b_j(x_{sr}^{(3)}(t))}_{\text{NLE}} + \cdots\)</p>
 
   <p><strong>R code:</strong></p>
+
   <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rem</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">nl</span><span class="p">(</span><span class="n">dist</span><span class="p">),</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dat_gam_nl</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gam"</span><span class="p">)</span><span class="w">
 </span></code></pre></div>  </div>
 </blockquote>
 
 <h3 id="random-effect">Random effect</h3>
 
-<p>Can be efficiently estimated as <strong>0-dimensional splines</strong>, with basis functions taking the value 1 when the level of the random factor is present and 0 otherwise:</p>
+<p>Can be efficiently estimated as <strong>0-dimensional splines</strong>, with basis
+functions taking the value 1 when the level of the random factor is
+present and 0 otherwise:</p>
 
 \[\sum_{s' \in V} \gamma_{s'}\mathbb{1}\{s' = s\}, \qquad \boldsymbol{\gamma} = (\gamma_1,\ldots,\gamma_{|V|})\]
 
@@ -386,6 +481,48 @@ p_{sr}(t) &amp;= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr
 \(f\!\left(\boldsymbol{x}_{sr}(t),\boldsymbol{v}_{sr}(t),t\right) = \cdots + \underbrace{\sum_{s' \in V} \gamma_{s'}\mathbb{1}\{s = s'\}}_{\text{RE}} + \cdots\)</p>
 
   <p><strong>R code:</strong></p>
+
   <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rem</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">re</span><span class="p">(</span><span class="n">sender</span><span class="p">),</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dat_gam_r</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gam"</span><span class="p">)</span><span class="w">
 </span></code></pre></div>  </div>
 </blockquote>
+
+<h2 id="references">References</h2>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">REM Tutorials</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">REM Tutorials</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Tutorials on Relational (Hyper) Event Modeling</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script type="text/javascript" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+  </body>
+</html>

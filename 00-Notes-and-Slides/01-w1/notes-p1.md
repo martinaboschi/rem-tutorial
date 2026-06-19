@@ -1,47 +1,3 @@
-<style>
-blockquote {
-  background: #f0f7ff;
-  border-left: 3px solid #93c5fd;
-  border-radius: 6px;
-  padding: 1rem 1.25rem;
-  margin: 1.5rem 0;
-  color: #111;
-}
-blockquote p { margin: 0.4rem 0; }
-blockquote strong { color: #000; }
-pre, code {
-  background: #f8f8f8;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-}
-pre {
-  padding: 1rem 1.25rem;
-  overflow-x: auto;
-}
-code {
-  padding: 2px 5px;
-  font-size: 13px;
-}
-</style>
-
-# Introduction to Relational Event Models
-
-::: download-box
-`<strong>`{=html}📥 Download files`</strong>`{=html}
-<ul>
-<li>
-`<a href="./Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>`{=html}Sunbelt26_Notes.pdf`</a>`{=html}
---- PDF version of the notes
-</li>
-<li>
-`<a href="" download>`{=html}Sunbelt26_SlidesW1.pdf`</a>`{=html} ---
-Slides
-</li>
-</ul>
-:::
-
-<!-- "./Sunbelt-Daytona/Slides/01-Introduction-to-REMs/" -->
-
 ## 1. Core REMs
 
 ### Notation
@@ -51,10 +7,13 @@ process**.
 
 $$E = \{e_i = (s_i, r_i, t_i),\ i=1,\dots,n\}$$
 
-where: - $s_i$: **sender** of the $i$-th relational event; - $r_i$:
-**receiver** of the $i$-th relational event; - $t_i$: **time** of the
-$i$-th relational event; - $n$: **number of events**; - $i$: **index of
-a generic event**.
+where:
+
+-   $s_i$: **sender** of the $i$-th relational event;
+-   $r_i$: **receiver** of the $i$-th relational event;
+-   $t_i$: **time** of the $i$-th relational event;
+-   $n$: **number of events**;
+-   $i$: **index of a generic event**.
 
 ------------------------------------------------------------------------
 
@@ -64,9 +23,11 @@ a generic event**.
 
 $$\{N_{sr}(t)\}_{s \in V^S,\ r \in V^R,\ t \geq 0}$$
 
-where: - $N_{sr}(t)$: number of interactions from $s$ to $r$ until time
-$t$; - $V^S$: **set of senders** in the system; - $V^R$: **set of
-receivers** in the system.
+where:
+
+-   $N_{sr}(t)$: number of interactions from $s$ to $r$ until time $t$;
+-   $V^S$: **set of senders** in the system;
+-   $V^R$: **set of receivers** in the system.
 
 If senders/receivers belong to the same group, then $V^S = V^R = V$
 (**vertex set**), with $p=\lvert V \rvert$.
@@ -75,10 +36,13 @@ If senders/receivers belong to the same group, then $V^S = V^R = V$
 
 $$N_{sr}(t) = \Lambda_{sr}(t) + M_{sr}(t) = \int_{0}^t \lambda_{sr}(u)\,\mathrm{d}u + M_{sr}(t)$$
 
-where: - $\Lambda_{sr}(t)$: **cumulative intensity process** (structural
-part); - $M_{sr}(t)$: **Martingale residual process** (noisy part); -
-$\lambda_{sr}(t)$: **hazard** (also: **rate**, **intensity**):
-instantaneous rate at which $(s,r)$ occurs at $t$.
+where:
+
+-   $\Lambda_{sr}(t)$: **cumulative intensity process** (structural
+    part);
+-   $M_{sr}(t)$: **Martingale residual process** (noisy part);
+-   $\lambda_{sr}(t)$: **hazard** (also: **rate**, **intensity**):
+    instantaneous rate at which $(s,r)$ occurs at $t$.
 
 ------------------------------------------------------------------------
 
@@ -88,14 +52,18 @@ instantaneous rate at which $(s,r)$ occurs at $t$.
 
 $$\lambda_{sr}(t) = W_{sr}(t) \times \lambda_0(t) \times \exp\{f(\boldsymbol{x}_{sr}(t),t)\}$$
 
-where: - **Risk indicator** $W_{sr}(t)$ - equal to 1 if $(s,r)$ is at
-risk at time $t$; - **Baseline hazard** $\lambda_0(t)$ (including global
-risk determinants); - **Event log-rate contribution**
-$f(\boldsymbol{x_{sr}}(t),t)$. E.g. **linear contribution**:
-$f(\boldsymbol{x_{sr}}(t),t) = \beta \cdot x_{sr}(t)$. - $f(\cdot,t)$:
-**contribution function** (also: **effect**); -
-$\boldsymbol{x}_{sr}(t)$: edge-specific **covariates**; - $t$:
-**calendar time**.
+where:
+
+-   **Risk indicator** $W_{sr}(t)$ - equal to 1 if $(s,r)$ is at risk at
+    time $t$;
+-   **Baseline hazard** $\lambda_0(t)$ (including global risk
+    determinants);
+-   **Event log-rate contribution** $f(\boldsymbol{x_{sr}}(t),t)$. E.g.
+    **linear contribution**:
+    $f(\boldsymbol{x_{sr}}(t),t) = \beta \cdot x_{sr}(t)$.
+    -   $f(\cdot,t)$: **contribution function** (also: **effect**);
+    -   $\boldsymbol{x}_{sr}(t)$: edge-specific **covariates**;
+    -   $t$: **calendar time**.
 
 The dyads $(s,r)$ satisfying $W_{sr}(t)=1$ compose the **risk set**
 $\mathcal{R}_t$.
@@ -113,11 +81,13 @@ D &\sim \mathrm{Multinomial}\!\left(\{p_{sr}(t)\}_{(s,r)\in\mathcal{R}_t}\right)
 p_{sr}(t) &= \frac{\lambda_{sr}(t)}{\sum_{(s,r)\in\mathcal{R}_t} \lambda_{sr}(t)}, \quad (s,r)\in\mathcal{R}_t.
 \end{aligned}$$
 
-where: - $\Delta T_{sr}(t)$: **waiting time** until an event involving
-sender $s$ and receiver $r$ occurs, evaluated at time $t$; - $T$:
-waiting time until the next event, evaluated at time $t$; - $D$:
-identifies the dyad $(s,r)$ involved in the event occurring at time
-$t + T$.
+where:
+
+-   $\Delta T_{sr}(t)$: **waiting time** until an event involving sender
+    $s$ and receiver $r$ occurs, evaluated at time $t$;
+-   $T$: waiting time until the next event, evaluated at time $t$;
+-   $D$: identifies the dyad $(s,r)$ involved in the event occurring at
+    time $t + T$.
 
 > **Assumption:** $\lambda_{sr}(t)$ does not change between $t$ and
 > $t + T$.
@@ -178,7 +148,7 @@ information derived from **attributes** $z_{sr}(t)$ of nodes and edges.
 
 > **Assumption** (this section only): **linear contribution function**,
 > i.e.,
-> $$f(\boldsymbol{x_{sr}}(t),t) = \boldsymbol{{\beta}} \cdot \boldsymbol{x_{sr}}(t)$$
+> $$f(\boldsymbol{x_{sr}}(t),t) = \boldsymbol{\beta} \cdot \boldsymbol{x_{sr}}(t)$$
 
 The counting process is adapted to the **filtration**:
 
@@ -255,9 +225,14 @@ Lerner & Lomi, 2020):
 
 $$D_m = \{(e_i, \mathcal{SR}_{t_i}),\ \mathcal{SR}_{t_i} \subset \mathcal{R}_{t_i},\ |\mathcal{SR}_{t_i}|=m+1,\ i=1,\dots,n\}$$
 
-where: - **sampled risk set** at $t_i$, $\mathcal{SR}_{t_i}$ , including
-$(s_i, r_i)$ and $m$ randomly sampled dyads in $\mathcal{R}_{t_i}$; -
-**number of sampled non-events** $m$.
+where: - **sampled risk set** at $t_i$:
+
+$${\mathcal{SR}}_{t_i}$$
+
+including $(s_i, r_i)$ and $m$ randomly sampled dyads in
+$\mathcal{R}_{t_i}$;
+
+-   **number of sampled non-events** $m$.
 
 **Relational event model with sampling:**
 

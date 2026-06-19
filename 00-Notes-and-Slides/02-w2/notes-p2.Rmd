@@ -1,44 +1,13 @@
 ---
-title: Part 2 — All You Need to Know About Relational Hyper-Event Modeling
-nav_order: 2
-parent: Notes and Slides
-math: mathjax
+title: "All You Need to Know About Relational Hyper-Event Modeling"
+author: "Martina Boschi, Melania Lembo, Juergen Lerner, Ernst C. Wit"
+date: "2026-07-17"
+output:
+  md_document:
+    variant: markdown
+    preserve_yaml: false
+subtitle: "Theoretical Notes"
 ---
-
-<style>
-blockquote {
-  background: #f0f7ff;
-  border-left: 3px solid #93c5fd;
-  border-radius: 6px;
-  padding: 1rem 1.25rem;
-  margin: 1.5rem 0;
-  color: #111;
-}
-blockquote p { margin: 0.4rem 0; }
-blockquote strong { color: #000; }
-pre, code {
-  background: #f8f8f8;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-}
-pre {
-  padding: 1rem 1.25rem;
-  overflow-x: auto;
-}
-code {
-  padding: 2px 5px;
-  font-size: 13px;
-}
-</style>
-
-<div class="download-box">
-  <strong>📥 Download files</strong>
-  <ul>
-    <li><a href="./Sunbelt-Daytona/Sunbelt26_Notes.pdf" download>Sunbelt26_Notes.pdf</a> — PDF version of the notes</li>
-  </ul>
-</div>
-
-# All You Need to Know About Relational Hyper-Event Modeling
 
 ## 1. Core RHEMs
 

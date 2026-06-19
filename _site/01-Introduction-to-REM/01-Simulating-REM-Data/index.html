@@ -66,17 +66,17 @@ and fit relational event models with increasing levels of complexity.</p>
 
 <ul>
   <li><a href="../../00-Notes-and-Slides/notes-p1#simulating-relational-event-data">to simulate relational event
-data</a>
-[Theoretical reference]</li>
-  <li>to structure data for inference [Theoretical reference]</li>
-  <li>to fit models with linear effects [Theoretical reference]</li>
-  <li>compare different inference techniques [Theoretical reference]</li>
+data</a></li>
+  <li><a href="../../00-Notes-and-Slides/notes-p1#2-rem-inference">to structure data for
+inference</a></li>
+  <li>to fit models with linear effects</li>
+  <li>compare different inference techniques</li>
 </ul>
 
 <h2 id="1-how-to-simulate-relational-event-data-in-amorem">1. How to simulate relational event data in <code class="language-plaintext highlighter-rouge">amorem</code></h2>
 
-<p>As seen in [Theoretical reference], <em>relational event data</em> consists
-of a sequence of $n$ triplets:</p>
+<p><a href="../../00-Notes-and-Slides/notes-p1#notation"><em>Relational event data</em></a>
+consists of a sequence of $n$ triplets:</p>
 
 \[E = \{e_i = (s_i, r_i, t_i), i=1,\dots,n\}\]
 
@@ -88,9 +88,9 @@ the <em>receiver set</em> (<code class="language-plaintext highlighter-rouge">re
 provide to simulate our relational event sequence by means of the
 function <code class="language-plaintext highlighter-rouge">simulate_relational_events</code>.</p>
 
-<p>We saw in [Theoretical reference] that relational events can be both
-described and simulated using a <em>rate function</em>. This rate function can
-be decomposed into three main blocks:</p>
+<p>Relational events can be both described and simulated using a <a href="../../00-Notes-and-Slides/notes-p1#relational-event-model-rem"><em>rate
+function</em></a>.
+This rate function can be decomposed into three main blocks:</p>
 
 <ol>
   <li>
@@ -162,12 +162,13 @@ each event.</p>
 
 <h2 id="2-how-to-structure-data-for-inference">2. How to structure data for inference</h2>
 
-<p>In [Theoretical reference], we covered a wide range of inference
-methods. Since most of the REM literature you are likely to encounter
-relies on <em>(sampled) partial likelihood estimation</em>, we start with a
-practical example of this approach. We then provide an example using the
-<em>case-1-control partial likelihood</em>, which opens the door to subsequent
-practicals where we move beyond linearity.</p>
+<p>In the <a href="../../00-Notes-and-Slides/notes-p1#2-rem-inference">theoretical
+section</a>, covered a
+wide range of inference methods. Since most of the REM literature you
+are likely to encounter relies on <em>(sampled) partial likelihood
+estimation</em>, we start with a practical example of this approach. We then
+provide an example using the <em>case-1-control partial likelihood</em>, which
+opens the door to subsequent practicals where we move beyond linearity.</p>
 
 <p>Each approach requires a particular data structure. This tutorial
 distinguishes between two main data formats:</p>
@@ -221,13 +222,14 @@ in the long format, which is the default output format of
 
 <h3 id="22-data-for-case-1-control-partial-likelihood">2.2. Data for Case-1-control partial likelihood</h3>
 
-<p>As discussed in [Theoretical reference], when there is only one
-non-event per event, a <em>logistic regression</em> can be fitted. In this
-case, the statistical unit is the event/non-event pair. The logistic
-regression is fitted with a fixed response equal to 1 (which must
-therefore be included in the data) and covariates equal to the
-differences between the covariates of the event and those of the
-non-event. These differences must also be recorded in the data.</p>
+<p>When there is only <a href="../../00-Notes-and-Slides/notes-p1#24-case-1-control-partial-likelihood-approaches">one non-event per
+event</a>,
+a <em>logistic regression</em> can be fitted. In this case, the statistical
+unit is the event/non-event pair. The logistic regression is fitted with
+a fixed response equal to 1 (which must therefore be included in the
+data) and covariates equal to the differences between the covariates of
+the event and those of the non-event. These differences must also be
+recorded in the data.</p>
 
 <p>The function <code class="language-plaintext highlighter-rouge">widen_case_control</code> transforms data from long format to
 wide format. To do so, we need to specify the <code class="language-plaintext highlighter-rouge">event</code> argument - the
@@ -265,10 +267,9 @@ method can be selected via the <code class="language-plaintext highlighter-rouge
 
 <h3 id="31-sampled-partial-likelihood-via-conditional-logistic-regression">3.1. Sampled partial likelihood via Conditional logistic regression</h3>
 
-<p>As discussed in [Theoretical reference], when considering more than
-one non-event per event, it can be shown that the partial likelihood
-coincides with that of a <em>conditional logistic regression</em> - hence we
-set the method to <code class="language-plaintext highlighter-rouge">clogit</code>.</p>
+<p>When considering more than one non-event per event, it can be shown that
+the partial likelihood coincides with that of a <em>conditional logistic
+regression</em> - hence we set the method to <code class="language-plaintext highlighter-rouge">clogit</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fit_clogit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">reciprocity_count</span><span class="p">,</span><span class="w"> 
                   </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raw_data_m7</span><span class="p">,</span><span class="w"> 
@@ -305,9 +306,10 @@ employed in simulation was 0.6.</p>
 
 <h3 id="32-case-1-control-partial-likelihood-via-degenerate-logistic-regression">3.2. Case-1-control partial likelihood via Degenerate logistic regression</h3>
 
-<p>When considering only one non-event per event ([Theoretical
-reference]), it can be shown that the partial likelihood coincides with
-that of a <em>degenerate logistic regression</em>:</p>
+<p>When considering only <a href="../../00-Notes-and-Slides/notes-p1#24-case-1-control-partial-likelihood-approaches">one non-event per
+event</a>,
+it can be shown that the partial likelihood coincides with that of a
+<em>degenerate logistic regression</em>:</p>
 
 <ul>
   <li>without an intercept term,</li>
@@ -507,16 +509,16 @@ the next practical.</p>
 
 <ul>
   <li>
-    <p>Richter F, Boschi M, Wit E, Lembo M (2026). amorem: Augmented Modelling of Relational Events. R package version 1.0.0, https://franciscorichter.github.io/amorem/.</p>
+    <p>Borgan, Ø., Goldstein, L., &amp; Langholz, B. (1995). Methods for the analysis of sampled cohort data in the Cox proportional hazards model. <em>The Annals of Statistics, 23</em>, 1749–1778.</p>
   </li>
   <li>
-    <p>Borgan, Ø., Goldstein, L., &amp; Langholz, B. (1995). Methods for the analysis of sampled cohort data in the Cox proportional hazards model. <em>The Annals of Statistics, 23</em>, 1749–1778.</p>
+    <p>Boschi, M., Juozaitienė, R., &amp; Wit, E. C. (2025). Mixed additive modelling of global alien species co-invasions of plants and insects. <em>Journal of the Royal Statistical Society: Series C (Applied Statistics)</em>. Advance online publication. https://doi.org/10.1093/jrsssc/qlaf034</p>
   </li>
   <li>
     <p>Lerner, J., &amp; Lomi, A. (2020). Reliability of relational event model estimates under sampling: How to fit a relational event model to 360 million dyadic events. <em>Network Science, 8</em>(1), 97–135. https://doi.org/10.1017/nws.2019.28</p>
   </li>
   <li>
-    <p>Boschi, M., Juozaitienė, R., &amp; Wit, E. C. (2025). Mixed additive modelling of global alien species co-invasions of plants and insects. <em>Journal of the Royal Statistical Society: Series C (Applied Statistics)</em>. Advance online publication. https://doi.org/10.1093/jrsssc/qlaf034</p>
+    <p>Richter F, Boschi M, Wit E, Lembo M (2026). amorem: simulation and inference for Relational Event Models with time-varying non-linear effects. R package version 1.0.0, https://franciscorichter.github.io/amorem/</p>
   </li>
 </ul>
 
