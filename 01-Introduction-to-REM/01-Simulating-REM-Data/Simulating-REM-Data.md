@@ -15,15 +15,15 @@ library(amorem)
 While exploring the main functions of the package, we will cover how:
 
 -   [to simulate relational event
-    data](../../00-Notes-and-Slides/notes-p1#simulating-relational-event-data)
+    data](../../00-Notes-and-Slides/01-w1/#simulating-relational-event-data)
 -   [to structure data for
-    inference](../../00-Notes-and-Slides/notes-p1#2-rem-inference)
+    inference](../../00-Notes-and-Slides/01-w1/#2-rem-inference)
 -   to fit models with linear effects
 -   compare different inference techniques
 
 ## 1. How to simulate relational event data in `amorem`
 
-[*Relational event data*](../../00-Notes-and-Slides/notes-p1#notation)
+[*Relational event data*](../../00-Notes-and-Slides/01-w1/#notation)
 consists of a sequence of $n$ triplets:
 
 $$E = \{e_i = (s_i, r_i, t_i), i=1,\dots,n\}$$
@@ -37,7 +37,7 @@ provide to simulate our relational event sequence by means of the
 function `simulate_relational_events`.
 
 Relational events can be both described and simulated using a [*rate
-function*](../../00-Notes-and-Slides/notes-p1#relational-event-model-rem).
+function*](../../00-Notes-and-Slides/01-w1/#relational-event-model-rem).
 This rate function can be decomposed into three main blocks:
 
 1.  *Risk indicator*: equal to 1 if the dyad $(s,r)$ is at risk at time
@@ -107,7 +107,7 @@ head(raw_data_m1,16)
 ## 2. How to structure data for inference
 
 In the [theoretical
-section](../../00-Notes-and-Slides/notes-p1#2-rem-inference), covered a
+section](../../00-Notes-and-Slides/01-w1/#2-rem-inference), covered a
 wide range of inference methods. Since most of the REM literature you
 are likely to encounter relies on *(sampled) partial likelihood
 estimation*, we start with a practical example of this approach. We then
@@ -164,7 +164,7 @@ head(raw_data_m7,10)
 ### 2.2. Data for Case-1-control partial likelihood
 
 When there is only [one non-event per
-event](../../00-Notes-and-Slides/notes-p1#24-case-1-control-partial-likelihood-approaches),
+event](../../00-Notes-and-Slides/01-w1/#24-case-1-control-partial-likelihood-approaches),
 a *logistic regression* can be fitted. In this case, the statistical
 unit is the event/non-event pair. The logistic regression is fitted with
 a fixed response equal to 1 (which must therefore be included in the
@@ -250,7 +250,7 @@ employed in simulation was 0.6.
 ### 3.2. Case-1-control partial likelihood via Degenerate logistic regression
 
 When considering only [one non-event per
-event](../../00-Notes-and-Slides/notes-p1#24-case-1-control-partial-likelihood-approaches),
+event](../../00-Notes-and-Slides/01-w1/#24-case-1-control-partial-likelihood-approaches),
 it can be shown that the partial likelihood coincides with that of a
 *degenerate logistic regression*:
 

@@ -65,9 +65,9 @@ and fit relational event models with increasing levels of complexity.</p>
 <p>While exploring the main functions of the package, we will cover how:</p>
 
 <ul>
-  <li><a href="../../00-Notes-and-Slides/notes-p1#simulating-relational-event-data">to simulate relational event
+  <li><a href="../../00-Notes-and-Slides/01-w1/#simulating-relational-event-data">to simulate relational event
 data</a></li>
-  <li><a href="../../00-Notes-and-Slides/notes-p1#2-rem-inference">to structure data for
+  <li><a href="../../00-Notes-and-Slides/01-w1/#2-rem-inference">to structure data for
 inference</a></li>
   <li>to fit models with linear effects</li>
   <li>compare different inference techniques</li>
@@ -75,7 +75,7 @@ inference</a></li>
 
 <h2 id="1-how-to-simulate-relational-event-data-in-amorem">1. How to simulate relational event data in <code class="language-plaintext highlighter-rouge">amorem</code></h2>
 
-<p><a href="../../00-Notes-and-Slides/notes-p1#notation"><em>Relational event data</em></a>
+<p><a href="../../00-Notes-and-Slides/01-w1/#notation"><em>Relational event data</em></a>
 consists of a sequence of $n$ triplets:</p>
 
 \[E = \{e_i = (s_i, r_i, t_i), i=1,\dots,n\}\]
@@ -88,7 +88,7 @@ the <em>receiver set</em> (<code class="language-plaintext highlighter-rouge">re
 provide to simulate our relational event sequence by means of the
 function <code class="language-plaintext highlighter-rouge">simulate_relational_events</code>.</p>
 
-<p>Relational events can be both described and simulated using a <a href="../../00-Notes-and-Slides/notes-p1#relational-event-model-rem"><em>rate
+<p>Relational events can be both described and simulated using a <a href="../../00-Notes-and-Slides/01-w1/#relational-event-model-rem"><em>rate
 function</em></a>.
 This rate function can be decomposed into three main blocks:</p>
 
@@ -162,7 +162,7 @@ each event.</p>
 
 <h2 id="2-how-to-structure-data-for-inference">2. How to structure data for inference</h2>
 
-<p>In the <a href="../../00-Notes-and-Slides/notes-p1#2-rem-inference">theoretical
+<p>In the <a href="../../00-Notes-and-Slides/01-w1/#2-rem-inference">theoretical
 section</a>, covered a
 wide range of inference methods. Since most of the REM literature you
 are likely to encounter relies on <em>(sampled) partial likelihood
@@ -222,7 +222,7 @@ in the long format, which is the default output format of
 
 <h3 id="22-data-for-case-1-control-partial-likelihood">2.2. Data for Case-1-control partial likelihood</h3>
 
-<p>When there is only <a href="../../00-Notes-and-Slides/notes-p1#24-case-1-control-partial-likelihood-approaches">one non-event per
+<p>When there is only <a href="../../00-Notes-and-Slides/01-w1/#24-case-1-control-partial-likelihood-approaches">one non-event per
 event</a>,
 a <em>logistic regression</em> can be fitted. In this case, the statistical
 unit is the event/non-event pair. The logistic regression is fitted with
@@ -306,7 +306,7 @@ employed in simulation was 0.6.</p>
 
 <h3 id="32-case-1-control-partial-likelihood-via-degenerate-logistic-regression">3.2. Case-1-control partial likelihood via Degenerate logistic regression</h3>
 
-<p>When considering only <a href="../../00-Notes-and-Slides/notes-p1#24-case-1-control-partial-likelihood-approaches">one non-event per
+<p>When considering only <a href="../../00-Notes-and-Slides/01-w1/#24-case-1-control-partial-likelihood-approaches">one non-event per
 event</a>,
 it can be shown that the partial likelihood coincides with that of a
 <em>degenerate logistic regression</em>:</p>
