@@ -265,7 +265,7 @@ $$\mathcal{L}^{S}(\boldsymbol{\beta}) \stackrel{m=1}{=} \prod_{i=1}^n \operatorn
 
 where:
 - $(s_i^\ast, r_i^\ast)$: the **sampled dyad** at time $t_i$, drawn from the risk set $\mathcal{R}_{t_i}$;
-- $\Delta\boldsymbol{x}_i = \boldsymbol{x}_{s_ir_i}(t_i) - \boldsymbol{x}_{s_i^\ast r_i^\ast}(t_i)$: the difference between covariates for the event and the sampled non-event.
+- $\Delta {\boldsymbol{x}}_i = {\boldsymbol{x}}_{s_ir_i}(t_i) - \boldsymbol{x}_{s_i^\ast r_i^\ast}(t_i)$: the difference between covariates for the event and the sampled non-event.
 
 This coincides with the likelihood of a **degenerate logistic regression**: without intercept term, with constant response equal to 1, and with covariates equal to the difference $\Delta\boldsymbol{x}_i$.
 
