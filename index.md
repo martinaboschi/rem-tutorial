@@ -51,12 +51,8 @@ This site collects teaching materials on **Relational (Hyper) Event Models** (RH
 <span class="rem-arrow">→</span>
 </a>
 
-<div class="rem-grid-top">
-
-<div class="rem-grid-bot">
-
 <a class="rem-box" href="https://franciscorichter.github.io/amorem/">
-<span style="font-size:22px">💻</span>
+<span style="font-size:22px">📦</span>
 <span class="rem-tag tag-green">Software</span>
 <span class="rem-title"><code>amore</code> package</span>
 <span class="rem-sub">R package</span>
@@ -66,8 +62,8 @@ This site collects teaching materials on **Relational (Hyper) Event Models** (RH
 <a class="rem-box" href="https://github.com/juergenlerner/eventnet/wiki">
 <span style="font-size:22px">🧑‍💻</span>
 <span class="rem-tag tag-green">Software</span>
-<span class="rem-title"><code>eventnet</code> package</span>
-<span class="rem-sub">statistical analysis of networks of relational events</span>
+<span class="rem-title"><code>eventnet</code></span>
+<span class="rem-sub">Statistical analysis of networks of relational events</span>
 <span class="rem-arrow">→</span>
 </a>
 
