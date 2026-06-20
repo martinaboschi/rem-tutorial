@@ -12,7 +12,7 @@ has_children: true
 .notes-title { font-size: 15px; font-weight: 700; color: #111827; margin: 0; line-height: 1.4; }
 .notes-sub { font-size: 13px; color: #6b7280; margin: 0; line-height: 1.5; }
 .notes-arrow { font-size: 16px; color: #9ca3af; margin-top: auto; padding-top: 6px; }
-.tag-yellow { background: #fef9c3; color: #854d0e; }
+.tag-blue   { background: #dbeafe; color: #1e3a8a; }
 .tag-red    { background: #ffe4e6; color: #9f1239; }
 </style>
 
@@ -27,7 +27,7 @@ The notes are authored by **Martina Boschi, Melania Lembo, Jürgen Lerner, and E
 
 <a class="notes-box" href="01-w1/">
 <span class="rem-icon">📖</span>
-<span class="notes-tag tag-yellow">Workshop 1</span>
+<span class="notes-tag tag-blue">Workshop 1</span>
 <span class="notes-title">Introduction to relational event models</span>
 <span class="notes-sub">Core REMs, inference methods, and non-linear extensions</span>
 <span class="notes-arrow">→</span>
