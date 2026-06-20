@@ -8,7 +8,6 @@ nav_order: 1
 .rem-hero h2 { font-size: 1.6rem; font-weight: 700; color: #111827; margin: 0 0 0.75rem; }
 .rem-hero p { font-size: 1rem; color: #4b5563; line-height: 1.7; max-width: 680px; margin: 0; }
 .rem-grid-top { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 1.5rem 0 0; align-items: stretch; }
-.rem-grid-bot { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 0 1.5rem; width: 66.6%; margin: 16px auto 0; align-items: stretch; }
 .rem-box { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; text-decoration: none; display: flex; flex-direction: column; gap: 6px; box-sizing: border-box; }
 .rem-title { font-size: 13px; font-weight: 700; color: #111827; margin: 0; line-height: 1.4; }
 .rem-sub { font-size: 11px; color: #6b7280; margin: 0; line-height: 1.5; }
@@ -52,7 +51,7 @@ This site collects teaching materials on **Relational (Hyper) Event Models** (RH
 <span class="rem-arrow">→</span>
 </a>
 
-</div>
+<div class="rem-grid-top">
 
 <div class="rem-grid-bot">
 
@@ -61,6 +60,14 @@ This site collects teaching materials on **Relational (Hyper) Event Models** (RH
 <span class="rem-tag tag-green">Software</span>
 <span class="rem-title"><code>amore</code> package</span>
 <span class="rem-sub">R package</span>
+<span class="rem-arrow">→</span>
+</a>
+
+<a class="rem-box" href="https://github.com/juergenlerner/eventnet/wiki">
+<span style="font-size:22px">🧑‍💻</span>
+<span class="rem-tag tag-green">Software</span>
+<span class="rem-title"><code>eventnet</code> package</span>
+<span class="rem-sub">statistical analysis of networks of relational events</span>
 <span class="rem-arrow">→</span>
 </a>
 
