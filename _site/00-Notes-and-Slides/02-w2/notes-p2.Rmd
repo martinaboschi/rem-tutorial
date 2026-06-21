@@ -76,7 +76,7 @@ $(S,R)$ satisfying $W_{SR}(t)=1$ compose the **risk set** $\mathcal{R}_t$.
 
 ---
 
-### 1.1 Exogenous & endogenous drivers for undirected hyperevents
+### 1.1 Exogenous and endogenous drivers for undirected hyperevents
 
 **Exogenous and endogenous drivers** are measured by means of **covariates** $x_S(t)$, which can be seen as aggregations or summaries of **attributes** $z_s(t)$ of nodes in subsets $S' \subseteq S$.
 

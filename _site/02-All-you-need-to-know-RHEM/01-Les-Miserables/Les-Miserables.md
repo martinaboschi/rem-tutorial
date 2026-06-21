@@ -44,8 +44,8 @@ head(data_original)
 ## 6    dummy          TS add.actor
 </code></pre>
 
-Inspecting the data, we can interpret it as a relational hyper-event
-network:
+Inspecting the data, we can interpret it as a [relational hyper-event
+network](../../00-Notes-and-Slides/02-w2/#1-core-rhems):
 
 -   The network consists of **80 actors** ($|V| = 80$) co-appearing in
     one or several of **288 chapters** ($n = 288$);
@@ -61,10 +61,12 @@ is therefore represented by as many rows as the number of actors
 involved.
 
 ``` r
-table(data_original$TYPE)
+table(data_original$type)
 ```
 
-<pre><code>## < table of extent 0 >
+<pre><code>## 
+## add.actor   chapter is.female 
+##        80       727        28
 </code></pre>
 
 To show how to analyze the data in `eventnet`, we refer explicitly to
@@ -88,7 +90,8 @@ output directory](02-Pictures/file-tab.png)
 
 -   **(ii) events**: allows you to map different components of an event
     to columns of the input file and define whether the event network is
-    one-mode or multi-mode.
+    [one-mode](../../00-Notes-and-Slides/02-w2/#1-core-rhems) or
+    [multi-mode](../../00-Notes-and-Slides/02-w2/#1-core-rhems).
 
     1.  `SOURCE`: identifies who initiates the event;
     2.  `TARGET`: identifies who receives the event. Undirected
@@ -134,12 +137,14 @@ which column of the CSV file](02-Pictures/event-tab.png)
 ![Time tab where you can specify the format of the time variable and
 which events are considered as simultaneous.](02-Pictures/time-tab.png)
 
--   **(iv) attributes**: Attributes include information about past
-    events and assign values to nodes, to the entire network, or to
-    hyperedges of any size. In this example, we define two `NODE_LEVEL`,
-    one `DYAD_LEVEL`, and one `UNDIR_HYPER_LEVEL` attribute. The values
-    of attributes generally change over time. Attributes are then used
-    to define explanatory variables (statistics).
+-   **(iv) attributes**:
+    [Attributes](../../00-Notes-and-Slides/02-w2/#11-exogenous-and-endogenous-drivers-for-undirected-hyperevents)
+    include information about past events and assign values to nodes, to
+    the entire network, or to hyperedges of any size. In this example,
+    we define two `NODE_LEVEL`, one `DYAD_LEVEL`, and one
+    `UNDIR_HYPER_LEVEL` attribute. The values of attributes generally
+    change over time. Attributes are then used to define explanatory
+    variables (statistics).
 
     -   **`NODE_LEVEL`**:
 
@@ -177,12 +182,14 @@ The Attributes tab for this application is shown below.
 ![Attribute tab allows to specify and compute attributes for nodes,
 dyads, entire network, or hyperedges.](02-Pictures/attribute-tab.png)
 
--   **(v) statistics**: Hyperedge statistics are computed by aggregating
-    attributes and, therefore, might be functions of previous history of
-    events. The values of hyperedge statistics are computed for all
-    observed hyperevents and for all, or a subset of, non-events. Even
-    though the configuration file includes information about closure, we
-    focus on five statistics in this tutorial:
+-   **(v) statistics**: [Hyperedge
+    statistics](../../00-Notes-and-Slides/02-w2/#11-exogenous-and-endogenous-drivers-for-undirected-hyperevents).
+    are computed by aggregating attributes and, therefore, might be
+    functions of previous history of events. The values of hyperedge
+    statistics are computed for all observed hyperevents and for all, or
+    a subset of, non-events. Even though the configuration file includes
+    information about closure, we focus on five statistics in this
+    tutorial:
 
 1.  **num.actors**: a statistic of type `UHE_SIZE_STAT`. It computes the
     size of the hyperevent and requires no additional settings.
@@ -337,8 +344,9 @@ different inference methods.
 ### 2.1. Sampled partial likelihood via Conditional logistic regression
 
 Since we do not have access to timing information for the events and we
-have a case-control sample with 20 non-events, we fit a *conditional
-logistic regression*.
+have a case-control sample with 20 non-events, we fit a [*conditional
+logistic
+regression*](../../00-Notes-and-Slides/01-w1/#23-sampled-partial-likelihood-approaches).
 
 ``` r
 fit_clogit <- rem(IS_OBSERVED ~ diff.female
@@ -388,7 +396,8 @@ gender.
 
 When considering only one non-event per event (\[Theoretical
 reference\]), it can be shown that the partial likelihood coincides with
-that of a *degenerate logistic regression*:
+that of a [*degenerate logistic
+regression*](../../00-Notes-and-Slides/01-w1/#24-case-1-control-partial-likelihood-approaches):
 
 -   without an intercept term,
 -   with a constant response equal to 1,

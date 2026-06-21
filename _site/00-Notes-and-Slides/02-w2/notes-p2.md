@@ -98,7 +98,7 @@ $\mathcal{R}_t$.
 
 ------------------------------------------------------------------------
 
-### 1.1 Exogenous & endogenous drivers for undirected hyperevents
+### 1.1 Exogenous and endogenous drivers for undirected hyperevents
 
 **Exogenous and endogenous drivers** are measured by means of
 **covariates** $x_S(t)$, which can be seen as aggregations or summaries

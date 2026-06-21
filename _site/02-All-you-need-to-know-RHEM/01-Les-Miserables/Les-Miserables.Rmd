@@ -33,7 +33,7 @@ data_original <- read.csv("00-eventnet/jean_events.csv")
 head(data_original)
 ```
 
-Inspecting the data, we can interpret it as a relational hyper-event network:
+Inspecting the data, we can interpret it as a [relational hyper-event network](../../00-Notes-and-Slides/02-w2/#1-core-rhems):
 
 - The network consists of **80 actors** ($|V| = 80$) co-appearing in one or several of **288 chapters** ($n = 288$);
 - $e_i = (S_i, t_i)$ is a *hyperevent* (a chapter) involving a set of co-appearing actors (i.e. the *senders* of the event) $S_i$, where $t_i$ is simply a counter for the chapter;
@@ -42,7 +42,7 @@ Inspecting the data, we can interpret it as a relational hyper-event network:
 The file `jean_events.csv` contains three types of entries (which can be distinguished using the column `type`), namely `add.actor`, `is.female`, and `chapter`. Each entry involves only one actor at a time. A chapter is therefore represented by as many rows as the number of actors involved.
 
 ```{r}
-table(data_original$TYPE)
+table(data_original$type)
 ```
 
 To show how to analyze the data in `eventnet`, we refer explicitly to the tutorials
@@ -54,7 +54,7 @@ You can find the **configuration file** `jean.config.small.txt` in the materials
 
 ![Files tab where you can specify input directory, CSV settings, and the output directory](02-Pictures/file-tab.png)
 
-- **(ii) events**: allows you to map different components of an event to columns of the input file and define whether the event network is one-mode or multi-mode.
+- **(ii) events**: allows you to map different components of an event to columns of the input file and define whether the event network is [one-mode](../../00-Notes-and-Slides/02-w2/#1-core-rhems) or [multi-mode](../../00-Notes-and-Slides/02-w2/#1-core-rhems).
 
   1. `SOURCE`: identifies who initiates the event;
   2. `TARGET`: identifies who receives the event. Undirected hyperevents should map `SOURCE` and `TARGET` to the same column indicating the participants;
@@ -73,7 +73,7 @@ Once the column for `TYPE` has been set, you can click on the button `learn even
 
 ![Time tab where you can specify the format of the time variable and which events are considered as simultaneous.](02-Pictures/time-tab.png)
 
-- **(iv) attributes**: Attributes include information about past events and assign values to nodes, to the entire network, or to hyperedges of any size. In this example, we define two `NODE_LEVEL`, one `DYAD_LEVEL`, and one `UNDIR_HYPER_LEVEL` attribute. The values of attributes generally change over time. Attributes are then used to define explanatory variables (statistics).
+- **(iv) attributes**: [Attributes](../../00-Notes-and-Slides/02-w2/#11-exogenous-and-endogenous-drivers-for-undirected-hyperevents) include information about past events and assign values to nodes, to the entire network, or to hyperedges of any size. In this example, we define two `NODE_LEVEL`, one `DYAD_LEVEL`, and one `UNDIR_HYPER_LEVEL` attribute. The values of attributes generally change over time. Attributes are then used to define explanatory variables (statistics).
 
   - **`NODE_LEVEL`**:
     
@@ -96,7 +96,7 @@ The Attributes tab for this application is shown below.
 
 ![Attribute tab allows to specify and compute attributes for nodes, dyads, entire network, or hyperedges.](02-Pictures/attribute-tab.png)
 
-- **(v) statistics**: Hyperedge statistics are computed by aggregating attributes and, therefore, might be functions of previous history of events. The values of hyperedge statistics are computed for all observed hyperevents and for all, or a subset of, non-events. Even though the configuration file includes information about closure, we focus on five statistics in this tutorial:
+- **(v) statistics**: [Hyperedge statistics](../../00-Notes-and-Slides/02-w2/#11-exogenous-and-endogenous-drivers-for-undirected-hyperevents). are computed by aggregating attributes and, therefore, might be functions of previous history of events. The values of hyperedge statistics are computed for all observed hyperevents and for all, or a subset of, non-events. Even though the configuration file includes information about closure, we focus on five statistics in this tutorial:
 
 1. **num.actors**: a statistic of type `UHE_SIZE_STAT`. It computes the size of the hyperevent and requires no additional settings.
 2. **individual.activity** and **dyadic.activity**: both are of type `UHE_SUB_REPETITION_STAT`. According to the discussion on subset repetition, these statistics rely on the attribute `prior_events`. The individual and dyadic versions differ in the hyperedge size, which is equal to 1 and 2, respectively. At the bottom, one can specify how to aggregate the values over the different participant subsets; in this case, they are summed (`SUM`).
@@ -167,7 +167,7 @@ Based on the data structures constructed above, we can apply two different infer
 
 ### 2.1. Sampled partial likelihood via Conditional logistic regression
 
-Since we do not have access to timing information for the events and we have a case-control sample with 20 non-events, we fit a *conditional logistic regression*.
+Since we do not have access to timing information for the events and we have a case-control sample with 20 non-events, we fit a [*conditional logistic regression*](../../00-Notes-and-Slides/01-w1/#23-sampled-partial-likelihood-approaches).
 
 ```{r}
 fit_clogit <- rem(IS_OBSERVED ~ diff.female
@@ -183,7 +183,7 @@ summary(fit_clogit)
 
 ### 2.2. Case-1-control partial likelihood via Degenerate logistic regression
 
-When considering only one non-event per event ([Theoretical reference]), it can be shown that the partial likelihood coincides with that of a *degenerate logistic regression*:
+When considering only one non-event per event ([Theoretical reference]), it can be shown that the partial likelihood coincides with that of a [*degenerate logistic regression*](../../00-Notes-and-Slides/01-w1/#24-case-1-control-partial-likelihood-approaches):
 
 - without an intercept term,
 - with a constant response equal to 1,
