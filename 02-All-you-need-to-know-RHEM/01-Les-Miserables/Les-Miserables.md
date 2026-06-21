@@ -26,8 +26,10 @@ of actor co-appearances in *Les Misérables*, compiled by Donald Knuth
 (Knuth, 1993).
 
 The data comprises 80 actors (co-)appearing in one or several of 288
-chapters. The (binary`\footnote{only for mathematical purposes}`{=tex})
-gender of the actors is known.
+chapters. The (binary) gender of the actors is known\[\^1\].
+
+\[\^1\] The gender variable is assumed binary only for mathematical
+purposes.
 
 ## 1. Data import and Covariate computation in `eventnet`
 
