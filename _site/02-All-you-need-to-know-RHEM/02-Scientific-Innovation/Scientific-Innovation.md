@@ -393,7 +393,7 @@ typically composed of authors with large differences in the number of
 papers they have previously published, for example a PhD student
 together with her supervisor.
 
-### 3.2. Beyond Linearity
+### 3.2. [Beyond Linearity](../../00-Notes-and-Slides/02-w2/#23-beyond-linearity)
 
 While keeping the effect for Prior papers, Difference in prior papers,
 and Paper outdegree popularity linear, we allow the effect of Paper
@@ -563,12 +563,13 @@ plot(gam_tve)
 
 ![](Scientific-Innovation_files/figure-markdown/gam_tve-1.png)
 
-**Interpretation:** The plot of the time-varying effect shows an
-increase; the confidence bands are very large at the beginning, probably
-due to the nature of the data (largest part of the data are from recent
-years). The effect is significantly time-varying, however. It is also
-possible to see a slight decrease in the effect at the end of the time
-window, where, instead, confidence intervals are quite narrow.
+**Interpretation:** The plot of the [time-varying
+effect](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents)
+shows an increase; the confidence bands are very large at the beginning,
+probably due to the nature of the data (largest part of the data are
+from recent years). The effect is significantly time-varying, however.
+It is also possible to see a slight decrease in the effect at the end of
+the time window, where, instead, confidence intervals are quite narrow.
 
 ``` r
 gam_tve_transformed <- rem(~ tv(diff.author.publication.activity) +
@@ -643,16 +644,17 @@ plot(gam_nle)
 
 ![](Scientific-Innovation_files/figure-markdown/gam_nle-1.png)
 
-**Interpretation:** The plot of the non-linear effect clearly shows a
-non-monotonic pattern. Apparently, authors tend to publish together when
-they have very similar levels of experience; otherwise, the tendency to
-collaborate drops immediately. This tendency then increases again as the
-difference grows, as in the classic example of a PhD student and their
-professor. The effect appears to reach saturation and eventually
-decreases for very large values of the covariate. This seems to
-highlight an "optimal" level of variation in prior publications that
-maximizes this covariate's contribution to the log-rate of coauthoring a
-new paper.
+**Interpretation:** The plot of the [non-linear
+effect](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents)
+clearly shows a non-monotonic pattern. Apparently, authors tend to
+publish together when they have very similar levels of experience;
+otherwise, the tendency to collaborate drops immediately. This tendency
+then increases again as the difference grows, as in the classic example
+of a PhD student and their professor. The effect appears to reach
+saturation and eventually decreases for very large values of the
+covariate. This seems to highlight an "optimal" level of variation in
+prior publications that maximizes this covariate's contribution to the
+log-rate of coauthoring a new paper.
 
 #### Time-varying non-linear effect
 
@@ -716,8 +718,10 @@ ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +
 
 ![](Scientific-Innovation_files/figure-markdown/gam_tvnle-1.png)
 
-**Interpretation:** By allowing both effects simultaneously, we can see
-that the non-linear effect remains clearly present, while the
+**Interpretation:** By allowing both effects simultaneously
+([**time-varying non-linear
+effect**](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents)),
+we can see that the non-linear effect remains clearly present, while the
 decrease/increase over time is visible only at the very beginning of the
 time window.
 

@@ -439,7 +439,7 @@ typically composed of authors with large differences in the number of
 papers they have previously published, for example a PhD student
 together with her supervisor.</p>
 
-<h3 id="32-beyond-linearity">3.2. Beyond Linearity</h3>
+<h3 id="32-beyond-linearity">3.2. <a href="../../00-Notes-and-Slides/02-w2/#23-beyond-linearity">Beyond Linearity</a></h3>
 
 <p>While keeping the effect for Prior papers, Difference in prior papers,
 and Paper outdegree popularity linear, we allow the effect of Paper
@@ -594,12 +594,13 @@ the second approach.</p>
 
 <p><img src="Scientific-Innovation_files/figure-markdown/gam_tve-1.png" alt="" /></p>
 
-<p><strong>Interpretation:</strong> The plot of the time-varying effect shows an
-increase; the confidence bands are very large at the beginning, probably
-due to the nature of the data (largest part of the data are from recent
-years). The effect is significantly time-varying, however. It is also
-possible to see a slight decrease in the effect at the end of the time
-window, where, instead, confidence intervals are quite narrow.</p>
+<p><strong>Interpretation:</strong> The plot of the <a href="../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents">time-varying
+effect</a>
+shows an increase; the confidence bands are very large at the beginning,
+probably due to the nature of the data (largest part of the data are
+from recent years). The effect is significantly time-varying, however.
+It is also possible to see a slight decrease in the effect at the end of
+the time window, where, instead, confidence intervals are quite narrow.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gam_tve_transformed</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rem</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">tv</span><span class="p">(</span><span class="n">diff.author.publication.activity</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
                            </span><span class="n">paper.outdegree.popularity</span><span class="w"> </span><span class="o">+</span><span class="w">
@@ -669,16 +670,17 @@ untransformed time, is captured here as well.</p>
 
 <p><img src="Scientific-Innovation_files/figure-markdown/gam_nle-1.png" alt="" /></p>
 
-<p><strong>Interpretation:</strong> The plot of the non-linear effect clearly shows a
-non-monotonic pattern. Apparently, authors tend to publish together when
-they have very similar levels of experience; otherwise, the tendency to
-collaborate drops immediately. This tendency then increases again as the
-difference grows, as in the classic example of a PhD student and their
-professor. The effect appears to reach saturation and eventually
-decreases for very large values of the covariate. This seems to
-highlight an “optimal” level of variation in prior publications that
-maximizes this covariate’s contribution to the log-rate of coauthoring a
-new paper.</p>
+<p><strong>Interpretation:</strong> The plot of the <a href="../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents">non-linear
+effect</a>
+clearly shows a non-monotonic pattern. Apparently, authors tend to
+publish together when they have very similar levels of experience;
+otherwise, the tendency to collaborate drops immediately. This tendency
+then increases again as the difference grows, as in the classic example
+of a PhD student and their professor. The effect appears to reach
+saturation and eventually decreases for very large values of the
+covariate. This seems to highlight an “optimal” level of variation in
+prior publications that maximizes this covariate’s contribution to the
+log-rate of coauthoring a new paper.</p>
 
 <h4 id="time-varying-non-linear-effect">Time-varying non-linear effect</h4>
 
@@ -739,8 +741,10 @@ new paper.</p>
 
 <p><img src="Scientific-Innovation_files/figure-markdown/gam_tvnle-1.png" alt="" /></p>
 
-<p><strong>Interpretation:</strong> By allowing both effects simultaneously, we can see
-that the non-linear effect remains clearly present, while the
+<p><strong>Interpretation:</strong> By allowing both effects simultaneously
+(<a href="../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents"><strong>time-varying non-linear
+effect</strong></a>),
+we can see that the non-linear effect remains clearly present, while the
 decrease/increase over time is visible only at the very beginning of the
 time window.</p>
 
