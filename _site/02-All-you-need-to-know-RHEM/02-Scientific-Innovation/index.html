@@ -96,17 +96,18 @@ et al., 2025; Boschi et al., 2026].</p>
 restricted to journal articles, and is derived from the Aminer Citation
 Network [Tang et al., 2008].</p>
 
-<p>Code to pre-process and filter the data is publicly available at
-<a href="https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023">https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023</a>.
+<p>Code to pre-process and filter the data is publicly available at the
+<a href="https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023"><code class="language-plaintext highlighter-rouge">eventnet</code>
+webpage</a>.
 To allow you to upload the data and experiment in real time, we provide
 a sampled version of the original dataset, consisting of $n = 30\,136$
 rows.</p>
 
-<p>As discussed in the theoretical part of the workshop [reference], a
-<em>relational hyperevent</em> is defined as the formal <em>publication of a
-scientific work</em>, marking the moment when a group of authors presents
-their research together with a set of citations listed in the reference
-section.</p>
+<p>As discussed in the theoretical part of the workshop, a <a href="../../00-Notes-and-Slides/02-w2/#1-core-rhems"><em>relational
+hyperevent</em></a> is defined
+as the formal <em>publication of a scientific work</em>, marking the moment
+when a group of authors presents their research together with a set of
+citations listed in the reference section.</p>
 
 \[\{ r_i = (t_i, S_i, R_i), i = 1, \ldots, 10\ 046 \}\]
 
@@ -115,11 +116,13 @@ group of authors in $S_i \subseteq V^S_{t_i}$ citing journal articles in
 $R_i \subseteq V^R_{t_i}$.</p>
 
 <p>These events can be represented as time-stamped directed hyperedges of a
-two-mode network. There are two types of nodes: authors (<em>sender set</em>)
-and cited papers (<em>receiver set</em>). When a new hyperedge occurs at time
-$t_i$, a new publication $r_i$ – authored by a set of authors in $S_i$
-and citing a set of papers in $R_i$ – enters the system and can be
-cited by other papers at later time points.</p>
+two-mode network. There are two types of nodes: authors (<a href="../../00-Notes-and-Slides/02-w2/#1-core-rhems"><em>sender
+set</em></a>) and cited papers
+(<a href="../../00-Notes-and-Slides/02-w2/#1-core-rhems"><em>receiver set</em></a>). When
+a new hyperedge occurs at time $t_i$, a new publication $r_i$ –
+authored by a set of authors in $S_i$ and citing a set of papers in
+$R_i$ – enters the system and can be cited by other papers at later
+time points.</p>
 
 <p>This two-mode network representation also makes it possible to examine
 more complex relationships, such as author-cites-paper,
@@ -127,8 +130,10 @@ paper-cites-paper, and author-cites-author. These three relations are
 part of a broader class that we will employ later.</p>
 
 <p>The sampled events span <strong>from 1939 to 2023</strong>. The provided dataset is
-already in a <em>case–1–control formulation</em> (<strong>wide format</strong>), which is
-explored in more detail in the following section of the tutorial.</p>
+already in a <a href="../../00-Notes-and-Slides/01-w1/#24-case-1-control-partial-likelihood-approaches"><em>case–1–control
+formulation</em></a>
+(<strong>wide format</strong>), which is explored in more detail in the following
+section of the tutorial.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">range</span><span class="p">(</span><span class="n">dat_gam</span><span class="o">$</span><span class="n">TIME_ev</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
@@ -269,8 +274,8 @@ a look at [Lembo et al. (2025)].</p>
 
 <p>We will not dive into the details of <code class="language-plaintext highlighter-rouge">eventnet</code> covariate computation
 here (if you are curious, you can find both a tutorial and a
-configuration file at
-<a href="https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023">https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023</a>).</p>
+configuration file at <a href="https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023"><code class="language-plaintext highlighter-rouge">eventnet</code>
+webpage</a>.</p>
 
 <p>However, it is important to understand that, in this application,
 building the covariates - computed as aggregations of attributes - may
@@ -281,18 +286,21 @@ require several basic blocks.</p>
 <p>The necessary basic blocks (for this tutorial) are the following:</p>
 
 <ul>
-  <li><strong>Author–paper citations</strong>: the extent to which a set of authors
-has cited a set of papers in joint publications.</li>
+  <li><a href="../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents"><strong>Author–paper
+citations</strong></a>:
+the extent to which a set of authors has cited a set of papers in
+joint publications.</li>
 </ul>
 
 \[\text{cite}^{\text{aut}-\text{pap}}(t, S, R)
 = \sum_{t_m &lt; t} \omega(t-t_m) \cdot 1_{\{S \subseteq S_m \cap R \subseteq R_m\}}\]
 
 <ul>
-  <li><strong>Out-degree</strong>: the length of the reference list of a paper.</li>
+  <li><a href="../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents"><strong>Out-degree</strong></a>:
+the length of the reference list of a paper.</li>
 </ul>
 
-\[\text{out\_degree}(t, r)
+\[\text{out_degree}(t, r)
 = \sum_{t_m &lt; t} \omega(t-t_m) \cdot 1_{\{r = r_m\}} \cdot |R_m|\]
 
 <p>where, for all of them,</p>
@@ -340,43 +348,43 @@ computed for this dataset can be found in [Lerner et al., 2025; Boschi
 et al., 2026].</p>
 
 <p>Several of the following covariates are defined as
-<strong>subset-repetition</strong>:</p>
+<a href="../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents"><strong>subset-repetition</strong></a>:</p>
 
 \[\text{subrep}^{(\rho, \ell)}(t, S, R) = \sum_{(S', R') \in \binom{I}{\rho} \times \binom{J}{\ell}} \dfrac{\text{cite}^{\text{aut}-\text{pap}}(t, S', R')}{\binom{|I|}{\rho} \times \binom{|J|}{\ell}},\]
 
-<ol>
+<ul>
   <li><strong>Prior papers</strong>: for a set of authors $S$, the average number of
 prior papers (downweighted by the elapsed time). The covariates is a
 measure of past publication activity of the authors in the sender
 set.</li>
-</ol>
+</ul>
 
-\[\text{prior\_papers}(t,S,R)=\text{subrep}^{(1,0)}(t,S,R)\]
+\[\text{prior_papers}(t,S,R)=\text{subrep}^{(1,0)}(t,S,R)\]
 
-<ol>
+<ul>
   <li><strong>Difference in prior papers</strong>: for a set of authors $S$, it
 captures the heterogeneity of the past publication activity. A
 positive parameter would suggest a large dispersion in the number of
 prior publications.</li>
-</ol>
+</ul>
 
-\[\text{difference\_in\_prior\_papers}(t,S,R)=\sum_{\{s,s'\}\in{\binom{I}{2}}} \frac{|\text{cite}^{\text{aut}-\text{pap}}(t,\{s\},\emptyset)-\text{cite}^{\text{aut}-\text{pap}}(t,\{s'\},\emptyset)|}{\binom{|S|}{2}}\]
+\[\text{difference_in_prior_papers}(t,S,R)=\sum_{\{s,s'\}\in{\binom{I}{2}}} \frac{|\text{cite}^{\text{aut}-\text{pap}}(t,\{s\},\emptyset)-\text{cite}^{\text{aut}-\text{pap}}(t,\{s'\},\emptyset)|}{\binom{|S|}{2}}\]
 
-<ol>
+<ul>
   <li><strong>Paper outdegree popularity</strong>: average length of reference lists of
 a set of papers $R$.</li>
-</ol>
+</ul>
 
-\[\text{paper\_outdegree\_popularity}(t,S,R)=\sum_{r\in R} \frac{\text{out\_degree}(r)}{|R|}\]
+\[\text{paper_outdegree_popularity}(t,S,R)=\sum_{r\in R} \frac{\text{out_degree}(r)}{|R|}\]
 
-<ol>
+<ul>
   <li><strong>Paper citation popularity</strong>: for a set of papers $R$, average
 number of past citations (downweighted by the elapsed time). The
 covariates is a measure of past citation popularity. A positive
 parameter would be in lign with the idea of the “rich gets richer”.</li>
-</ol>
+</ul>
 
-\[\text{paper\_citation\_popularity}(t,S,R)=\text{subrep}^{(0,1)}(t,S,R)\]
+\[\text{paper_citation_popularity}(t,S,R)=\text{subrep}^{(0,1)}(t,S,R)\]
 
 <h2 id="3-model-fitting">3. Model fitting</h2>
 

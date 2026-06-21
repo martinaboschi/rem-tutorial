@@ -46,17 +46,18 @@ The original dataset consists of the DBLP Citation Network V14,
 restricted to journal articles, and is derived from the Aminer Citation
 Network \[Tang et al., 2008\].
 
-Code to pre-process and filter the data is publicly available at
-<https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023>.
+Code to pre-process and filter the data is publicly available at the
+[`eventnet`
+webpage](https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023).
 To allow you to upload the data and experiment in real time, we provide
 a sampled version of the original dataset, consisting of $n = 30\,136$
 rows.
 
-As discussed in the theoretical part of the workshop \[reference\], a
-*relational hyperevent* is defined as the formal *publication of a
-scientific work*, marking the moment when a group of authors presents
-their research together with a set of citations listed in the reference
-section.
+As discussed in the theoretical part of the workshop, a [*relational
+hyperevent*](../../00-Notes-and-Slides/02-w2/#1-core-rhems) is defined
+as the formal *publication of a scientific work*, marking the moment
+when a group of authors presents their research together with a set of
+citations listed in the reference section.
 
 $$
     \{ r_i = (t_i, S_i, R_i), i = 1, \ldots, 10\ 046 \}
@@ -67,11 +68,13 @@ group of authors in $S_i \subseteq V^S_{t_i}$ citing journal articles in
 $R_i \subseteq V^R_{t_i}$.
 
 These events can be represented as time-stamped directed hyperedges of a
-two-mode network. There are two types of nodes: authors (*sender set*)
-and cited papers (*receiver set*). When a new hyperedge occurs at time
-$t_i$, a new publication $r_i$ -- authored by a set of authors in $S_i$
-and citing a set of papers in $R_i$ -- enters the system and can be
-cited by other papers at later time points.
+two-mode network. There are two types of nodes: authors ([*sender
+set*](../../00-Notes-and-Slides/02-w2/#1-core-rhems)) and cited papers
+([*receiver set*](../../00-Notes-and-Slides/02-w2/#1-core-rhems)). When
+a new hyperedge occurs at time $t_i$, a new publication $r_i$ --
+authored by a set of authors in $S_i$ and citing a set of papers in
+$R_i$ -- enters the system and can be cited by other papers at later
+time points.
 
 This two-mode network representation also makes it possible to examine
 more complex relationships, such as author-cites-paper,
@@ -79,8 +82,10 @@ paper-cites-paper, and author-cites-author. These three relations are
 part of a broader class that we will employ later.
 
 The sampled events span **from 1939 to 2023**. The provided dataset is
-already in a *case--1--control formulation* (**wide format**), which is
-explored in more detail in the following section of the tutorial.
+already in a [*case--1--control
+formulation*](../../00-Notes-and-Slides/01-w1/#24-case-1-control-partial-likelihood-approaches)
+(**wide format**), which is explored in more detail in the following
+section of the tutorial.
 
 ``` r
 range(dat_gam$TIME_ev)
@@ -232,8 +237,8 @@ all(dat_gam[, "TIME_nv"] == dat_gam[, "TIME_ev"])
 
 We will not dive into the details of `eventnet` covariate computation
 here (if you are curious, you can find both a tutorial and a
-configuration file at
-<https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023>).
+configuration file at [`eventnet`
+webpage](https://github.com/juergenlerner/eventnet/tree/master/data/scientific_networks/aminer_2023).
 
 However, it is important to understand that, in this application,
 building the covariates - computed as aggregations of attributes - may
@@ -243,15 +248,18 @@ require several basic blocks.
 
 The necessary basic blocks (for this tutorial) are the following:
 
--   **Author--paper citations**: the extent to which a set of authors
-    has cited a set of papers in joint publications.
+-   [**Author--paper
+    citations**](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents):
+    the extent to which a set of authors has cited a set of papers in
+    joint publications.
 
 $$\text{cite}^{\text{aut}-\text{pap}}(t, S, R)
 = \sum_{t_m < t} \omega(t-t_m) \cdot 1_{\{S \subseteq S_m \cap R \subseteq R_m\}} $$
 
--   **Out-degree**: the length of the reference list of a paper.
+-   [**Out-degree**](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents):
+    the length of the reference list of a paper.
 
-$$\text{out\_degree}(t, r)
+$$\text{out_degree}(t, r)
 = \sum_{t_m < t} \omega(t-t_m) \cdot 1_{\{r = r_m\}} \cdot |R_m|$$
 
 where, for all of them,
@@ -301,35 +309,35 @@ computed for this dataset can be found in \[Lerner et al., 2025; Boschi
 et al., 2026\].
 
 Several of the following covariates are defined as
-**subset-repetition**:
+[**subset-repetition**](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents):
 
 $$\text{subrep}^{(\rho, \ell)}(t, S, R) = \sum_{(S', R') \in \binom{I}{\rho} \times \binom{J}{\ell}} \dfrac{\text{cite}^{\text{aut}-\text{pap}}(t, S', R')}{\binom{|I|}{\rho} \times \binom{|J|}{\ell}},$$
 
-1.  **Prior papers**: for a set of authors $S$, the average number of
+-   **Prior papers**: for a set of authors $S$, the average number of
     prior papers (downweighted by the elapsed time). The covariates is a
     measure of past publication activity of the authors in the sender
     set.
 
-$$\text{prior\_papers}(t,S,R)=\text{subrep}^{(1,0)}(t,S,R)$$
+$$\text{prior_papers}(t,S,R)=\text{subrep}^{(1,0)}(t,S,R)$$
 
-2.  **Difference in prior papers**: for a set of authors $S$, it
+-   **Difference in prior papers**: for a set of authors $S$, it
     captures the heterogeneity of the past publication activity. A
     positive parameter would suggest a large dispersion in the number of
     prior publications.
 
-$$\text{difference\_in\_prior\_papers}(t,S,R)=\sum_{\{s,s'\}\in{\binom{I}{2}}} \frac{|\text{cite}^{\text{aut}-\text{pap}}(t,\{s\},\emptyset)-\text{cite}^{\text{aut}-\text{pap}}(t,\{s'\},\emptyset)|}{\binom{|S|}{2}}$$
+$$\text{difference_in_prior_papers}(t,S,R)=\sum_{\{s,s'\}\in{\binom{I}{2}}} \frac{|\text{cite}^{\text{aut}-\text{pap}}(t,\{s\},\emptyset)-\text{cite}^{\text{aut}-\text{pap}}(t,\{s'\},\emptyset)|}{\binom{|S|}{2}}$$
 
-3.  **Paper outdegree popularity**: average length of reference lists of
+-   **Paper outdegree popularity**: average length of reference lists of
     a set of papers $R$.
 
-$$\text{paper\_outdegree\_popularity}(t,S,R)=\sum_{r\in R} \frac{\text{out\_degree}(r)}{|R|}$$
+$$\text{paper_outdegree_popularity}(t,S,R)=\sum_{r\in R} \frac{\text{out_degree}(r)}{|R|}$$
 
-4.  **Paper citation popularity**: for a set of papers $R$, average
+-   **Paper citation popularity**: for a set of papers $R$, average
     number of past citations (downweighted by the elapsed time). The
     covariates is a measure of past citation popularity. A positive
     parameter would be in lign with the idea of the "rich gets richer".
 
-$$\text{paper\_citation\_popularity}(t,S,R)=\text{subrep}^{(0,1)}(t,S,R)$$
+$$\text{paper_citation_popularity}(t,S,R)=\text{subrep}^{(0,1)}(t,S,R)$$
 
 ## 3. Model fitting
 
@@ -385,7 +393,7 @@ typically composed of authors with large differences in the number of
 papers they have previously published, for example a PhD student
 together with her supervisor.
 
-### 3.2. Beyond Linearity
+### 3.2. [Beyond Linearity](../../00-Notes-and-Slides/02-w2/#23-beyond-linearity)
 
 While keeping the effect for Prior papers, Difference in prior papers,
 and Paper outdegree popularity linear, we allow the effect of Paper
@@ -555,12 +563,13 @@ plot(gam_tve)
 
 ![](Scientific-Innovation_files/figure-markdown/gam_tve-1.png)
 
-**Interpretation:** The plot of the time-varying effect shows an
-increase; the confidence bands are very large at the beginning, probably
-due to the nature of the data (largest part of the data are from recent
-years). The effect is significantly time-varying, however. It is also
-possible to see a slight decrease in the effect at the end of the time
-window, where, instead, confidence intervals are quite narrow.
+**Interpretation:** The plot of the [time-varying
+effect](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents)
+shows an increase; the confidence bands are very large at the beginning,
+probably due to the nature of the data (largest part of the data are
+from recent years). The effect is significantly time-varying, however.
+It is also possible to see a slight decrease in the effect at the end of
+the time window, where, instead, confidence intervals are quite narrow.
 
 ``` r
 gam_tve_transformed <- rem(~ tv(diff.author.publication.activity) +
@@ -635,16 +644,17 @@ plot(gam_nle)
 
 ![](Scientific-Innovation_files/figure-markdown/gam_nle-1.png)
 
-**Interpretation:** The plot of the non-linear effect clearly shows a
-non-monotonic pattern. Apparently, authors tend to publish together when
-they have very similar levels of experience; otherwise, the tendency to
-collaborate drops immediately. This tendency then increases again as the
-difference grows, as in the classic example of a PhD student and their
-professor. The effect appears to reach saturation and eventually
-decreases for very large values of the covariate. This seems to
-highlight an "optimal" level of variation in prior publications that
-maximizes this covariate's contribution to the log-rate of coauthoring a
-new paper.
+**Interpretation:** The plot of the [non-linear
+effect](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents)
+clearly shows a non-monotonic pattern. Apparently, authors tend to
+publish together when they have very similar levels of experience;
+otherwise, the tendency to collaborate drops immediately. This tendency
+then increases again as the difference grows, as in the classic example
+of a PhD student and their professor. The effect appears to reach
+saturation and eventually decreases for very large values of the
+covariate. This seems to highlight an "optimal" level of variation in
+prior publications that maximizes this covariate's contribution to the
+log-rate of coauthoring a new paper.
 
 #### Time-varying non-linear effect
 
@@ -708,8 +718,10 @@ ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +
 
 ![](Scientific-Innovation_files/figure-markdown/gam_tvnle-1.png)
 
-**Interpretation:** By allowing both effects simultaneously, we can see
-that the non-linear effect remains clearly present, while the
+**Interpretation:** By allowing both effects simultaneously
+([**time-varying non-linear
+effect**](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents)),
+we can see that the non-linear effect remains clearly present, while the
 decrease/increase over time is visible only at the very beginning of the
 time window.
 

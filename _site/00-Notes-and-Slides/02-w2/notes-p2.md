@@ -138,7 +138,7 @@ referring to the paper publication hyperevent defined above. Data
 concerning directed hyperevents manifest in the form of
 $E = \{e_i = (S_i, R_i, t_i),\ i=1,\dots,n\}$.
 
-### 2.2 Exogenous & endogenous drivers for directed hyperevents
+### 2.2 Exogenous and endogenous drivers for directed hyperevents
 
 **Endogenous covariates:** depend on the network of (previous) events
 and allow us to measure **relational mechanisms**.
