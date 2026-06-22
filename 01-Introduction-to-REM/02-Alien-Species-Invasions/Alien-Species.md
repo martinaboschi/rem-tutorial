@@ -84,16 +84,16 @@ contains such information.
     native[sample(1:nrow(native), 10), c("species", "region")]
 
 <pre><code>##                       species         region
-## 1006080       Diprion similis         Russia
-## 1021691  Pheidole megacephala        Nigeria
-## 995581     Anastrepha obliqua        Jamaica
-## 996857       Aphis spiraecola    South Korea
-## 1032219     Vespula germanica          Corse
-## 1008087    Gilpinia hercyniae Czech Republic
-## 1009153 Bostrichus ligniperda        Ukraine
-## 1030550   Solenopsis richteri        Uruguay
-## 1005924  Diabrotica virgifera      Guatemala
-## 995574     Anastrepha obliqua         Panama
+## 1032235     Vespula germanica Czech Republic
+## 1024989    Polistes chinensis          China
+## 994830         Adelges piceae         Turkey
+## 1033813 Xyleborinus saxesenii        Algeria
+## 1032244     Vespula germanica         Sweden
+## 1032237     Vespula germanica        Estonia
+## 1033018      Vespula vulgaris           Iran
+## 994978       Adoretus sinicus         Taiwan
+## 1015791   Neodiprion sertifer       Slovakia
+## 1038394 Xylosandrus mutilatus      Sri Lanka
 </code></pre>
 
 This information is crucial for the definition of the [*risk
@@ -506,7 +506,7 @@ for such an effect, when using `rem()` function.
 ## 
 ## Approximate significance of smooth terms:
 ##                  edf Ref.df Chi.sq p-value    
-## s(.time):trade 2.565  2.936  117.3  <2e-16 ***
+## s(.time):trade 2.565  2.936  121.3  <2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 

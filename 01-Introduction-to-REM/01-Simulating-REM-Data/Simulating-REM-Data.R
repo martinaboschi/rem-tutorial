@@ -1,14 +1,12 @@
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::knit_hooks$set(purl = knitr::hook_purl)
 knitr::opts_chunk$set(echo = TRUE)
-knitr::knit_hooks$set(output = function(x, options) {
-  paste0('<div class="r-output"><pre><code>', x, '</code></pre></div>')
-})
+knitr::knit_hooks$set(output = function(x, options) {  
+  paste0('<pre><code>', x, '</code></pre>')})
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
-# remotes::install_github("franciscorichter/amore")
-library(amore)
-library(knitr)
+# remotes::install_github("franciscorichter/amorem")
+library(amorem)
 
 ## -----------------------------------------------------------------------------
 set.seed(1)
@@ -17,13 +15,13 @@ raw_data_m1 <- simulate_relational_events(
   senders            = paste0("a", 1:20),
   receivers          = paste0("a", 1:20),
   baseline_rate      = 1,
-  n_controls         = 1,
   endogenous_stats   = "reciprocity_count", 
-  endogenous_effects = c(reciprocity_count = 0.6)
+  endogenous_effects = c(reciprocity_count = 0.6),
+  n_controls         = 1
 )
 
 ## -----------------------------------------------------------------------------
-head(raw_data_m1,20)
+head(raw_data_m1,16)
 
 ## -----------------------------------------------------------------------------
 set.seed(1)
@@ -45,18 +43,22 @@ wide_data_m1 <- widen_case_control(raw_data_m1, case = "event", stratum= "stratu
 head(wide_data_m1)
 
 ## -----------------------------------------------------------------------------
-fit_clogit <- rem(event ~ reciprocity_count, data = raw_data_m7, method = "clogit")
+fit_clogit <- rem(event ~ reciprocity_count, 
+                  data = raw_data_m7, 
+                  method = "clogit")
 summary(fit_clogit)
 
 ## -----------------------------------------------------------------------------
-fit_glm <- rem(~ reciprocity_count, data = wide_data_m1, method = "gam")
+fit_glm <- rem(~ reciprocity_count, 
+               data = wide_data_m1, 
+               method = "gam")
 summary(fit_glm)
 
 ## -----------------------------------------------------------------------------
 # parameters
 N_SIM        <- 100
 N_EVENTS     <- 1000
-TRUE_BETA    <- 0.6        
+TRUE_BETA    <- 0.6
 SENDERS      <- paste0("a", 1:20)
 RECEIVERS    <- paste0("a", 1:20)
 
@@ -70,9 +72,9 @@ coefs <- data.frame(
 
 ## -----------------------------------------------------------------------------
 for (i in seq_len(N_SIM)) {
-  
+
   set.seed(i)
-  
+
   # case-1-control dataset
   d1 <- simulate_relational_events(
     n_events           = N_EVENTS,
@@ -80,16 +82,16 @@ for (i in seq_len(N_SIM)) {
     receivers          = RECEIVERS,
     baseline_rate      = 1,
     n_controls         = 1,
-    endogenous_stats   = "reciprocity_count", 
+    endogenous_stats   = "reciprocity_count",
     endogenous_effects = c(reciprocity_count = TRUE_BETA),
   )
-  
+
   # fit degenerate logistic regression
   wide_d1 <- widen_case_control(d1, case = "event", stratum = "stratum")
   fit_glm <- rem(~ reciprocity_count, data = wide_d1, method = "gam")
   coefs$glm_1[i] <- coef(fit_glm)[["reciprocity_count"]]
-  
-  
+
+
   # case-7-control dataset
   d7 <- simulate_relational_events(
     n_events           = N_EVENTS,
@@ -97,13 +99,14 @@ for (i in seq_len(N_SIM)) {
     receivers          = RECEIVERS,
     baseline_rate      = 1,
     n_controls         = 7,
-    endogenous_stats   = "reciprocity_count", 
+    endogenous_stats   = "reciprocity_count",
     endogenous_effects = c(reciprocity_count = TRUE_BETA)
   )
-  
+
+  # fit conditional logistic regression
   fit_clogit_7 <- rem(event ~ reciprocity_count, data = d7, method = "clogit")
   coefs$clogit_7[i] <- coef(fit_clogit_7)[["reciprocity_count"]]
-  
+
   # case-20-control dataset
   d20 <- simulate_relational_events(
     n_events           = N_EVENTS,
@@ -111,16 +114,17 @@ for (i in seq_len(N_SIM)) {
     receivers          = RECEIVERS,
     baseline_rate      = 1,
     n_controls         = 20,
-    endogenous_stats   = "reciprocity_count", 
+    endogenous_stats   = "reciprocity_count",
     endogenous_effects = c(reciprocity_count = TRUE_BETA),
   )
-  
+
+  # fit conditional logistic regression
   fit_clogit_20 <- rem(event ~ reciprocity_count, data = d20, method = "clogit")
   coefs$clogit_20[i] <- coef(fit_clogit_20)[["reciprocity_count"]]
-  
+
   if (i %% 10 == 0) message(sprintf("  Completed %d / %d replications", i, N_SIM))
-  
-  
+
+
 }
 
 ## -----------------------------------------------------------------------------
@@ -130,7 +134,7 @@ levels(coefs_long$ind) <- c(
   "Cond. logit\n(7 controls)",
   "Cond. logit\n(20 controls)"
 )
-cols <- c("#4E79A7", "#F28E2B", "#59A14F")
+cols <- c("#AEC6CF", "#E8D57A", "#FF9999")
 
 ## ----simulation_varying_m-----------------------------------------------------
 boxplot(
