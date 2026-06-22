@@ -54,7 +54,7 @@ This site collects teaching materials on **Relational (Hyper) Event Models** (RH
 <a class="rem-box" href="https://franciscorichter.github.io/amorem/">
 <span style="font-size:22px">📦</span>
 <span class="rem-tag tag-green">Software</span>
-<span class="rem-title"><code>amore</code> package</span>
+<span class="rem-title"><code>amorem</code> package</span>
 <span class="rem-sub">R package</span>
 <span class="rem-arrow">→</span>
 </a>
