@@ -1,0 +1,234 @@
+---
+title: "Goodness of fit (update)"
+author: "Martina Boschi"
+date: "2026-08-09"
+output: pdf_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data simulation and storage
+
+```{r}
+source("script/packages.R")
+source("script/GOF.R")
+```
+
+```{r}
+p <- 20
+n_sim <- 100
+n <- 2000
+set.seed(1234)
+source("script/S3_true_nle.R")
+```
+
+```{r eval=FALSE}
+event_simulator <- function(p, n, seed, fx, distance) {
+  
+  set.seed(seed)
+  print(seed)
+  
+  current.tm <- 0
+  
+  dat <- matrix(0, nrow = n, ncol = 7)
+  nondat <- matrix(0, nrow = n, ncol = 4)
+  
+  p2 <- p^2
+  all_ids <- 1:p2
+  diag_ids <- which(as.vector(diag(p)) == 1)
+  
+  hazard <- matrix(
+    exp(fx(as.vector(distance),
+           xlim = dist_range,
+           beta = beta_true)),
+    nrow = p,
+    ncol = p
+  ) / p2
+  diag(hazard) <- 0
+  haz_sum <- sum(hazard)
+  
+  Lambda_cum <- 0
+  Lambda_at_last_event <- 0
+  prev_event_time <- 0
+  
+  for (i in 1:n) {
+    
+    ## waiting time
+    dt <- rexp(1, haz_sum)
+    
+    current.tm <- current.tm + dt
+    
+    ## compensator
+    Lambda_cum <- Lambda_cum + haz_sum * dt
+    compensator_increment <- Lambda_cum - Lambda_at_last_event
+    Lambda_at_last_event <- Lambda_cum
+    
+    interarrival_time <- current.tm - prev_event_time
+    prev_event_time <- current.tm
+    
+    ## event
+    event.id <- sample(all_ids, 1, prob = hazard / haz_sum)
+    
+    s <- (event.id - 1) %% p + 1
+    r <- (event.id - 1) %/% p + 1
+    
+    dat[i, ] <- c(
+      current.tm,
+      s,
+      r,
+      event.id,
+      distance[s, r],
+      haz_sum,
+      compensator_increment
+    )
+    
+    ## non-event
+    excluded_ids <- union(event.id, diag_ids) 
+    non.event.id <- sample(all_ids[-excluded_ids], 1)
+    
+    non.s <- (non.event.id - 1) %% p + 1
+    non.r <- (non.event.id - 1) %/% p + 1
+    
+    nondat[i, ] <- c(
+      non.s,
+      non.r,
+      non.event.id,
+      distance[non.s, non.r]
+    )
+  }
+  
+  remdat <- cbind(
+    1:n,
+    dat,
+    nondat,
+    dat[, 5] - nondat[, 4],
+    1
+  )
+  
+  colnames(remdat) <- c(
+    "index",
+    "tms",
+    "s",
+    "r",
+    "event.id",
+    "distance",
+    "tot_rate_at_event",
+    "compensator_increment",
+    "non.s",
+    "non.r",
+    "non.event.id",
+    "non.distance",
+    "delta.dist",
+    "one"
+  )
+  
+  as.data.frame(remdat)
+}
+save(event_simulator, file="output/S3_true_nle_simulator.RData")
+```
+
+```{r eval=FALSE}
+remdat <- event_simulator(
+  p = p, n = n, seed = 1234, fx = fx, 
+  distance = dist_matrix
+)
+summary(diff(remdat$tms))
+rescaled <- remdat$compensator_increment
+summary(rescaled)
+hist(
+  rescaled,
+  breaks = 50,
+  freq = FALSE,
+  main = "Rescaled inter-event times",
+  xlab = expression(Delta * Lambda)
+)
+curve(
+  dexp(x, rate = 1),
+  from = 0,
+  to = max(rescaled),
+  add = TRUE,
+  col = "red",
+  lwd = 2
+)
+
+ks.test(rescaled, "pexp", rate = 1)
+```
+
+```{r eval=FALSE}
+remdats <- sapply(1:n_sim, function(x)
+  event_simulator(p = p, n = n, seed = x, fx = fx, 
+                  distance = dist_matrix),
+  simplify = FALSE)
+
+linear_f <- function(x, xlim, beta, df = 10, m = 2) 2*x
+remdats_lin <- sapply(1:n_sim, function(x)
+  event_simulator(p = p, n = n, seed = x, fx = linear_f, 
+                  distance = dist_matrix),
+  simplify = FALSE)
+
+gam.fits <- lapply(remdats, function(x) {
+  dist_MAT <- cbind(x$distance, x$non.distance)
+  ONE <- cbind(x$one, -x$one)
+  fit <- gam(one ~ s(dist_MAT, by = ONE) - 1,
+             family = "binomial", data = x)
+  return(fit)
+})
+
+gam.fits_lin <- lapply(remdats_lin, function(x) {
+  fit <- gam(one ~ delta.dist - 1,
+             family = "binomial", data = x)
+  return(fit)
+})
+
+gam.fits_lin_mis <- lapply(remdats, function(x) {
+  fit <- gam(one ~ delta.dist - 1,
+             family = "binomial", data = x)
+  return(fit)
+})
+
+distance_lin = unlist(lapply(gam.fits_lin, function(x) x$coefficients[1]))
+boxplot(distance_lin)
+abline(h=2, col=2)
+
+b.dist <- lapply(gam.fits, getViz)
+xg <- seq(min(dist_range), 
+          max(dist_range), length = 200)
+data <- data.frame(x = xg,
+                   y = fx(xg, xlim = dist_range, beta_true)-0.1)
+
+coefficients_plot <- ggplot(data=data, aes(x, y)) +
+  geom_line(data=data,
+            linetype = 1, col="darkblue",
+            size=1)
+for (iter in 1:n_sim){
+  b.iter <- b.dist[[iter]]
+  o.iter <- plot(sm(b.iter, 1))
+  coefficients_plot <- coefficients_plot + 
+    geom_line(data=o.iter$data$fit, 
+              linetype = 3, col="lightblue", 
+              size=0.5)
+}
+coefficients_plot <- coefficients_plot +
+  labs(
+    title = "Estimated vs True Non-linear Effect",
+    x = "Covariate",
+    y = "Log-hazard contribution"
+  ) + theme(legend.position = "none")
+coefficients_plot +
+  geom_line(data=data,
+            linetype = 1, col="darkblue",
+            size=1)
+
+save(n, p, fx, dist_matrix, n_sim,
+     remdats, remdats_lin,
+     gam.fits, gam.fits_lin, gam.fits_lin_mis,
+     file="output/S3_true_nle_simulation.RData")
+```
+
+```{r}
+load(file="output/S3_true_nle_simulation.RData")
+```
+

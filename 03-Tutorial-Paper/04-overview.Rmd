@@ -108,12 +108,19 @@ rownames(remdat_display) <- NULL
 ```
 
 ```{r}
-ft <- flextable(remdat_display) %>%
-  set_table_properties(layout = "fixed", width = 1) %>%
-  width(j = c(2:5), width = 2) %>%   
-  fontsize(size = 9, part = "all")
-save_as_image(ft, path="pictures/overview/overview_case_control.png")
+# ft <- flextable(remdat_display) %>%
+#   set_table_properties(layout = "fixed", width = 1) %>%
+#   width(j = c(2:5), width = 2) %>%   
+#   fontsize(size = 9, part = "all")
+# save_as_image(ft, path="pictures/overview/overview_case_control.png")
 ```
+
+```{r}
+remdat_display %>%
+  kbl(format = "latex", booktabs = FALSE, align = "c", escape = TRUE) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
 
 ## Table 2: Covariate Computation
 
@@ -146,29 +153,60 @@ dist_matrix["Texas","Hawaii"]
 
 
 ```{r}
-ft <- flextable(remdat_display) %>%
-  set_table_properties(layout = "fixed", width = 1) %>%
-  width(j = c(2:5), width = 2) %>%   
-  fontsize(size = 9, part = "all")%>%
-  bg(i = 5, j = 3, bg = "#FFE4E1")%>%
-  bg(i = 5, j = 2, bg = "#FFE4E1")%>%
-  bg(i = 14, j = 5, bg = "#FFE4E1")%>%
-  bg(i = 14, j = 2, bg = "#FFE4E1")%>%
-  bg(i = 14, j = 3, bg = "#FFE4E1")%>%
-   
-  bg(i = 2, j = 2, bg = "#ADD8E6")%>%
-  bg(i = 10, j = 2, bg = "#ADD8E6")%>%
-  bg(i = 12, j = 2, bg = "#ADD8E6")%>%
-  
-  bg(i = 2, j = 3, bg = "#FFFACD")%>%
- 
-  bg(i = 10, j = 3, bg = "#FFFACD")%>%
-  bg(i = 10, j = 4, bg = "#FFFACD")%>%
-   
-  bg(i = 12, j = 3, bg = "#FFFACD")%>% 
-  bg(i = 12, j = 4, bg = "#FFFACD")
-save_as_image(ft, path="pictures/overview/overview_covariate_computation.png")
+# ft <- flextable(remdat_display) %>%
+#   set_table_properties(layout = "fixed", width = 1) %>%
+#   width(j = c(2:5), width = 2) %>%   
+#   fontsize(size = 9, part = "all")%>%
+#   bg(i = 5, j = 3, bg = "#FFE4E1")%>%
+#   bg(i = 5, j = 2, bg = "#FFE4E1")%>%
+#   bg(i = 14, j = 5, bg = "#FFE4E1")%>%
+#   bg(i = 14, j = 2, bg = "#FFE4E1")%>%
+#   bg(i = 14, j = 3, bg = "#FFE4E1")%>%
+#    
+#   bg(i = 2, j = 2, bg = "#ADD8E6")%>%
+#   bg(i = 10, j = 2, bg = "#ADD8E6")%>%
+#   bg(i = 12, j = 2, bg = "#ADD8E6")%>%
+#   
+#   bg(i = 2, j = 3, bg = "#FFFACD")%>%
+#  
+#   bg(i = 10, j = 3, bg = "#FFFACD")%>%
+#   bg(i = 10, j = 4, bg = "#FFFACD")%>%
+#    
+#   bg(i = 12, j = 3, bg = "#FFFACD")%>% 
+#   bg(i = 12, j = 4, bg = "#FFFACD")
+# save_as_image(ft, path="pictures/overview/overview_covariate_computation.png")
 ```
+
+```{r}
+tbl <- remdat_display
+highlight_cell <- function(df, i, j, color) {
+  df[i, j] <- cell_spec(df[i, j], format = "latex", background = color)
+  df
+}
+
+tbl <- highlight_cell(tbl, 5, 3, "#FFE4E1")
+tbl <- highlight_cell(tbl, 5, 2, "#FFE4E1")
+tbl <- highlight_cell(tbl, 14, 5, "#FFE4E1")
+tbl <- highlight_cell(tbl, 14, 2, "#FFE4E1")
+tbl <- highlight_cell(tbl, 14, 3, "#FFE4E1")
+
+tbl <- highlight_cell(tbl, 2, 2, "#ADD8E6")
+tbl <- highlight_cell(tbl, 10, 2, "#ADD8E6")
+tbl <- highlight_cell(tbl, 12, 2, "#ADD8E6")
+
+tbl <- highlight_cell(tbl, 2, 3, "#FFFACD")
+tbl <- highlight_cell(tbl, 10, 3, "#FFFACD")
+tbl <- highlight_cell(tbl, 10, 4, "#FFFACD")
+tbl <- highlight_cell(tbl, 12, 3, "#FFFACD")
+tbl <- highlight_cell(tbl, 12, 4, "#FFFACD")
+
+tbl %>%
+  kbl(format = "latex", booktabs = TRUE, align = "l", escape = FALSE,
+      caption = "Network statistics computation in practice.") %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"),
+                font_size = 9)
+```
+
 
 ## Table 3: Model Fitting
 
@@ -205,9 +243,17 @@ rem_data_display <- rbind(rep("...", ncol(rem_data_display)),
                         rep("...", ncol(rem_data_display)))
 rem_data_display <- rbind(rem_data_display, 
                           rep(" ", ncol(rem_data_display)))
-ft <- flextable(rem_data_display) %>%
-  set_table_properties(layout = "fixed", width = 1)
-save_as_image(ft, path="pictures/overview/overview_data_fitting.png")
+# ft <- flextable(rem_data_display) %>%
+#   set_table_properties(layout = "fixed", width = 1)
+# save_as_image(ft, path="pictures/overview/overview_data_fitting.png")
+```
+
+```{r}
+tbl <- rem_data_display
+tbl %>%
+  kbl(format = "latex", booktabs = TRUE, align = "l", escape = FALSE) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"),
+                font_size = 9)
 ```
 
 
@@ -250,43 +296,6 @@ AIC(linear_fit_both)
 AIC(linear_rec)
 AIC(linear_dist)
 ```
-
-```{r}
-# set.seed(1234)
-# BB9 <- BB.single(dim.k = 9)
-```
-
-```{r}
-# coefficients(gam_fit)[1]
-# GOF_univariate(data = dat_gam, gam.fit = gam_fit,index = 1)[[1]]
-```
-
-```{r}
-# coefficients(gam_fit)[2:10]
-# GOF_multivariate(data = dat_gam, gam.fit = gam_fit,
-#                  index = 2:10, BB.stat = BB9[[2]])[[1]]
-# plot(
-#   dat_gam$tms,
-#   apply(GOF_multivariate(data = dat_gam, gam.fit = gam_fit,
-#         index = 2:10, BB.stat = BB9[[2]])[[2]], 1, function(x) crossprod(x,x)),
-#   type="l",
-#   lwd=2,
-#   col="black",
-#   xlab="Time Points",
-#   ylab="Squared Norm of the Martingale-Residual Process",
-#   main="Goodness of Fit of Individual Activity with TVE",
-#   ylim=c(0,max(BB9[[1]]))
-# )
-# for (iter in 1:100){
-#   lines(
-#     dat_gam$tms,
-#     BB9[[1]][seq(1, 2000,
-#                   length.out=length(dat_gam$tms)),iter],
-#     col="darkgray", lwd=1,
-#     lty=3)
-# }
-```
-
 
 ```{r}
 create_plots <- function(gam_fit, elements, ranges, 
@@ -352,11 +361,6 @@ dev.off()
 ```
 
 ```{r}
-exp(coefficients(gam_fit)[1])
-```
-
-
-```{r}
 shifted_remdat_display <- shifted_remdat[x1:x2,c("tms", "s", "r", "weekday",
                                  "non.tms","non.s", "non.r", "non.weekday")]
 
@@ -383,17 +387,43 @@ shifted_remdat_display
 ```
 
 ```{r echo}
-ft <- flextable(shifted_remdat_display) %>%
-  set_table_properties(layout = "fixed", width = 1) %>%
-  width(j = c(1:8), width = 1.5) %>%   
-  fontsize(size = 9, part = "all")%>%
-  bg(i = 6, j = 4, bg = "#FFE4E1")%>%
-  bg(i = 6, j = 8, bg = "#FFE4E1")%>%
-  bg(i = 8, j = 4, bg = "#FFE4E1")%>%
-  bg(i = 8, j = 8, bg = "#FFE4E1")%>%
-  bg(i = 9, j = 4, bg = "#FFE4E1")%>%
-  bg(i = 9, j = 8, bg = "#FFE4E1")%>%
-  bg(i = 12, j = 4, bg = "#FFE4E1")%>%
-  bg(i = 12, j = 8, bg = "#FFE4E1")
-save_as_image(ft, path="pictures/overview/overview_shifted_data.png")
+# ft <- flextable(shifted_remdat_display) %>%
+#   set_table_properties(layout = "fixed", width = 1) %>%
+#   width(j = c(1:8), width = 1.5) %>%   
+#   fontsize(size = 9, part = "all")%>%
+#   bg(i = 6, j = 4, bg = "#FFE4E1")%>%
+#   bg(i = 6, j = 8, bg = "#FFE4E1")%>%
+#   bg(i = 8, j = 4, bg = "#FFE4E1")%>%
+#   bg(i = 8, j = 8, bg = "#FFE4E1")%>%
+#   bg(i = 9, j = 4, bg = "#FFE4E1")%>%
+#   bg(i = 9, j = 8, bg = "#FFE4E1")%>%
+#   bg(i = 12, j = 4, bg = "#FFE4E1")%>%
+#   bg(i = 12, j = 8, bg = "#FFE4E1")
+# save_as_image(ft, path="pictures/overview/overview_shifted_data.png")
+```
+
+```{r}
+
+tbl <- shifted_remdat_display
+
+# Same highlight_cell() helper from before
+highlight_cell <- function(df, i, j, color) {
+  df[i, j] <- cell_spec(df[i, j], format = "latex", background = color)
+  df
+}
+
+tbl <- highlight_cell(tbl, 6, 4, "#FFE4E1")
+tbl <- highlight_cell(tbl, 6, 8, "#FFE4E1")
+tbl <- highlight_cell(tbl, 8, 4, "#FFE4E1")
+tbl <- highlight_cell(tbl, 8, 8, "#FFE4E1")
+tbl <- highlight_cell(tbl, 9, 4, "#FFE4E1")
+tbl <- highlight_cell(tbl, 9, 8, "#FFE4E1")
+tbl <- highlight_cell(tbl, 12, 4, "#FFE4E1")
+tbl <- highlight_cell(tbl, 12, 8, "#FFE4E1")
+
+tbl %>%
+  kbl(format = "latex", booktabs = TRUE, align = "l", escape = FALSE,
+      caption = "Synthetic shifted augmented dataset.") %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"),
+                font_size = 9)
 ```

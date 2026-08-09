@@ -75,11 +75,19 @@ poisson_display
 ```
 
 ```{r}
-ft <- flextable(poisson_display) %>%
-  set_table_properties(layout = "fixed", width = 1) %>%
-  width(j = c(7), width = 1.4) %>%      # Adjust columns 1 to 6
-  fontsize(size = 10, part = "all")
-save_as_image(ft, path="pictures/inference/poisson_display.png")
+# ft <- flextable(poisson_display) %>%
+#   set_table_properties(layout = "fixed", width = 1) %>%
+#   width(j = c(7), width = 1.4) %>%      # Adjust columns 1 to 6
+#   fontsize(size = 10, part = "all")
+# save_as_image(ft, path="pictures/inference/poisson_display.png")
+```
+
+```{r}
+poisson_display %>%
+  kbl(format = "latex", booktabs = TRUE, align = "l", escape = TRUE) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"),
+                font_size = 10) %>%
+  column_spec(7, width = "1.4cm")
 ```
 
 
@@ -111,11 +119,16 @@ cox_data_display
 ```
 
 ```{r}
-ft <- flextable(cox_data_display) %>%
-  set_table_properties(layout = "fixed", width = 1) %>%
-  fontsize(size = 10, part = "all")
-save_as_image(ft, path="pictures/inference/cox_data_display.png")
-cox_data_display
+# ft <- flextable(cox_data_display) %>%
+#   set_table_properties(layout = "fixed", width = 1) %>%
+#   fontsize(size = 10, part = "all")
+# save_as_image(ft, path="pictures/inference/cox_data_display.png")
+# cox_data_display
+cox_data_display %>%
+    kbl(format = "latex", booktabs = TRUE, align = "l", escape = TRUE) %>%
+    kable_styling(latex_options = c("hold_position", "scale_down"),
+                  font_size = 10) %>%
+    column_spec(7, width = "1.4cm")
 ```
 
 ```{r}
@@ -148,13 +161,21 @@ rownames(sampled_data_display) <- NULL
 sampled_data_display
 ```
 
+```{r}
+# ft <- flextable(sampled_data_display) %>%
+#   set_table_properties(layout = "fixed", width = 1) %>%
+#   fontsize(size = 10, part = "all")
+# save_as_image(ft, path="pictures/inference/sampled_data_display.png")
+```
 
 ```{r}
-ft <- flextable(sampled_data_display) %>%
-  set_table_properties(layout = "fixed", width = 1) %>%
-  fontsize(size = 10, part = "all")
-save_as_image(ft, path="pictures/inference/sampled_data_display.png")
+sampled_data_display %>%
+    kbl(format = "latex", booktabs = TRUE, align = "l", escape = TRUE) %>%
+    kable_styling(latex_options = c("hold_position", "scale_down"),
+                  font_size = 10) %>%
+    column_spec(7, width = "1.4cm")
 ```
+
 
 ```{r}
 sampled_data$x <- sampled_data$rec
@@ -165,12 +186,38 @@ summary(clogit_fit)
 ## Case-Control Partial Likelihood via GAM
 
 ```{r}
-rem_data_display <- rem_data[x1:(x1+4),c("tms", "s", "r", "non.s", "non.r",
-                                         "rec", "non.rec", "delta.rec")]
+rem_data <- remdats_nocox[[1]][[1]]
+rem_data_display <- rem_data[,c("tms", "s", "r", "non.s", "non.r",
+                                "distance", "non.distance",
+                                "delta.dist")]
 rem_data_display$tms <- round(rem_data_display$tms, 2)
 rem_data_display$id_ev <- 1
 rem_data_display$id_non_ev <- -1
 rem_data_display$y <- 1
+colnames(rem_data_display) <- c("time", "sender_ev", "receiver_ev",
+                                "sender_non_ev", "receiver_non_ev",
+                                "x_ev", "x_non_ev", "delta_x",
+                                "id_ev", "id_non_ev", "y")
+rownames(rem_data_display) <- NULL
+ncc_data <- rem_data_display
+x_matrix <- cbind(ncc_data$x_ev, ncc_data$x_non_ev)
+by_matrix <- cbind(ncc_data$id_ev, ncc_data$id_non_ev)
+plot(gam(y ~ -1 + s(x_matrix, by=by_matrix),
+        family="binomial"(link = "logit"), data = ncc_data))
+plot(gam(y ~ -1 + s(time, by=delta_x),
+        family="binomial"(link = "logit"), data = ncc_data))
+```
+
+```{r}
+rem_data_display <- ncc_data[x1:(x1+4),]
+rem_data_display[c("x_ev", "x_non_ev", "delta_x")] <-
+  lapply(
+    rem_data_display[c("x_ev", "x_non_ev", "delta_x")],
+    round,
+    digits = 2
+  )
+rem_data_display <- rem_data_display %>%
+  mutate(across(c(x_ev, x_non_ev, delta_x), ~ sprintf("%.2f", .x)))
 rem_data_display <- rbind(rep("...", ncol(rem_data_display)),
                         rem_data_display, 
                         rep("...", ncol(rem_data_display)))
@@ -185,11 +232,20 @@ rem_data_display
 ```
 
 ```{r}
-ft <- flextable(rem_data_display) %>%
-  set_table_properties(layout = "fixed", width = 1) %>%
-  fontsize(size = 9, part = "all")
-save_as_image(ft, path="pictures/inference/rem_data_display.png")
+# ft <- flextable(rem_data_display) %>%
+#   set_table_properties(layout = "fixed", width = 1) %>%
+#   fontsize(size = 9, part = "all") 
+# save_as_image(ft, path="pictures/inference/rem_data_display.png")
 ```
+
+```{r}
+rem_data_display %>%
+  kbl(format = "latex", booktabs = TRUE, align = "l", escape = TRUE) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"),
+                font_size = 10) %>%
+  column_spec(7, width = "1.4cm")
+```
+
 
 ## Shifted Case-Control Partial Likelihood via GAM
 
@@ -227,11 +283,20 @@ shifted_data_display
 ```
 
 ```{r}
-ft <- flextable(shifted_data_display) %>%
-  set_table_properties(layout = "fixed", width = 1) %>%
-  fontsize(size = 9, part = "all")
-save_as_image(ft, path="pictures/inference/shifted_data_display.png")
+# ft <- flextable(shifted_data_display) %>%
+#   set_table_properties(layout = "fixed", width = 1) %>%
+#   fontsize(size = 9, part = "all")
+# save_as_image(ft, path="pictures/inference/shifted_data_display.png")
 ```
+
+```{r}
+shifted_data_display %>%
+  kbl(format = "latex", booktabs = TRUE, align = "l", escape = TRUE) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"),
+                font_size = 10) %>%
+  column_spec(7, width = "1.4cm")
+```
+
 
 ```{r}
 shifted_ncc_data <- shifted_data
@@ -266,10 +331,18 @@ rem_data_display
 ```
 
 ```{r}
-ft <- flextable(rem_data_display) %>%
-  set_table_properties(layout = "fixed", width = 1) %>%
-  fontsize(size = 9, part = "all")
-save_as_image(ft, path="pictures/inference/rem_data_display_random_effect.png")
+# ft <- flextable(rem_data_display) %>%
+#   set_table_properties(layout = "fixed", width = 1) %>%
+#   fontsize(size = 9, part = "all")
+# save_as_image(ft, path="pictures/inference/rem_data_display_random_effect.png")
+```
+
+```{r}
+rem_data_display %>%
+  kbl(format = "latex", booktabs = TRUE, align = "l", escape = TRUE) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"),
+                font_size = 10) %>%
+  column_spec(7, width = "1.4cm")
 ```
 
 ```{r}
@@ -284,22 +357,3 @@ gam(y ~ s(sender_act, by=by_matrix, bs="re") +
     data=ncc_data)
 ```
 
-```{r}
-# rem_data <- remdats_nocox[[1]][[1]]
-# rem_data_display <- rem_data[,c("tms", "s", "r", "non.s", "non.r",
-#                                          "rec", "non.rec", "delta.rec")]
-# rem_data_display$tms <- round(rem_data_display$tms, 2)
-# rem_data_display$id_ev <- 1
-# rem_data_display$id_non_ev <- -1
-# rem_data_display$y <- 1
-# colnames(rem_data_display) <- c("time", "sender_ev", "receiver_ev", 
-#                                 "sender_non_ev", "receiver_non_ev", 
-#                                 "x_ev", "x_non_ev", "delta_x", 
-#                                 "id_ev", "id_non_ev", "y")
-# rownames(rem_data_display) <- NULL
-# ncc_data <- rem_data_display
-# x_matrix <- cbind(ncc_data$x_ev, ncc_data$x_non_ev)
-# by_matrix <- cbind(ncc_data$id_ev, ncc_data$id_non_ev)
-# gam(y ~ -1 + s(x_matrix, by=by_matrix, k=4),
-#         family="binomial"(link = "logit"), data = ncc_data)
-```

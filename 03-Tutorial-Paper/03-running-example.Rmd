@@ -323,3 +323,4 @@ gam.fits_shifted <- lapply(shifted_rems, function(x){
 )
 save(gam.fits_shifted, file="output/running_example_gam.fits_shifted.RData")
 ```
+

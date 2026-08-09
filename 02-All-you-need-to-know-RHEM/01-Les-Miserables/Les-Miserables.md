@@ -12,6 +12,8 @@ If you are running this tutorial locally, make sure to uncomment the
 library(amorem)
 ```
 
+Les-Miserables.R
+
 This practical also requires the `dplyr` library. If you do not have it
 installed, uncomment the `install.packages("dplyr")` line below.
 
@@ -19,6 +21,8 @@ installed, uncomment the `install.packages("dplyr")` line below.
 # install.packages("dplyr")
 library(dplyr)
 ```
+
+Les-Miserables.R
 
 This practical is inspired by the analysis conducted in (Lerner et al.,
 2025), where, for illustrative purposes, RHEM is applied to the network
@@ -44,6 +48,8 @@ head(data_original)
 ## 6    dummy          TS add.actor
 </code></pre>
 
+Les-Miserables.R
+
 Inspecting the data, we can interpret it as a [relational hyper-event
 network](../../00-Notes-and-Slides/02-w2/#1-core-rhems):
 
@@ -68,6 +74,8 @@ table(data_original$type)
 ## add.actor   chapter is.female 
 ##        80       727        28
 </code></pre>
+
+Les-Miserables.R
 
 To show how to analyze the data in `eventnet`, we refer explicitly to
 the tutorials [Basic
@@ -254,6 +262,8 @@ head(data_preproc)
 ## 6               0       0      2           2
 </code></pre>
 
+Les-Miserables.R
+
 Upon inspecting the dataset, you may notice the presence of missing
 values (`NA`) in some columns. In particular, the `TARGET` column
 contains only missing values, while the `SOURCE` column includes
@@ -299,6 +309,8 @@ head(raw_data_m20)
 ## 6       0      2           2
 </code></pre>
 
+Les-Miserables.R
+
 The object `raw_data_m20` is in **long format** with 20 non-events per
 event.
 
@@ -324,6 +336,8 @@ raw_data_m1 <- bind_rows(data_ev, data_nv_sampled) %>%
   arrange(EVENT_INTERVAL)
 ```
 
+Les-Miserables.R
+
 The function `widen_case_control` transforms data from long format to
 wide format. To do so, we need to specify the `event` argument - the
 dummy variable that distinguishes events from non-events - and the
@@ -335,6 +349,8 @@ ncc_data <- widen_case_control(raw_data_m1,
                                case = "IS_OBSERVED", 
                                stratum = "EVENT_INTERVAL")
 ```
+
+Les-Miserables.R
 
 ## 2. Model fitting
 
@@ -384,6 +400,8 @@ summary(fit_clogit)
 ## Wald test            = 245.8  on 4 df,   p=<2e-16
 ## Score (logrank) test = 1418  on 4 df,   p=<2e-16
 </code></pre>
+
+Les-Miserables.R
 
 **Interpretation:** We find a **positive effect of individual and dyadic
 activity**. This suggests that prior (co-)presence in previous chapters
@@ -437,6 +455,8 @@ summary(fit_glm)
 ## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
 ## UBRE = -0.54948  Scale est. = 1         n = 288
 </code></pre>
+
+Les-Miserables.R
 
 As before, we find a positive effect of individual and dyadic activity,
 a negative main effect for female gender, and a positive effect for

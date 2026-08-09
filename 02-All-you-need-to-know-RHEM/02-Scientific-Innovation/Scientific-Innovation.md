@@ -12,6 +12,8 @@ If you are running this tutorial locally, make sure to uncomment the
 library(amorem)
 ```
 
+Scientific-Innovation.R
+
 This practical also requires the `dplyr` library. If you do not have it
 installed, uncomment the `install.packages("dplyr")` line below.
 
@@ -20,6 +22,8 @@ installed, uncomment the `install.packages("dplyr")` line below.
 library(dplyr)
 ```
 
+Scientific-Innovation.R
+
 To show more complex types of effects you also might need `mgcViz`. Make
 sure to install it if you did not yet.
 
@@ -27,6 +31,8 @@ sure to install it if you did not yet.
 # install.packages("mgcViz")
 library(mgcViz)
 ```
+
+Scientific-Innovation.R
 
 ### Aminer Citation Network
 
@@ -37,6 +43,8 @@ nrow(dat_gam)
 
 <pre><code>## [1] 30136
 </code></pre>
+
+Scientific-Innovation.R
 
 We begin the second part of the tutorial by uploading a new dataset.
 This dataset has been sampled from an existing dataset used in \[Lerner
@@ -94,6 +102,8 @@ range(dat_gam$TIME_ev)
 <pre><code>## [1] 1939 2023
 </code></pre>
 
+Scientific-Innovation.R
+
 ### Inspecting case-1-control dataset
 
 This data set contains 76 variables (quite a large number!).
@@ -104,6 +114,8 @@ ncol(dat_gam)
 
 <pre><code>## [1] 76
 </code></pre>
+
+Scientific-Innovation.R
 
 As in the previous tutorial, we provide you with the case--control data
 set already computed, but we also try to explain the rationale behind
@@ -141,6 +153,8 @@ head(dat_gam[, c("SOURCE_ev", "TARGET_ev", "TIME_ev")])
 ## 236                          |557e84a7d19faf961d16a4bf|    1960
 </code></pre>
 
+Scientific-Innovation.R
+
 Consider event number 481 and look at the set of authors. How can we
 tell that they are different authors? The bar `|` separates different
 author IDs.
@@ -152,6 +166,8 @@ dat_gam[481, "SOURCE_ev"]
 
 <pre><code>## [1] "|5432f227dabfaeb4c6a9f023|53f42c13dabfaec22ba03a86|53f7adafdabfae90ec113c96|"
 </code></pre>
+
+Scientific-Innovation.R
 
 Exactly the same logic applies to the papers. If you want to know how
 many authors are involved, you could count the bars minus one. Or maybe
@@ -172,6 +188,8 @@ dat_gam[481, "target.size_ev"]
 <pre><code>## [1] 10
 </code></pre>
 
+Scientific-Innovation.R
+
 ``` r
 # publication time
 dat_gam[481, "TIME_ev"]
@@ -179,6 +197,8 @@ dat_gam[481, "TIME_ev"]
 
 <pre><code>## [1] 1983
 </code></pre>
+
+Scientific-Innovation.R
 
 As we did in the other applications, one non-event is sampled for each
 event, and the same basic information is stored for the non-event.
@@ -203,6 +223,8 @@ head(dat_gam[, c("SOURCE_nv", "TARGET_nv", "TIME_nv")])
 ## 236                          |53e99f56b7602d9702825e4c|    1960
 </code></pre>
 
+Scientific-Innovation.R
+
 Do you notice some similarities with the `head` above? Well, they have
 the same size... Is that by chance?
 
@@ -221,6 +243,8 @@ all(dat_gam[, "target.size_ev"] == dat_gam[, "target.size_nv"])
 <pre><code>## [1] TRUE
 </code></pre>
 
+Scientific-Innovation.R
+
 Just one more check: is the time of the non-event the same as the time
 of the event? Is that trivial? Well - if you are curious - you can have
 a look at \[Lembo et al. (2025)\].
@@ -232,6 +256,8 @@ all(dat_gam[, "TIME_nv"] == dat_gam[, "TIME_ev"])
 
 <pre><code>## [1] TRUE
 </code></pre>
+
+Scientific-Innovation.R
 
 ## 2. Attribute and covariate computation
 
@@ -287,7 +313,7 @@ colnames(dat_gam)[7:19]
 ## [13] "author.self.citation_ev"
 </code></pre>
 
-and
+Scientific-Innovation.R and
 
 ``` r
 colnames(dat_gam)[26:38]
@@ -301,6 +327,8 @@ colnames(dat_gam)[26:38]
 ## [11] "author.ref.paper.sub.rep.1.1_nv"     "cite.paper.and.its.references.1_nv" 
 ## [13] "author.self.citation_nv"
 </code></pre>
+
+Scientific-Innovation.R
 
 In this tutorial, we focus on 4 of them: **Prior papers**, **Difference
 in prior papers**, **Paper outdegree popularity**, **Paper citation
@@ -384,6 +412,8 @@ summary(gam_linear)
 ## R-sq.(adj) =   -Inf   Deviance explained = -Inf%
 ## UBRE = -0.55233  Scale est. = 1         n = 30136
 </code></pre>
+
+Scientific-Innovation.R
 
 **Interpretation:** We find a positive value for the covariate
 `diff.author.publication.activity`, which indicates a negative homophily
@@ -516,6 +546,8 @@ all(dat_gam[,75] == dat_gam[,73] - dat_gam[,74])
 <pre><code>## [1] TRUE
 </code></pre>
 
+Scientific-Innovation.R
+
 #### Time-varying effect
 
 ``` r
@@ -526,6 +558,8 @@ gam_tve <- gam_tve <- rem(~ tv(diff.author.publication.activity) +
                  method ="gam", time = "TIME_ev",
                  data = dat_gam)
 ```
+
+Scientific-Innovation.R
 
 ``` r
 summary(gam_tve)
@@ -557,11 +591,13 @@ summary(gam_tve)
 ## UBRE = -0.55249  Scale est. = 1         n = 30136
 </code></pre>
 
+Scientific-Innovation.R
+
 ``` r
 plot(gam_tve)
 ```
 
-![](Scientific-Innovation_files/figure-markdown/gam_tve-1.png)
+![](Scientific-Innovation_files/figure-markdown/gam_tve-1.png)Scientific-Innovation.R
 
 **Interpretation:** The plot of the [time-varying
 effect](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents)
@@ -580,11 +616,13 @@ gam_tve_transformed <- rem(~ tv(diff.author.publication.activity) +
                            data = dat_gam)
 ```
 
+Scientific-Innovation.R
+
 ``` r
 plot(gam_tve_transformed)
 ```
 
-![](Scientific-Innovation_files/figure-markdown/gam_tve_transformed-1.png)
+![](Scientific-Innovation_files/figure-markdown/gam_tve_transformed-1.png)Scientific-Innovation.R
 
 **Interpretation:** As previously mentioned, fitting a model with smooth
 terms improves when the covariates do not exhibit major outliers. When
@@ -607,6 +645,8 @@ gam_nle <- rem(~ nl(diff.author.publication.activity)
                  method ="gam",
                  data = dat_gam)
 ```
+
+Scientific-Innovation.R
 
 ``` r
 summary(gam_nle)
@@ -638,11 +678,13 @@ summary(gam_nle)
 ## UBRE = -0.59597  Scale est. = 1         n = 30136
 </code></pre>
 
+Scientific-Innovation.R
+
 ``` r
 plot(gam_nle)
 ```
 
-![](Scientific-Innovation_files/figure-markdown/gam_nle-1.png)
+![](Scientific-Innovation_files/figure-markdown/gam_nle-1.png)Scientific-Innovation.R
 
 **Interpretation:** The plot of the [non-linear
 effect](../../00-Notes-and-Slides/02-w2/#22-exogenous-and-endogenous-drivers-for-directed-hyperevents)
@@ -669,6 +711,8 @@ gam_tvnle <- rem(~ tvnl(diff.author.publication.activity)
                    data = dat_gam)
 viz <- getViz(gam_tvnle$fit)
 ```
+
+Scientific-Innovation.R
 
 ``` r
 summary(gam_tvnle)
@@ -701,6 +745,8 @@ summary(gam_tvnle)
 ## UBRE = -0.57892  Scale est. = 1         n = 30136
 </code></pre>
 
+Scientific-Innovation.R
+
 ``` r
 plot_obj <- plot(viz)
 plot_data <- plot_obj$plots[[1]]$ggObj$data
@@ -716,7 +762,7 @@ ggplot(plot_data, aes(x = x, y = y, fill = z_centered)) +
   scale_fill_viridis_c()
 ```
 
-![](Scientific-Innovation_files/figure-markdown/gam_tvnle-1.png)
+![](Scientific-Innovation_files/figure-markdown/gam_tvnle-1.png)Scientific-Innovation.R
 
 **Interpretation:** By allowing both effects simultaneously
 ([**time-varying non-linear
@@ -757,3 +803,5 @@ AIC(gam_tvnle)
 
 <pre><code>## [1] 12689.64
 </code></pre>
+
+Scientific-Innovation.R
