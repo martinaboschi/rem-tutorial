@@ -10,6 +10,7 @@ subtitle: "Simulating Relational Events"
 ---
 
 ```{r setup, include=FALSE}
+knitr::knit_hooks$set(purl = knitr::hook_purl)
 knitr::opts_chunk$set(echo = TRUE)
 knitr::knit_hooks$set(output = function(x, options) {  
   paste0('<pre><code>', x, '</code></pre>')})
