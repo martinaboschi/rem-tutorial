@@ -5,12 +5,11 @@ date: "2026-08-09"
 output: pdf_document
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Data simulation and storage
+## Data simulation and storage
 
 ```{r}
 source("script/packages.R")
@@ -230,5 +229,153 @@ save(n, p, fx, dist_matrix, n_sim,
 
 ```{r}
 load(file="output/S3_true_nle_simulation.RData")
+```
+
+## Goodness of fit evaluation via martingale residuals
+
+```{r}
+remdat_nle <- remdats[[7]]
+remdat_lin <- remdats_lin[[7]]
+rem_fit_nle <- gam.fits[[7]]
+rem_fit_lin <- gam.fits_lin_mis[[7]]
+```
+
+### Time specification
+
+```{r}
+gof_test_time <- GOF_test(rem_fit = rem_fit_nle, 
+                          time = remdat_nle$tms,
+                          term = "dist_MAT",
+                          test  = "time",
+                          main = "Correct time specification",
+                          subtitle = "",
+                          seed = 1234)
+pdf("pictures/gof/S3_true_nle_GOF_test_true_nle_time.pdf")
+gof_test_time$pvalue
+gof_test_time$plot_fn()
+dev.off()
+```
+
+### Covariate functional form specification
+
+```{r}
+gof_test_cov <- GOF_test(rem_fit = rem_fit_lin, 
+                          covariate_event = remdat_nle$distance,
+                          covariate_nonevent = remdat_nle$non.distance,
+                          test  = "functional_form",
+                          main = "Misspecified functional form of covariate effect",
+                          subtitle = "",
+                          seed = 1234)
+pdf("pictures/gof/S3_true_nle_GOF_test_misp_lin.pdf")
+gof_test_cov$pvalue
+gof_test_cov$plot_fn()
+dev.off()
+```
+
+## Goodness of fit evaluation via simulation
+
+```{r}
+library(relevent)
+```
+
+```{r}
+remdat <- remdats_lin[[7]]
+data_rem <- remdat[,c("tms","s","r","distance")]
+colnames(data_rem) <- c("time","sender","receiver", "x")
+n_dyads <- p^2
+x_array <- array(NA_real_, dim = c(n, n_dyads, 1))
+x_matrix <- dist_matrix
+
+fit <- rem.dyad(edgelist=data_rem, n=p, effects="CovEvent", 
+                covar=list(CovEvent=x_matrix), gof = FALSE)
+```
+```{r}
+n_sim_boot <- 100
+sim_list <- lapply(1:n_sim_boot, function(i){ 
+  simulate(fit, covar = list(CovEvent = x_matrix), verbose = FALSE, seed = i)
+})
+aux_stat <- function(dat, x_matrix) {
+  mean(apply(dat, 1, function(x) x_matrix[x[2], x[3]]^2))
+}
+sim_stats <- sapply(sim_list, function(sim) aux_stat(sim, x_matrix))
+observed_stat <- aux_stat(data_rem, x_matrix)
+```
+
+```{r}
+plot_df <- data.frame(stat = sim_stats)
+pdf("pictures/gof/simulated_statistics_true.pdf")
+ggplot(plot_df, aes(x = "Simulated (fitted model)", y = stat)) +
+  geom_violin(fill = "grey80", alpha = 0.4) +
+  geom_jitter(width = 0.05, alpha = 0.3, size = 1) +
+  geom_hline(aes(yintercept = observed_stat, color = "Observed"),
+             linewidth = 1, linetype = "dashed") +
+  scale_color_manual(name = NULL, values = c("Observed" = 2)) +
+  labs(y = "Auxiliary statistic", x = NULL,
+       title = "Check on auxiliary statistics (true)",
+       subtitle = "True: linear effect of x\nFitted: linear effect of x") +
+  theme_minimal() +
+  theme(legend.position = "top",
+        plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 16),
+        axis.text = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        axis.title.x = element_text(size = 16),
+        legend.text = element_text(size = 16),
+        legend.key.size = unit(1.2, "cm"),
+        legend.key.width = unit(1.8, "cm"),
+        axis.line.y = element_line(color = "black", linewidth = 0.5),
+        axis.line.x = element_line(color = "black", linewidth = 0.5))
+dev.off()
+```
+
+```{r}
+remdat <- remdats[[7]]
+data_rem <- remdat[,c("tms","s","r","distance")]
+colnames(data_rem) <- c("time","sender","receiver", "x")
+n_dyads <- p^2
+x_array <- array(NA_real_, dim = c(n, n_dyads, 1))
+x_matrix <- dist_matrix
+
+fit <- rem.dyad(edgelist=data_rem, n=p, effects="CovEvent", 
+                covar=list(CovEvent=x_matrix), gof = FALSE)
+```
+
+```{r}
+n_sim_boot <- 100
+sim_list <- lapply(1:n_sim_boot, function(i){ 
+  simulate(fit, covar = list(CovEvent = x_matrix), verbose = FALSE, seed = i)
+})
+aux_stat <- function(dat, x_matrix) {
+  mean(apply(dat, 1, function(x) x_matrix[x[2], x[3]]^2))
+}
+sim_stats <- sapply(sim_list, function(sim) aux_stat(sim, x_matrix))
+observed_stat <- aux_stat(data_rem, x_matrix)
+```
+
+```{r}
+plot_df <- data.frame(stat = sim_stats)
+pdf("pictures/gof/simulated_statistics_misp.pdf")
+ggplot(plot_df, aes(x = "Simulated (fitted model)", y = stat)) +
+  geom_violin(fill = "grey80", alpha = 0.4) +
+  geom_jitter(width = 0.05, alpha = 0.3, size = 1) +
+  geom_hline(aes(yintercept = observed_stat, color = "Observed"),
+             linewidth = 1, linetype = "dashed") +
+  scale_color_manual(name = NULL, values = c("Observed" = 2)) +
+  labs(y = "Auxiliary statistic", x = NULL,
+       title = "Check on auxiliary statistics (mispecified)",
+       subtitle = "True: non-linear effect of x\nFitted: linear effect of x") +
+  theme_minimal() +
+  theme(legend.position = "top",
+        plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 16),
+        axis.text = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        axis.title.x = element_text(size = 16),
+        legend.text = element_text(size = 16),
+        legend.key.size = unit(1.2, "cm"),
+        legend.key.width = unit(1.8, "cm"),
+        axis.line.y = element_line(color = "black", linewidth = 0.5),
+        axis.line.x = element_line(color = "black", linewidth = 0.5))
+dev.off()
 ```
 

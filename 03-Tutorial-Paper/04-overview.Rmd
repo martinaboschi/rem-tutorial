@@ -298,6 +298,42 @@ AIC(linear_dist)
 ```
 
 ```{r}
+source("script/GOF.R")
+```
+
+```{r}
+dist_matrix <- cbind(remdat$distance, remdat$non.distance)
+by_matrix <- dist_matrix
+by_matrix[,1] <- 1
+by_matrix[,2] <- -1
+remdat$y <- 1
+rem_fit <- gam(y ~ -1 + s(dist_matrix, by=by_matrix) + delta.rec,
+               family="binomial"(link = "logit"), data = remdat)
+plot(rem_fit)
+```
+
+```{r}
+gof_test_cov1 <- GOF_test(rem_fit = rem_fit, 
+                         covariate_event = remdat$distance,
+                         covariate_nonevent = remdat$non.distance,
+                         test  = "functional_form",
+                         main = "Correctly functional form of covariate effect",
+                         subtitle = "")
+gof_test_cov1$pvalue
+```
+
+```{r}
+gof_test_cov2 <- GOF_test(rem_fit = rem_fit, 
+                         covariate_event = remdat$rec,
+                         covariate_nonevent = remdat$non.rec,
+                         test  = "functional_form",
+                         main = "Correctly functional form of covariate effect",
+                         subtitle = "")
+gof_test_cov2$pvalue
+```
+
+
+```{r}
 create_plots <- function(gam_fit, elements, ranges, 
                          x_labs, y_labs, titles, subtitle){
   

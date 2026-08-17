@@ -539,3 +539,43 @@ plots_shift[[6]]
 plots_shift[[7]]
 ```
 
+```{r}
+source("script/GOF.R")
+```
+
+```{r}
+gof_test_time1 <- GOF_test(fit_shift,
+                           times = dat_gam_shifted$stp,
+                           term = "Rec_Mat",
+                           test  = "time",
+                           n.sim = 500)
+gof_test_time1$plot_fn()
+```
+
+
+```{r}
+gof_test_time2 <- GOF_test(fit_shift,
+                           times = dat_gam_shifted$stp,
+                           term = "Rep_Mat",
+                           test  = "time",
+                           n.sim = 500)
+gof_test_time2$plot_fn()
+```
+
+```{r}
+gof_test_time3 <- GOF_test(fit_shift,
+                           times = dat_gam_shifted$stp,
+                           term = "Trs_Mat",
+                           test  = "time",
+                           n.sim = 500)
+gof_test_time3$plot_fn()
+```
+
+```{r}
+gof_test_time4 <- GOF_test(fit_shift,
+                           times = dat_gam_shifted$stp,
+                           term = "Cyc_Mat",
+                           test  = "time",
+                           n.sim = 500)
+gof_test_time4$plot_fn()
+```
