@@ -86,6 +86,11 @@ dev.off()
 b.dist_shift.objects <- lapply(gam.fits_shifted, getViz)
 data <- data.frame(x = as.vector(dist_matrix),
                    y = spline_function(as.vector(dist_matrix), fit))
+shift_amount <- 0.72
+data_shifted <- data.frame(
+  x = data$x,
+  y = data$y + shift_amount
+)
 coefficients_plot_shifted <- ggplot(data=data, aes(x, y)) +
   geom_line(data=data,
             linetype = 1, col="lightcoral",
@@ -102,6 +107,9 @@ coefficients_plot_shifted <- coefficients_plot_shifted +
   geom_line(data=data,
             linetype = 1, col="lightcoral",
             size=1) +
+  geom_line(data = data_shifted,
+            linetype = 2, col = "lightcoral",
+            size = 1) +
   labs(title = "ESTIMATED vs TRUE non-linear effect (Model with SHIFTING)",
        x = "Covariate",
        y = "Log-hazard contribution") +
